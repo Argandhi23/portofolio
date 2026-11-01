@@ -1,0 +1,72 @@
+import { z } from 'zod';
+import { slugify } from '@/lib/utils';
+
+const mediaUrlOrPathSchema = z
+  .string()
+  .min(1, 'URL gambar wajib diisi')
+  .refine(
+    (val) => {
+      if (val.startsWith('/')) return val.length > 1;
+      try {
+        const parsed = new URL(val);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    },
+    { message: 'Format URL gambar tidak valid (gunakan https://... atau /path/gambar.webp)' }
+  );
+
+export const projectSchema = z.object({
+  title: z
+    .string()
+    .min(1, 'Judul project wajib diisi')
+    .max(150, 'Judul project maksimal 150 karakter'),
+  slug: z
+    .string()
+    .min(1, 'Slug wajib diisi')
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      'Format slug tidak valid (hanya huruf kecil, angka, dan tanda hubung)'
+    ),
+  category: z
+    .string()
+    .min(1, 'Kategori project wajib diisi')
+    .max(100, 'Kategori maksimal 100 karakter'),
+  client_name: z.string().nullable().optional(),
+  summary: z.string().nullable().optional(),
+  content: z.string().nullable().optional(),
+  thumbnail_url: mediaUrlOrPathSchema,
+  gallery_urls: z.array(mediaUrlOrPathSchema).default([]),
+  tech_stack: z.array(z.string()).default([]),
+  project_url: z
+    .string()
+    .url('Format URL project tidak valid')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  github_url: z
+    .string()
+    .url('Format URL GitHub tidak valid')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  apk_url: z
+    .string()
+    .url('Format URL APK tidak valid')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  is_featured: z.boolean().default(false),
+  status: z.enum(['draft', 'published']).default('draft'),
+  display_order: z.coerce.number().int().default(0),
+});
+
+export type ProjectInput = z.infer<typeof projectSchema>;
+
+/**
+ * Helper to auto-generate a sanitized slug for projects
+ */
+export function generateProjectSlug(title: string): string {
+  return slugify(title);
+}

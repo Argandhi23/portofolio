@@ -1,0 +1,43 @@
+name: Portfolio Quality Gate (CI)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  verify:
+    name: Typecheck, Lint, Unit Tests & Production Build
+    runs-on: ubuntu-latest
+
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-project.supabase.co' }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'ci-public-anon-placeholder-key' }}
+      NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://argandhi.dev' }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'admin@argandhi.dev' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies cleanly
+        run: npm ci
+
+      - name: Strict TypeScript check
+        run: npm run typecheck
+
+      - name: ESLint code quality check
+        run: npm run lint
+
+      - name: Run Vitest unit & security test suite
+        run: npm run test
+
+      - name: Verify Next.js production build
+        run: npm run build

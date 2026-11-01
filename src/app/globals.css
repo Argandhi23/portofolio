@@ -1,26 +1,370 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Folioblox Official Design Tokens */
+  --bg-primary-black: #080808;
+  --bg-surface-elevated: #121212;
+  --bg-surface-card: #181818;
+  --accent-orange: #FF5510;
+  --accent-orange-hover: #FF6B2B;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --text-muted: #7A7A7A;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+
+  /* Motion Signature Curves */
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Compatibility aliases */
+  --background: var(--bg-primary-black);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-brand-orange: #FF5510;
+  --color-brand-orange-hover: #FF6B2B;
+  --color-brand-dark: #080808;
+  --color-brand-surface: #121212;
+  --color-brand-card: #181818;
+  --color-brand-muted: #7A7A7A;
+  --font-sans: var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary-black);
+  color: var(--text-primary);
+  font-family: var(--font-plus-jakarta-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for modern obsidian dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #242424;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}
+
+/* ==========================================================================
+   FOLIOBLOX SIGNATURE ATMOSPHERIC SURFACES & COMPONENTS
+   ========================================================================== */
+
+/* Hero Fiery Gradient & Atmospheric Lighting */
+.hero-card {
+  position: relative;
+  background: radial-gradient(
+    circle at 26% 24%,
+    #FF6B24 0%,
+    #F43E0B 30%,
+    #9E1B06 62%,
+    #2B0804 92%,
+    #170503 100%
+  );
+  border-bottom-left-radius: 42px;
+  border-bottom-right-radius: 42px;
+  overflow: hidden;
+  z-index: 20;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Compact Hero for Sub-pages (/projects/[slug], /about, /projects, /contact) */
+.compact-hero-card {
+  position: relative;
+  background: radial-gradient(
+    circle at 24% 20%,
+    #FF6B24 0%,
+    #E63709 34%,
+    #8C1705 66%,
+    #240703 92%,
+    #140402 100%
+  );
+  border-bottom-left-radius: 42px;
+  border-bottom-right-radius: 42px;
+  overflow: hidden;
+  z-index: 20;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Bookend Fiery Footer Surface */
+.footer-bookend-card {
+  position: relative;
+  background: radial-gradient(
+    circle at 74% 22%,
+    #FF6B24 0%,
+    #F43E0B 30%,
+    #9E1B06 62%,
+    #2B0804 92%,
+    #170503 100%
+  );
+  border-top-left-radius: 42px;
+  border-top-right-radius: 42px;
+  overflow: hidden;
+  box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Ambient Warm Glow Overlays inside Fiery Surfaces */
+.hero-glow-left {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 68%;
+  height: 85%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 115, 40, 0.65) 0%,
+    rgba(235, 55, 10, 0.25) 50%,
+    transparent 75%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes ambientBreathe {
+  0%, 100% {
+    opacity: 0.92;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ambient-breathe {
+  animation: ambientBreathe 7s ease-in-out infinite;
+}
+
+.hero-glow-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 42%;
+  background: linear-gradient(
+    to top,
+    rgba(16, 4, 2, 0.78) 0%,
+    rgba(45, 10, 4, 0.35) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Logo Strip Fade Mask on Right Edge */
+.logo-strip-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 82%,
+    rgba(0, 0, 0, 0.25) 97%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 82%,
+    rgba(0, 0, 0, 0.25) 97%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+/* Editorial Monochrome Showcase Card */
+.bw-card {
+  border-radius: 24px;
+  overflow: hidden;
+  background-color: #d8d8d8;
+  position: relative;
+  transition: transform 0.55s var(--ease-out-expo), box-shadow 0.55s var(--ease-out-expo);
+}
+
+.bw-card:hover {
+  transform: translate3d(0, -4px, 0);
+}
+
+.bw-card img,
+.bw-card svg.editorial-art {
+  transition: transform 0.65s var(--ease-out-expo);
+}
+
+.bw-card:hover img,
+.bw-card:hover svg.editorial-art {
+  transform: scale(1.045);
+}
+
+/* ==========================================================================
+   AWWWARDS-GRADE GPU MOTION PRIMITIVES (ZERO-BLOAT, 60/120FPS)
+   ========================================================================== */
+
+/* 1. Progressive-Enhanced Scroll Reveal (No clip-path collapse so IntersectionObserver always fires) */
+.reveal-item[data-reveal-state="pending"][data-reveal-variant="fade-up"] {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+}
+
+.reveal-item[data-reveal-state="pending"][data-reveal-variant="scale"] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0) scale(0.98);
+}
+
+.reveal-item[data-reveal-state="pending"][data-reveal-variant="mask-up"] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+
+.reveal-item[data-reveal-state="visible"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  transition:
+    opacity 0.68s var(--ease-out-expo) var(--reveal-delay, 0ms),
+    transform 0.68s var(--ease-out-expo) var(--reveal-delay, 0ms);
+}
+
+/* 2. Tactile Pill CTA Button with Directional Slide-Through Arrow */
+.pill-btn {
+  transition:
+    transform 0.32s var(--ease-out-expo),
+    box-shadow 0.32s var(--ease-out-expo),
+    background-color 0.25s ease;
+}
+
+.pill-btn:hover {
+  transform: translate3d(0, -1.5px, 0);
+}
+
+.pill-btn:active {
+  transform: translate3d(0, 0, 0) scale(0.98);
+}
+
+.arrow-circle {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.32s var(--ease-out-expo);
+}
+
+.pill-btn:hover .arrow-circle {
+  transform: scale(1.05);
+}
+
+.arrow-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.arrow-icon-primary,
+.arrow-icon-Clone {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.36s var(--ease-out-expo), opacity 0.36s var(--ease-out-expo);
+}
+
+.arrow-icon-primary {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+.arrow-icon-Clone {
+  transform: translate3d(-150%, 0, 0);
+  opacity: 0;
+}
+
+.pill-btn:hover .arrow-icon-primary {
+  transform: translate3d(150%, 0, 0);
+  opacity: 0;
+}
+
+.pill-btn:hover .arrow-icon-Clone {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+/* 3. Cursor-Tracking Fiery Spotlight Surface (Desktop Hover Only) */
+@media (hover: hover) and (pointer: fine) {
+  .spotlight-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      480px circle at var(--spot-x, -999px) var(--spot-y, -999px),
+      var(--spot-color, rgba(255, 85, 16, 0.13)),
+      transparent 55%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .spotlight-card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Infinite Smooth Marquee for Tech Stack / Client Logos when > 5 items */
+@keyframes marquee {
+  0% {
+    transform: translate3d(0%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 34s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Strict Accessibility Guardrail */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-item[data-reveal-state="pending"] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
 }

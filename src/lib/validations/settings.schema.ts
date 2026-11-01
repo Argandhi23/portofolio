@@ -1,0 +1,62 @@
+import { z } from 'zod';
+
+export const settingsSchema = z.object({
+  brand_name: z
+    .string()
+    .min(1, 'Nama brand wajib diisi')
+    .max(50, 'Nama brand maksimal 50 karakter'),
+  hero_greeting: z
+    .string()
+    .min(1, 'Greeting hero wajib diisi')
+    .max(50, 'Greeting hero maksimal 50 karakter'),
+  hero_title: z
+    .string()
+    .min(1, 'Judul hero wajib diisi')
+    .max(100, 'Judul hero maksimal 100 karakter'),
+  hero_subtitle: z
+    .string()
+    .min(1, 'Subtitle hero wajib diisi')
+    .max(250, 'Subtitle hero maksimal 250 karakter'),
+  hero_description: z
+    .string()
+    .min(1, 'Deskripsi hero wajib diisi'),
+  hero_image_url: z
+    .string()
+    .url('Format URL gambar hero tidak valid')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  about_label: z
+    .string()
+    .min(1, 'Label about wajib diisi')
+    .max(50, 'Label about maksimal 50 karakter'),
+  about_heading: z
+    .string()
+    .min(1, 'Heading about wajib diisi')
+    .max(150, 'Heading about maksimal 150 karakter'),
+  about_description: z
+    .string()
+    .min(1, 'Deskripsi about wajib diisi'),
+  contact_email: z
+    .string()
+    .email('Format email kontak tidak valid')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  whatsapp_number: z
+    .string()
+    .min(1, 'Nomor WhatsApp wajib diisi')
+    .default('6285806912873'),
+  github_url: z
+    .string()
+    .url('Format URL GitHub tidak valid')
+    .nullable()
+    .optional()
+    .or(z.literal('')),
+  cta_url: z
+    .string()
+    .min(1, 'CTA URL wajib diisi')
+    .default('#contact'),
+});
+
+export type SettingsInput = z.infer<typeof settingsSchema>;
