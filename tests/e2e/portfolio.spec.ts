@@ -26,7 +26,7 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
     expect(pageErrors).toEqual([]);
   });
 
-  test('opens and navigates via Mobile Obsidian-Glass Drawer on mobile viewport', async ({
+  test('transforms 2-line button to X and opens fullscreen black mobile overlay blocking whole page', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -36,16 +36,45 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
       name: /open navigation menu/i,
     });
     await expect(menuButton).toBeVisible();
+
+    // Verify 2-line bars inside the button
+    const bars = menuButton.locator('span');
+    await expect(bars).toHaveCount(2);
+
+    // Click to open
     await menuButton.click();
 
+    // Verify mobile navigation inside the full-screen black overlay
     const mobileNav = page.getByRole('navigation', {
       name: /mobile navigation/i,
     });
     await expect(mobileNav).toBeVisible();
 
+    // Verify close button shows rotated X bars
+    const closeButton = page
+      .getByRole('button', {
+        name: /close navigation menu/i,
+      })
+      .last();
+    await expect(closeButton).toBeVisible();
+    await expect(closeButton.locator('span').first()).toHaveClass(/rotate-45/);
+
     await mobileNav.getByRole('link', { name: 'About' }).click();
     await expect(page).toHaveURL(/\/about$/);
     await expect(page.locator('h1')).toContainText(/Engineering With Clarity/i);
+  });
+
+  test('reveals floating navbar on scroll on the home page via Portal', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const floatingNav = page.getByRole('navigation', {
+      name: /floating navigation/i,
+    });
+
+    // Scroll down 400px
+    await page.evaluate(() => window.scrollTo(0, 400));
+    await expect(floatingNav).toBeVisible();
   });
 
   test('supports interactive project filtering on /projects archive page', async ({
@@ -124,5 +153,48 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
         detailFooterHeading.evaluate((el) => getComputedStyle(el.parentElement ?? el).opacity)
       )
       .toBe('1');
+  });
+
+  test('opens high-resolution ImageLightbox on /projects/alparfume and dismisses with ESC key', async ({
+    page,
+  }) => {
+    await page.goto('/projects/alparfume');
+    const inspectTrigger = page.getByRole('button', { name: /Zoom image/i }).first();
+    await inspectTrigger.scrollIntoViewIfNeeded();
+    await inspectTrigger.click();
+
+    // Verify dialog opened directly in body (via portal) and is visible
+    const dialog = page.locator('div[role="dialog"]');
+    await expect(dialog).toBeVisible();
+
+    // Press Escape to close
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+  });
+
+  test('plays full-orange Argandhi. SVG stroke-draw preloader on initial entry, unmounts cleanly, and skips on SPA navigation', async ({
+    page,
+  }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const preloader = page.getByTestId('intro-preloader');
+    await expect(preloader).toBeAttached();
+
+    // Verify pure black background and full brand-orange (#FF5510) SVG stroke paths
+    const bgColor = await preloader.evaluate(
+      (el) => getComputedStyle(el).backgroundColor
+    );
+    expect(bgColor).toBe('rgb(0, 0, 0)');
+
+    const firstStroke = preloader.locator('svg path').first();
+    await expect(firstStroke).toHaveAttribute('stroke', '#FF5510');
+
+    // Wait for curtain slide-up exit & clean DOM unmount
+    await expect(preloader).toHaveCount(0, { timeout: 8000 });
+
+    // Navigate via SPA link to /about and verify preloader does NOT replay
+    await page.locator('header nav a[href="/about"]').first().click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.getByTestId('intro-preloader')).toHaveCount(0);
   });
 });

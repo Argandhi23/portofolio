@@ -63,21 +63,12 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
           {/* Left Main Display Heading */}
           <div className="md:col-span-7">
             <Reveal variant="fade-up" delay={0}>
-              <div className="inline-flex items-center gap-2 rounded-full bg-black/25 backdrop-blur-md border border-white/15 px-3 py-1 mb-4">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FF5510] animate-pulse" />
-                <span className="text-white/90 text-[11px] font-medium tracking-tight">
-                  Faqih Rafasha Argandhi &bull; Informatics UNESA &apos;24
-                </span>
-              </div>
-            </Reveal>
-
-            <Reveal variant="fade-up" delay={70}>
               <p className="text-white/95 text-[20px] sm:text-[23px] font-semibold tracking-[-0.02em] mb-2">
                 {heroGreeting}
               </p>
             </Reveal>
 
-            <Reveal variant="mask-up" delay={140}>
+            <Reveal variant="mask-up" delay={120}>
               <h1 className="text-white font-bold text-[54px] sm:text-[76px] lg:text-[84px] leading-[0.93] tracking-[-0.04em]">
                 {heroTitleWords.length >= 2 ? (
                   <>
@@ -95,7 +86,7 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
           {/* Right Supporting Statement */}
           <Reveal
             variant="fade-up"
-            delay={210}
+            delay={360}
             className="md:col-span-5 md:pl-8 pb-1"
           >
             <h2 className="text-white font-bold text-[20px] sm:text-[24px] leading-[1.22] tracking-[-0.02em] mb-3 max-w-[300px]">
@@ -112,7 +103,7 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
           {services.map((svc, idx) => {
             const { hash, digits } = splitServiceNumber(svc.number_label);
             return (
-              <Reveal key={svc.id} variant="fade-up" delay={260 + idx * 60}>
+              <Reveal key={svc.id} variant="fade-up" delay={460 + idx * 110}>
                 <div className="group/svc">
                   <div className="text-[12.5px] sm:text-[13px] font-bold tracking-tight mb-1">
                     <span className="text-[#FF5510]">{hash}</span>

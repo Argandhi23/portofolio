@@ -123,7 +123,7 @@ export function ServicesProcessSection({
               const details = getServiceDetails(svc.title, idx);
 
               return (
-                <Reveal key={svc.id} variant="fade-up" delay={idx * 75} className="h-full">
+                <Reveal key={svc.id} variant="curtain-up" delay={idx * 140} className="h-full">
                   <SpotlightCard className="h-full rounded-[24px] bg-[#181818] border border-white/[0.06] hover:border-[#FF5510]/35 p-6 sm:p-7 flex flex-col justify-between space-y-6 transition-all duration-300 hover:-translate-y-1 group overflow-hidden">
                     <div className="relative z-10 space-y-4">
                       <div className="inline-flex items-center justify-center rounded-full bg-[#121212] border border-white/[0.07] px-3.5 py-1 text-[13px] font-bold tracking-tight">

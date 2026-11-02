@@ -7,6 +7,7 @@ import { ContactForm } from '@/components/public/ContactForm';
 import { CopyEmailButton } from '@/components/public/CopyEmailButton';
 import { SectionHeader } from '@/components/public/SectionHeader';
 import { HeroAmbientGlow } from '@/components/motion/HeroAmbientGlow';
+import { FooterCurtain } from '@/components/motion/FooterCurtain';
 import { Reveal } from '@/components/motion/Reveal';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
 
@@ -201,86 +202,88 @@ export function FooterBookend({
 
       {/* =====================================================================
           FIERY SUNSET GLOW BOOKEND FOOTER (DESIGN_SYSTEM.MD SECTION 5.F)
-          Rounded Top 42px matching the Hero Section
+          Rounded Top 42px with GSAP-Grade Curtain Unveil Expansion
       ===================================================================== */}
-      <footer className="footer-bookend-card px-6 sm:px-12 pt-16 sm:pt-22 pb-10">
-        <HeroAmbientGlow />
-        <div className="hero-glow-bottom" aria-hidden="true" />
+      <FooterCurtain>
+        <footer className="footer-bookend-card px-6 sm:px-12 pt-16 sm:pt-22 pb-10">
+          <HeroAmbientGlow />
+          <div className="hero-glow-bottom" aria-hidden="true" />
 
-        <div className="relative z-10 w-full max-w-[1140px] mx-auto space-y-14">
-          {/* Top Giant Display Bookend Callout */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
-            <div className="md:col-span-8 space-y-3">
-              <Reveal variant="fade-up">
-                <p className="text-white/90 text-[16px] sm:text-[19px] font-semibold tracking-[-0.02em]">
-                  Ready to build something extraordinary?
-                </p>
-              </Reveal>
-              <Reveal variant="mask-up" delay={80}>
-                <h2 className="text-white font-bold text-[54px] sm:text-[78px] lg:text-[92px] leading-[0.92] tracking-[-0.04em]">
-                  Let&apos;s Talk.
-                </h2>
-              </Reveal>
-            </div>
-
-            <Reveal
-              variant="fade-up"
-              delay={140}
-              className="md:col-span-4 flex flex-col items-start md:items-end justify-end space-y-4 pb-1"
-            >
-              <p className="text-white/80 text-[13px] sm:text-[14px] leading-[1.55] md:text-right max-w-[280px]">
-                Faqih Rafasha Argandhi — Full-Stack &amp; Software Developer
-                based in Surabaya, Indonesia.
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <PillButton href={whatsappLink} variant="white" external>
-                  Start a conversation
-                </PillButton>
+          <div className="relative z-10 w-full max-w-[1140px] mx-auto space-y-14">
+            {/* Top Giant Display Bookend Callout */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
+              <div className="md:col-span-8 space-y-3">
+                <Reveal variant="fade-up">
+                  <p className="text-white/90 text-[16px] sm:text-[19px] font-semibold tracking-[-0.02em]">
+                    Ready to build something extraordinary?
+                  </p>
+                </Reveal>
+                <Reveal variant="mask-up" delay={140}>
+                  <h2 className="text-white font-bold text-[54px] sm:text-[78px] lg:text-[92px] leading-[0.92] tracking-[-0.04em]">
+                    Let&apos;s Talk.
+                  </h2>
+                </Reveal>
               </div>
-            </Reveal>
-          </div>
 
-          {/* Bottom Navigation & Copyright Bar */}
-          <div className="pt-8 border-t border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-[12.5px] text-white/75">
-            <div className="flex flex-wrap items-center gap-2">
-              <Link
-                href="/"
-                className="text-white font-bold text-[16px] tracking-[-0.03em]"
+              <Reveal
+                variant="fade-up"
+                delay={240}
+                className="md:col-span-4 flex flex-col items-start md:items-end justify-end space-y-4 pb-1"
               >
-                {brandName}
-              </Link>
-              <span className="text-white/40">&bull;</span>
-              <span>S1 Informatics Engineering UNESA &apos;24</span>
+                <p className="text-white/80 text-[13px] sm:text-[14px] leading-[1.55] md:text-right max-w-[280px]">
+                  Faqih Rafasha Argandhi — Full-Stack &amp; Software Developer
+                  based in Surabaya, Indonesia.
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <PillButton href={whatsappLink} variant="white" external>
+                    Start a conversation
+                  </PillButton>
+                </div>
+              </Reveal>
             </div>
 
-            <nav className="flex flex-wrap items-center gap-6 font-medium text-white/85">
-              <Link href="/" className="hover:text-white transition">
-                Home
-              </Link>
-              <Link href="/about" className="hover:text-white transition">
-                About
-              </Link>
-              <Link href="/projects" className="hover:text-white transition">
-                Projects
-              </Link>
-              <Link href="/#services" className="hover:text-white transition">
-                Services
-              </Link>
-              <a
-                href="#"
-                className="inline-flex items-center gap-1 text-white hover:opacity-85 transition"
-              >
-                <span>Top</span>
-                <ChevronUp className="w-3.5 h-3.5" />
-              </a>
-            </nav>
+            {/* Bottom Navigation & Copyright Bar */}
+            <div className="pt-8 border-t border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-[12.5px] text-white/75">
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/"
+                  className="text-white font-bold text-[16px] tracking-[-0.03em]"
+                >
+                  {brandName}
+                </Link>
+                <span className="text-white/40">&bull;</span>
+                <span>S1 Informatics Engineering UNESA &apos;24</span>
+              </div>
 
-            <p className="text-white/65">
-              &copy; {currentYear} {brandName} All rights reserved.
-            </p>
+              <nav className="flex flex-wrap items-center gap-6 font-medium text-white/85">
+                <Link href="/" className="hover:text-white transition">
+                  Home
+                </Link>
+                <Link href="/about" className="hover:text-white transition">
+                  About
+                </Link>
+                <Link href="/projects" className="hover:text-white transition">
+                  Projects
+                </Link>
+                <Link href="/#services" className="hover:text-white transition">
+                  Services
+                </Link>
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-1 text-white hover:opacity-85 transition"
+                >
+                  <span>Top</span>
+                  <ChevronUp className="w-3.5 h-3.5" />
+                </a>
+              </nav>
+
+              <p className="text-white/65">
+                &copy; {currentYear} {brandName} All rights reserved.
+              </p>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </FooterCurtain>
     </div>
   );
 }

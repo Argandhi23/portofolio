@@ -6,6 +6,7 @@ import { formatDisplayDomain } from '@/lib/utils';
 import { SectionHeader } from '@/components/public/SectionHeader';
 import { PillButton } from '@/components/public/PillButton';
 import { Reveal } from '@/components/motion/Reveal';
+import { ParallaxMedia } from '@/components/motion/ParallaxMedia';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
 import { Github } from '@/components/ui/Icons';
 
@@ -53,8 +54,12 @@ function BrowserPreviewFrame({
         <div className="w-9" />
       </div>
 
-      {/* Dedicated 16:10 Viewport Canvas */}
-      <div className="relative aspect-[16/10] w-full bg-[#141414] overflow-hidden">
+      {/* Dedicated 16:10 Viewport Canvas with Continuous ScrollTrigger Parallax */}
+      <ParallaxMedia
+        intensity={18}
+        className="aspect-[16/10] w-full bg-[#141414]"
+        innerClassName="relative h-full w-full"
+      >
         {src ? (
           <Image
             src={src}
@@ -70,7 +75,7 @@ function BrowserPreviewFrame({
             Project Preview
           </div>
         )}
-      </div>
+      </ParallaxMedia>
     </div>
   );
 }
@@ -128,7 +133,7 @@ export function SelectedWorksSection({
 
             if (isHeroBento) {
               return (
-                <Reveal key={project.id} variant="scale">
+                <Reveal key={project.id} variant="curtain-up">
                   <SpotlightCard className="rounded-[32px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-300 shadow-2xl">
                     <Link
                       href={`/projects/${project.slug}`}
@@ -260,8 +265,8 @@ export function SelectedWorksSection({
                   return (
                     <Reveal
                       key={project.id}
-                      variant="fade-up"
-                      delay={subIdx * 90}
+                      variant="curtain-up"
+                      delay={subIdx * 160}
                       className="h-full"
                     >
                       <SpotlightCard className="h-full rounded-[28px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-xl">

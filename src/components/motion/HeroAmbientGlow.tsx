@@ -45,19 +45,28 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
       ) {
         rafId = window.requestAnimationFrame(tick);
       } else {
+        el.style.willChange = 'auto';
         rafId = null;
       }
     };
 
-    const handlePointerMove = (e: PointerEvent) => {
-      const rect = parent.getBoundingClientRect();
-      const normX = (e.clientX - rect.left) / Math.max(1, rect.width) - 0.5;
-      const normY = (e.clientY - rect.top) / Math.max(1, rect.height) - 0.5;
+    let cachedWidth = parent.offsetWidth || 1;
+    let cachedHeight = parent.offsetHeight || 1;
 
-      targetX = normX * 44;
-      targetY = normY * 32;
+    const handlePointerEnter = () => {
+      cachedWidth = parent.offsetWidth || 1;
+      cachedHeight = parent.offsetHeight || 1;
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      const normX = e.offsetX / cachedWidth - 0.5;
+      const normY = e.offsetY / cachedHeight - 0.5;
+
+      targetX = normX * 40;
+      targetY = normY * 28;
 
       if (rafId === null) {
+        el.style.willChange = 'transform';
         rafId = window.requestAnimationFrame(tick);
       }
     };
@@ -66,14 +75,17 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
       targetX = 0;
       targetY = 0;
       if (rafId === null) {
+        el.style.willChange = 'transform';
         rafId = window.requestAnimationFrame(tick);
       }
     };
 
+    parent.addEventListener('pointerenter', handlePointerEnter, { passive: true });
     parent.addEventListener('pointermove', handlePointerMove, { passive: true });
     parent.addEventListener('pointerleave', handlePointerLeave, { passive: true });
 
     return () => {
+      parent.removeEventListener('pointerenter', handlePointerEnter);
       parent.removeEventListener('pointermove', handlePointerMove);
       parent.removeEventListener('pointerleave', handlePointerLeave);
       if (rafId !== null) {
@@ -86,7 +98,7 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
     <div
       ref={glowRef}
       aria-hidden="true"
-      className={cn('hero-glow-left ambient-breathe will-change-transform', className)}
+      className={cn('hero-glow-left', className)}
     />
   );
 }

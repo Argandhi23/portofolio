@@ -107,28 +107,34 @@ Agar pembuatan halaman baru konsisten dan modular, gunakan komponen berikut:
 
 ---
 
-## 6. Panduan Pembuatan Halaman Baru Selanjutnya
+## 6. Arsitektur Visual Multi-Halaman (Anti-Monoton)
 
-Saat menambahkan halaman baru di `src/app/(public)/`:
-1. **`/about` (Tentang & Perjalanan Akademik/Karier):**
-   - Buka dengan `<CompactHero eyebrow="About Faqih" title="Engineering With Clarity" ... />`.
-   - Gunakan `<SectionHeader />` di atas latar `#080808` untuk biografi lengkap, riwayat S1 Teknik Informatika UNESA '24, pengalaman *freelance*, dan daftar peralatan kerja (*tech stack* & *workflow*) dalam kartu `#121212` `rounded-[28px]`.
-   - Tutup dengan `<FooterBookend />`.
-2. **`/projects` (Arsip Seluruh Proyek & Filter Kategori):**
-   - Buka dengan `<CompactHero eyebrow="Portfolio Archive" title="Selected Works" ... />`.
-   - Tampilkan filter pill (`All`, `Web App`, `Mobile APK`, `AI System`) dengan state aktif `bg-[#FF5510] text-white rounded-full`, diikuti grid kartu proyek `#121212` `rounded-[28px]` ber-badge `#01`, `#02`, dst.
-   - Tutup dengan `<FooterBookend />`.
-3. **`/contact` / Inquiry System (`FooterBookend` & `/admin/inquiries`):**
-   - Form `ContactForm` terhubung langsung ke tabel `public.inquiries` dengan proteksi honeypot & sliding-window rate limiter, dilengkapi kartu kanal langsung (WhatsApp, Email, GitHub) di atas `#080808`.
+Agar setiap halaman memiliki karakter arsitektural yang unik namun tetap berada dalam satu DNA *Obsidian `#080808` + Fiery Orange `#FF5510`*:
+
+1. **`/` (Landing Page Utama):**
+   - **Satu-satunya** halaman yang menggunakan **Full Fiery Sunset Hero Card** (`.hero-card` + `HeroSilhouette` + `#01–#04` + Tech Marquee), dibungkus `<ScrollHeroDepth />` agar mengecil dan bergerak parallax ke dalam saat konten `#080808` naik menutupinya.
+   - Dilengkapi `<ScrollTextReveal />` manifesto arsitektur, `<EditorialIdentityCards />` ber-parallax kolom, `<SelectedWorksSection />`, `<ServicesProcessSection />`, dan `<FooterBookend />`.
+2. **`/about` (Minimalist Print-Magazine Editorial):**
+   - Dibuka di atas latar `#080808` bersih menggunakan `PublicNavbar` (`surfaceVariant="obsidian"`), garis *issue dateline* horizontal (`variant="hairline"`), tipografi masthead besar `Engineering With Clarity.`, dan bingkai potret monokrom vertikal (`aspect-[3/4.05]`) ber-parallax.
+   - Menggunakan `<ScrollTextReveal />` untuk filosofi kerja, baris riwayat berbatas *hairline* tipis (tanpa tumpukan kartu kotak berulang), esai *sticky* 4 standar arsitektur, serta tabel indeks kolofon teknologi.
+3. **`/projects` (Digital Exhibition Room & Dual-View Archive):**
+   - Dibuka dengan latar *blueprint grid* `.exhibition-grid-surface`, judul pameran `Selected Works & System Archive.`, dan blok **Monumental Archive Counter** besar.
+   - Menyediakan bar kontrol kaca dengan filter kategori, pencarian instan, serta *view switcher*:
+     - **Mode Gallery (Default):** Proyek utama tampil lebar 12-kolom diikuti kolom asimetris ber-kecepatan scroll berbeda (`<ParallaxColumn />`).
+     - **Mode Index List:** Daftar baris bernomor ala katalog majalah dengan *cursor-following floating image preview* (0 React re-render).
+4. **`/projects/[slug]` (Apple-Style Product Cinema Case Study):**
+   - Dibuka dengan panggung gelap sinematik (`PublicNavbar` obsidian + judul keynote terpusat + tombol Live/APK/Code), diikuti langsung oleh **Widescreen Cinema Mockup** yang membesar halus (`cinemaExpand` `0.92 -> 1.0`) saat di-scroll.
+   - Dilengkapi *Architectural Specification Strip*, narasi studi kasus *sticky split-rail*, galeri screenshot ber-efek *Curtain Reveal + Inner Parallax*, dan `<FooterBookend />`.
 
 ---
 
-## 7. Standar Motion & Micro-Interactions (`src/components/motion/`)
+## 7. Standar Smooth Scroll & Zero-Reflow ScrollTrigger (`src/components/motion/`)
 
-Seluruh animasi wajib mematuhi prinsip **Awwwards-Grade Restraint & Zero-Bloat (60/120fps)** tanpa membajak native scroll:
-1. **Kurva Transisi Utama:** `--ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1)`.
-2. **GPU-Composited Primitives:**
-   - `<Reveal />`: Progressive-enhanced scroll entrance (`fade-up`, `scale`, `mask-up`) dengan satu shared `IntersectionObserver` dan fallback penuh `@media (prefers-reduced-motion: reduce)`.
-   - `<SpotlightCard />`: Pijar radial `#FF5510` tipis mengikuti kursor melalui CSS custom properties `--spot-x` / `--spot-y` di dalam `requestAnimationFrame` (**0 React re-render**).
-   - `<HeroAmbientGlow />`: Pergeseran cahaya atmosferik *damped lerp* pada permukaan Fiery Sunset Glow yang otomatis tidur (`0% CPU`) saat kursor diam.
-   - `PillButton`: *Directional arrow slide-through* murni CSS saat di-hover.
+Seluruh animasi dioptimasi ketat untuk **Locked 60/120fps (Zero Layout Thrashing & Zero Permanent GPU Layer Bloat)**:
+1. **Kurva Transisi Sinematik:** `--ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1)` & `--ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1)`.
+2. **Featherlight Smooth Scroll (`<SmoothScrollProvider />` via `lenis`):**
+   - Menggunakan library resmi `lenis` (`lerp: 0.12`, `wheelMultiplier: 1.05`, `syncTouch: false`) yang ringan dan responsif di mouse wheel maupun trackpad, serta menyalurkan posisi `scroll` langsung ke `scroll-coordinator.ts` di dalam *frame* RAF yang sama.
+3. **Zero-Reflow Cached Geometry Engine (`scroll-coordinator.ts` & `src/lib/scroll-math.ts`):**
+   - Seluruh pengukuran geometri DOM (`getBoundingClientRect` & `scrollHeight`) hanya dijalankan **sekali** saat *mount* / `ResizeObserver` (*batch read*), dan **DILARANG** dipanggil saat event `scroll` berlangsung (0 forced synchronous reflow!).
+   - `<Reveal />`: Berjalan 100% di thread native `IntersectionObserver` (`1.22s – 1.28s`) tanpa *scroll listener* JS, serta melepas memori layer GPU (`will-change: auto`) begitu elemen selesai muncul.
+   - `<ScrollHeroDepth />`, `<ScrollTextReveal />`, `<ParallaxMedia />`, `<ParallaxColumn />`, `<FooterCurtain />`, & `<SpotlightCard />`: Menggunakan kalkulasi koordinat ter-cache + *dirty-checking* sehingga elemen di luar layar memakan `0%` CPU/GPU.

@@ -10,46 +10,72 @@ export interface SpotlightCardProps
 }
 
 /**
- * Zero-rerender cursor-tracking fiery spotlight surface.
- * Writes --spot-x and --spot-y directly to the DOM element inside requestAnimationFrame
- * so React never re-renders during mouse movement (guaranteed 60/120fps).
+ * Zero-rerender & zero-scroll-reflow cursor-tracking fiery spotlight surface.
+ * Caches bounding rect on pointerenter so `getBoundingClientRect()` is NEVER called
+ * during pointermove or while scrolling past cards.
  */
 export function SpotlightCard({
   children,
   className,
   spotlightColor = 'rgba(255, 85, 16, 0.13)',
   style,
+  onPointerEnter,
+  onPointerMove,
   ...props
 }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
+  const cachedBox = useRef<{
+    left: number;
+    top: number;
+    scrollY: number;
+  } | null>(null);
 
-  const handlePointerMove = useCallback(
+  const handlePointerEnter = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      onPointerEnter?.(e);
       if (e.pointerType === 'touch') return;
       const el = cardRef.current;
       if (!el) return;
+      const rect = el.getBoundingClientRect();
+      cachedBox.current = {
+        left: rect.left,
+        top: rect.top,
+        scrollY: window.scrollY,
+      };
+    },
+    [onPointerEnter]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      onPointerMove?.(e);
+      if (e.pointerType === 'touch') return;
+      const el = cardRef.current;
+      const box = cachedBox.current;
+      if (!el || !box) return;
 
       const clientX = e.clientX;
       const clientY = e.clientY;
 
-      if (rafRef.current !== null) {
-        window.cancelAnimationFrame(rafRef.current);
-      }
+      if (rafRef.current !== null) return;
 
       rafRef.current = window.requestAnimationFrame(() => {
-        const rect = el.getBoundingClientRect();
-        el.style.setProperty('--spot-x', `${Math.round(clientX - rect.left)}px`);
-        el.style.setProperty('--spot-y', `${Math.round(clientY - rect.top)}px`);
+        const scrollDelta = window.scrollY - box.scrollY;
+        const spotX = Math.round(clientX - box.left);
+        const spotY = Math.round(clientY - (box.top - scrollDelta));
+        el.style.setProperty('--spot-x', `${spotX}px`);
+        el.style.setProperty('--spot-y', `${spotY}px`);
         rafRef.current = null;
       });
     },
-    []
+    [onPointerMove]
   );
 
   return (
     <div
       ref={cardRef}
+      onPointerEnter={handlePointerEnter}
       onPointerMove={handlePointerMove}
       style={
         {

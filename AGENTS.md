@@ -22,6 +22,7 @@ Dokumen ini adalah instruksi utama (*Single Source of Truth*) untuk AI Agent dal
 - **Database, Auth, & Storage:** `@supabase/ssr` dan `@supabase/supabase-js`
 - **Schema Validation:** `zod`
 - **Styling:** Tailwind CSS
+- **Smooth Scrolling (Public Only):** `lenis` (ultra-lightweight ~3.5KB smooth inertia scroll)
 - **Icons:** `lucide-react` (import secara spesifik per ikon agar bundle tetap kecil)
 
 ### Larangan Keras (DILARANG Diinstal/Digunakan)

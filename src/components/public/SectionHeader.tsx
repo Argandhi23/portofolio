@@ -43,7 +43,7 @@ export function SectionHeader({
       {/* Right Column: Lead Statement + Micro Label & Inverted Orange Pill CTA */}
       <Reveal
         variant="fade-up"
-        delay={90}
+        delay={150}
         className="md:col-span-6 md:pl-6 flex flex-col justify-between h-full pt-1"
       >
         <div className="text-white font-semibold text-[18px] sm:text-[21.5px] leading-[1.38] tracking-[-0.015em] mb-9">

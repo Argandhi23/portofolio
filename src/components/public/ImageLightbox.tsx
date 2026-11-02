@@ -1,8 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { Maximize2, X } from 'lucide-react';
+
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 interface ImageLightboxProps {
   src: string;
@@ -13,6 +18,7 @@ interface ImageLightboxProps {
 
 /**
  * Interactive high-resolution lightbox modal for inspecting UI/architecture screenshots.
+ * Uses React Portal into document.body to prevent containing-block traps caused by parent CSS transforms.
  */
 export function ImageLightbox({
   src,
@@ -21,6 +27,7 @@ export function ImageLightbox({
   children,
 }: ImageLightboxProps) {
   const [open, setOpen] = useState(false);
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
     if (!open) return;
@@ -35,6 +42,56 @@ export function ImageLightbox({
     };
   }, [open]);
 
+  const modal = open && mounted ? (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={alt}
+      data-lenis-prevent
+      onClick={() => setOpen(false)}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/92 backdrop-blur-md p-4 sm:p-8 cursor-zoom-out animate-in fade-in duration-200"
+    >
+      {/* Top action bar with clear Close button */}
+      <div className="absolute top-5 right-5 sm:top-6 sm:right-8 z-10 flex items-center gap-3">
+        <span className="hidden sm:inline-block text-[11px] font-mono text-white/50 tracking-wider">
+          CLICK ANYWHERE OR ESC TO CLOSE
+        </span>
+        <button
+          type="button"
+          aria-label="Close image preview"
+          onClick={() => setOpen(false)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1A1A] border border-white/20 text-white hover:bg-[#FF5510] hover:border-[#FF5510] transition-colors cursor-pointer shadow-xl"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Responsive Viewport Image Canvas */}
+      <div
+        onClick={() => setOpen(false)}
+        className="relative w-full max-w-5xl h-[70vh] sm:h-[78vh] rounded-[20px] overflow-hidden border border-white/15 bg-[#0B0B0B] shadow-[0_25px_80px_rgba(0,0,0,0.85)] flex items-center justify-center cursor-zoom-out"
+      >
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-contain p-2 sm:p-4 select-none"
+          sizes="100vw"
+          unoptimized={src.startsWith('data:') || src.endsWith('.svg')}
+        />
+      </div>
+
+      {(caption || alt) && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="mt-4 px-4 py-2 rounded-full bg-[#121212]/90 border border-white/10 text-center text-xs sm:text-[13px] font-medium text-white/80 max-w-2xl cursor-default"
+        >
+          {caption || alt}
+        </div>
+      )}
+    </div>
+  ) : null;
+
   return (
     <>
       <div
@@ -48,57 +105,22 @@ export function ImageLightbox({
             setOpen(true);
           }
         }}
-        className="relative cursor-zoom-in group/zoom focus:outline-none"
+        className="relative w-full cursor-zoom-in group focus:outline-none"
       >
         {children}
 
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 group-hover/zoom:opacity-100 transition-opacity duration-200"
+          className="pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 px-3 py-1.5 text-[11px] font-semibold text-white/90 shadow-lg group-hover:scale-105 group-hover:border-[#FF5510]/50 group-hover:text-white transition-all duration-200"
         >
           <Maximize2 className="h-3 w-3 text-[#FF5510]" />
           <span>Inspect UI</span>
         </span>
       </div>
 
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={alt}
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl p-4 sm:p-8 cursor-zoom-out"
-        >
-          <button
-            type="button"
-            aria-label="Close image preview"
-            onClick={() => setOpen(false)}
-            className="absolute top-5 right-5 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#181818] border border-white/15 text-white hover:bg-[#FF5510] hover:border-[#FF5510] transition cursor-pointer"
-          >
-            <X className="h-4 w-4" />
-          </button>
-
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl aspect-[16/10] rounded-[22px] overflow-hidden border border-white/15 bg-[#0B0B0B] shadow-2xl cursor-default"
-          >
-            <Image
-              src={src}
-              alt={alt}
-              fill
-              className="object-contain"
-              sizes="100vw"
-              unoptimized={src.startsWith('data:') || src.endsWith('.svg')}
-            />
-          </div>
-
-          {(caption || alt) && (
-            <p className="mt-4 text-center text-xs sm:text-sm font-medium text-white/80 max-w-2xl">
-              {caption || alt}
-            </p>
-          )}
-        </div>
-      )}
+      {mounted && typeof document !== 'undefined' && modal
+        ? createPortal(modal, document.body)
+        : null}
     </>
   );
 }

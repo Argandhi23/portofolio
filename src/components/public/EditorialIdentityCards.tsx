@@ -1,14 +1,19 @@
+import { Reveal } from '@/components/motion/Reveal';
+import { ParallaxColumn } from '@/components/motion/ParallaxColumn';
+
 export function EditorialIdentityCards() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 items-start">
       {/* =====================================================================
           CARD 1: FULL-STACK WEB ARCHITECTURE (Matte Obsidian Workstation & Brushed Steel)
       ===================================================================== */}
-      <a
-        href="#projects"
-        className="bw-card aspect-[3/3.9] group cursor-pointer shadow-2xl block"
-        aria-label="Full-Stack Web Architecture — Next.js & Cloud Systems"
-      >
+      <ParallaxColumn offsetPx={-18}>
+        <Reveal variant="curtain-up" delay={0}>
+          <a
+            href="#projects"
+            className="bw-card aspect-[3/3.9] group cursor-pointer shadow-2xl block"
+            aria-label="Full-Stack Web Architecture — Next.js & Cloud Systems"
+          >
         <svg
           viewBox="0 0 400 520"
           className="editorial-art w-full h-full object-cover"
@@ -138,16 +143,20 @@ export function EditorialIdentityCards() {
             </p>
           </div>
         </div>
-      </a>
+          </a>
+        </Reveal>
+      </ParallaxColumn>
 
       {/* =====================================================================
           CARD 2: MOBILE APP / APK ENGINEERING (Sculptural Flagship Device on Stone)
       ===================================================================== */}
-      <a
-        href="#projects"
-        className="bw-card aspect-[3/3.9] group cursor-pointer shadow-2xl block"
-        aria-label="Cross-Platform Mobile App APK — Flutter Engineering"
-      >
+      <ParallaxColumn offsetPx={24}>
+        <Reveal variant="curtain-up" delay={160}>
+          <a
+            href="#projects"
+            className="bw-card aspect-[3/3.9] group cursor-pointer shadow-2xl block"
+            aria-label="Cross-Platform Mobile App APK — Flutter Engineering"
+          >
         <svg
           viewBox="0 0 400 520"
           className="editorial-art w-full h-full object-cover"
@@ -270,16 +279,20 @@ export function EditorialIdentityCards() {
             </p>
           </div>
         </div>
-      </a>
+          </a>
+        </Reveal>
+      </ParallaxColumn>
 
       {/* =====================================================================
           CARD 3: AI SYSTEMS & INFORMATICS ENGINEERING (Obsidian Neural Monolith)
       ===================================================================== */}
-      <a
-        href="#services"
-        className="bw-card aspect-[3/3.9] group cursor-pointer shadow-2xl block"
-        aria-label="AI Integration & Informatics Engineering UNESA '24"
-      >
+      <ParallaxColumn offsetPx={-14}>
+        <Reveal variant="curtain-up" delay={320}>
+          <a
+            href="#services"
+            className="bw-card aspect-[3/3.9] group cursor-pointer shadow-2xl block"
+            aria-label="AI Integration & Informatics Engineering UNESA '24"
+          >
         <svg
           viewBox="0 0 400 520"
           className="editorial-art w-full h-full object-cover"
@@ -387,7 +400,9 @@ export function EditorialIdentityCards() {
             </p>
           </div>
         </div>
-      </a>
+          </a>
+        </Reveal>
+      </ParallaxColumn>
     </div>
   );
 }

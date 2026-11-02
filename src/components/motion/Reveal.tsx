@@ -3,12 +3,18 @@
 import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
-export type RevealVariant = 'fade-up' | 'scale' | 'mask-up';
+export type RevealVariant =
+  | 'fade-up'
+  | 'scale'
+  | 'mask-up'
+  | 'curtain-up'
+  | 'hairline';
 
 export interface RevealProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   variant?: RevealVariant;
   delay?: number;
+  duration?: number;
   className?: string;
   as?: 'div' | 'section' | 'article' | 'header' | 'span' | 'li';
 }
@@ -37,8 +43,9 @@ function getSharedObserver(): IntersectionObserver | null {
         }
       },
       {
-        rootMargin: '0px',
-        threshold: 0,
+        // Enters 7% above bottom edge: visible right where the eye looks, while still firing cleanly for footer items
+        rootMargin: '0px 0px -7% 0px',
+        threshold: 0.01,
       }
     );
   }
@@ -46,15 +53,15 @@ function getSharedObserver(): IntersectionObserver | null {
 }
 
 /**
- * Ultra-lightweight GPU-composited scroll reveal wrapper.
- * - Shares a single IntersectionObserver (threshold: 0) across the entire page.
- * - Never uses clip-path on the observed target so IntersectionObserver bounding rects never collapse to 0px.
- * - Handles Next.js client-side route transitions & scroll restoration cleanly.
+ * Zero-scroll-listener GPU scroll entrance wrapper (1.25s - 1.4s).
+ * Runs 100% via native C++ IntersectionObserver with zero JS execution during scrolling,
+ * and releases GPU layer memory (`will-change: auto`) once revealed.
  */
 export function Reveal({
   children,
   variant = 'fade-up',
   delay = 0,
+  duration,
   className,
   as: Component = 'div',
 }: RevealProps) {
@@ -88,14 +95,14 @@ export function Reveal({
       return;
     }
 
-    const isCurrentlyInViewport = () => {
+    const isInInitialView = () => {
       const rect = el.getBoundingClientRect();
-      return rect.top < window.innerHeight && rect.bottom > 0;
+      return rect.top < window.innerHeight * 0.93 && rect.bottom > 0;
     };
 
     el.setAttribute('data-reveal-state', 'pending');
 
-    if (isCurrentlyInViewport()) {
+    if (isInInitialView()) {
       const rafId = window.requestAnimationFrame(() => {
         window.requestAnimationFrame(markVisible);
       });
@@ -105,12 +112,11 @@ export function Reveal({
     observerCallbacks.set(el, markVisible);
     observer.observe(el);
 
-    // Safety check after Next.js client-side navigation scroll-to-top completes
     const postNavTimer = window.setTimeout(() => {
-      if (!revealed && isCurrentlyInViewport()) {
+      if (!revealed && isInInitialView()) {
         markVisible();
       }
-    }, 90);
+    }, 100);
 
     return () => {
       window.clearTimeout(postNavTimer);
@@ -119,15 +125,19 @@ export function Reveal({
     };
   }, []);
 
+  const customStyle: React.CSSProperties = {};
+  if (delay > 0) {
+    (customStyle as Record<string, string>)['--reveal-delay'] = `${delay}ms`;
+  }
+  if (duration && duration > 0) {
+    (customStyle as Record<string, string>)['--reveal-duration'] = `${duration}ms`;
+  }
+
   return (
     <Component
       ref={ref as React.RefObject<never>}
       data-reveal-variant={variant}
-      style={
-        delay > 0
-          ? ({ '--reveal-delay': `${delay}ms` } as React.CSSProperties)
-          : undefined
-      }
+      style={Object.keys(customStyle).length > 0 ? customStyle : undefined}
       className={cn('reveal-item', className)}
     >
       {children}
