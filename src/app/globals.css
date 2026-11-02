@@ -39,6 +39,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--bg-primary-black);
   color: var(--text-primary);
