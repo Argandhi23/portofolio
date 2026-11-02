@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LoginForm } from '@/components/admin/LoginForm';
-import { ShieldCheck, ArrowLeft, Sparkles } from 'lucide-react';
+import { ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Masuk Panel Admin — Argandhi.',
-  description: 'Autentikasi aman panel kontrol administrator Argandhi Portfolio CMS.',
+  title: 'Login Admin — Argandhi.',
+  description: 'Login panel admin Argandhi.',
 };
 
 export default function LoginPage() {
@@ -30,7 +30,7 @@ export default function LoginPage() {
           <span className="w-7 h-7 rounded-full bg-[#121212] border border-white/[0.08] flex items-center justify-center group-hover:border-[#FF5510]/40 group-hover:text-[#FF5510] transition">
             <ArrowLeft className="h-3.5 w-3.5" />
           </span>
-          <span>Kembali ke Beranda</span>
+          <span>Beranda</span>
         </Link>
 
         <Link
@@ -50,19 +50,9 @@ export default function LoginPage() {
               <ShieldCheck className="h-6 w-6" />
             </div>
 
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#FF5510] tracking-wider uppercase mb-1">
-                <Sparkles className="h-3 w-3" />
-                <span>Portofolio CMS Control</span>
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">
-                Panel Administrator
-              </h1>
-            </div>
-
-            <p className="text-xs text-white/60 leading-relaxed max-w-xs mx-auto">
-              Kelola proyek, urutan pameran, studi kasus, layanan, dan konfigurasi profil.
-            </p>
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              Login Admin
+            </h1>
           </div>
 
           {/* Form */}
@@ -70,10 +60,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="relative z-10 w-full max-w-md mx-auto pt-6 text-center text-xs text-white/40">
-        <p>Argandhi. Portfolio &bull; 3-Layer Defense-in-Depth RLS Protected</p>
-      </div>
+      <div aria-hidden="true" className="pt-6" />
     </div>
   );
 }

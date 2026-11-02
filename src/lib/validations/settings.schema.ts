@@ -8,15 +8,15 @@ export const settingsSchema = z.object({
   hero_greeting: z
     .string()
     .min(1, 'Greeting hero wajib diisi')
-    .max(50, 'Greeting hero maksimal 50 karakter'),
+    .max(160, 'Greeting hero maksimal 160 karakter'),
   hero_title: z
     .string()
     .min(1, 'Judul hero wajib diisi')
-    .max(100, 'Judul hero maksimal 100 karakter'),
+    .max(220, 'Judul hero maksimal 220 karakter'),
   hero_subtitle: z
     .string()
     .min(1, 'Subtitle hero wajib diisi')
-    .max(250, 'Subtitle hero maksimal 250 karakter'),
+    .max(400, 'Subtitle hero maksimal 400 karakter'),
   hero_description: z
     .string()
     .min(1, 'Deskripsi hero wajib diisi'),
@@ -29,11 +29,11 @@ export const settingsSchema = z.object({
   about_label: z
     .string()
     .min(1, 'Label about wajib diisi')
-    .max(50, 'Label about maksimal 50 karakter'),
+    .max(140, 'Label about maksimal 140 karakter'),
   about_heading: z
     .string()
     .min(1, 'Heading about wajib diisi')
-    .max(150, 'Heading about maksimal 150 karakter'),
+    .max(300, 'Heading about maksimal 300 karakter'),
   about_description: z
     .string()
     .min(1, 'Deskripsi about wajib diisi'),

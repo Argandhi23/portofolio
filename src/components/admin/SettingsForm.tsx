@@ -2,7 +2,14 @@
 
 import { useState, useTransition } from 'react';
 import { updateSettings } from '@/actions/settings.actions';
+import { AdminLangTabs } from '@/components/admin/AdminLangTabs';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import {
+  decodeLocalized,
+  encodeLocalized,
+  type Locale,
+  type LocalizedPair,
+} from '@/lib/i18n/localized';
 import type { SiteSettings } from '@/types/database.types';
 import type { SettingsInput } from '@/lib/validations/settings.schema';
 import {
@@ -26,25 +33,74 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [activeLang, setActiveLang] = useState<Locale>('en');
 
   // Hero Fields
-  const [brandName, setBrandName] = useState(initialSettings?.brand_name || 'Argandhi.');
-  const [heroGreeting, setHeroGreeting] = useState(initialSettings?.hero_greeting || "Hey, I'm Faqih Rafasha — Full-Stack &");
-  const [heroTitle, setHeroTitle] = useState(initialSettings?.hero_title || 'Software Developer');
-  const [heroSubtitle, setHeroSubtitle] = useState(initialSettings?.hero_subtitle || 'Great software should feel effortless.');
-  const [heroDescription, setHeroDescription] = useState(initialSettings?.hero_description || "Informatics Engineering student at UNESA ('24) & Freelance Full-Stack Developer crafting fast, scalable web apps, mobile APKs, and AI-powered software.");
-  const [heroImageUrl, setHeroImageUrl] = useState(initialSettings?.hero_image_url || '');
+  const [brandName, setBrandName] = useState(
+    initialSettings?.brand_name || 'Argandhi.'
+  );
+  const [heroGreeting, setHeroGreeting] = useState<LocalizedPair>(() =>
+    decodeLocalized(
+      initialSettings?.hero_greeting ||
+        "Hi, I'm Faqih Rafasha<!--lang:id-->Halo, saya Faqih Rafasha"
+    )
+  );
+  const [heroTitle, setHeroTitle] = useState<LocalizedPair>(() =>
+    decodeLocalized(initialSettings?.hero_title || 'Software Developer')
+  );
+  const [heroSubtitle, setHeroSubtitle] = useState<LocalizedPair>(() =>
+    decodeLocalized(
+      initialSettings?.hero_subtitle ||
+        'Clean code. Fast products.<!--lang:id-->Kode bersih. Produk cepat.'
+    )
+  );
+  const [heroDescription, setHeroDescription] = useState<LocalizedPair>(() =>
+    decodeLocalized(
+      initialSettings?.hero_description ||
+        'Building web apps, Flutter APKs, and AI tools.<!--lang:id-->Membangun aplikasi web, APK Flutter, dan sistem AI.'
+    )
+  );
+  const [heroImageUrl, setHeroImageUrl] = useState(
+    initialSettings?.hero_image_url || ''
+  );
 
   // About Fields
-  const [aboutLabel, setAboutLabel] = useState(initialSettings?.about_label || 'Behind the Code');
-  const [aboutHeading, setAboutHeading] = useState(initialSettings?.about_heading || 'Engineering Digital Products That Solve Real Problems');
-  const [aboutDescription, setAboutDescription] = useState(initialSettings?.about_description || "I'm Faqih Rafasha Argandhi, a Full-Stack & Software Developer based in Surabaya. With multiple production-ready websites and mobile APKs running live, I help businesses and clients turn complex ideas into clean, secure, and high-performance applications.");
+  const [aboutLabel, setAboutLabel] = useState<LocalizedPair>(() =>
+    decodeLocalized(
+      initialSettings?.about_label || 'About<!--lang:id-->Tentang'
+    )
+  );
+  const [aboutHeading, setAboutHeading] = useState<LocalizedPair>(() =>
+    decodeLocalized(
+      initialSettings?.about_heading ||
+        'Building Practical Digital Products<!--lang:id-->Membangun Produk Digital Fungsional'
+    )
+  );
+  const [aboutDescription, setAboutDescription] = useState<LocalizedPair>(() =>
+    decodeLocalized(
+      initialSettings?.about_description ||
+        'Full-Stack Developer in Surabaya turning ideas into fast, reliable web and mobile apps.<!--lang:id-->Full-Stack Developer di Surabaya yang mengubah ide menjadi aplikasi web & mobile cepat.'
+    )
+  );
 
   // Contact & Social Fields
-  const [contactEmail, setContactEmail] = useState(initialSettings?.contact_email || 'argandhi23@gmail.com');
-  const [whatsappNumber, setWhatsappNumber] = useState(initialSettings?.whatsapp_number || '6285806912873');
-  const [githubUrl, setGithubUrl] = useState(initialSettings?.github_url || 'https://github.com/Argandhi23');
+  const [contactEmail, setContactEmail] = useState(
+    initialSettings?.contact_email || 'argandhi23@gmail.com'
+  );
+  const [whatsappNumber, setWhatsappNumber] = useState(
+    initialSettings?.whatsapp_number || '6285806912873'
+  );
+  const [githubUrl, setGithubUrl] = useState(
+    initialSettings?.github_url || 'https://github.com/Argandhi23'
+  );
   const [ctaUrl, setCtaUrl] = useState(initialSettings?.cta_url || '#contact');
+
+  const updatePair = (
+    setter: React.Dispatch<React.SetStateAction<LocalizedPair>>,
+    val: string
+  ) => {
+    setter((prev) => ({ ...prev, [activeLang]: val }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +110,14 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
     const payload: SettingsInput = {
       brand_name: brandName,
-      hero_greeting: heroGreeting,
-      hero_title: heroTitle,
-      hero_subtitle: heroSubtitle,
-      hero_description: heroDescription,
+      hero_greeting: encodeLocalized(heroGreeting),
+      hero_title: encodeLocalized(heroTitle),
+      hero_subtitle: encodeLocalized(heroSubtitle),
+      hero_description: encodeLocalized(heroDescription),
       hero_image_url: heroImageUrl || null,
-      about_label: aboutLabel,
-      about_heading: aboutHeading,
-      about_description: aboutDescription,
+      about_label: encodeLocalized(aboutLabel),
+      about_heading: encodeLocalized(aboutHeading),
+      about_description: encodeLocalized(aboutDescription),
       contact_email: contactEmail || null,
       whatsapp_number: whatsappNumber,
       github_url: githubUrl || null,
@@ -76,7 +132,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           setFieldErrors(res.fieldErrors);
         }
       } else {
-        setSuccessMessage('Pengaturan situs berhasil diperbarui dan cache publik telah diperbarui!');
+        setSuccessMessage('Pengaturan disimpan.');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
@@ -86,32 +142,30 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     <form onSubmit={handleSubmit} className="space-y-8" noValidate>
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-900 pb-5">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-white">
-            Pengaturan Teks & Kontak Portofolio
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Konfigurasi teks Hero Section, About Section, email kontak, dan tombol CTA utama.
-          </p>
-        </div>
+        <h1 className="text-2xl font-bold tracking-tight text-white">
+          Pengaturan
+        </h1>
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 px-5 py-2.5 text-xs font-semibold text-white shadow-lg shadow-orange-500/10 hover:from-orange-600 hover:to-red-700 transition disabled:opacity-50"
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Menyimpan...</span>
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4" />
-              <span>Simpan Pengaturan</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          <AdminLangTabs value={activeLang} onChange={setActiveLang} />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition disabled:opacity-50 cursor-pointer"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                <span>Simpan</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Success Banner */}
@@ -132,16 +186,19 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
       {/* Section 1: Hero Settings */}
       <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-6">
-        <div className="flex items-center gap-2 text-white border-b border-zinc-900 pb-3">
-          <Sparkles className="h-5 w-5 text-orange-400" />
-          <h2 className="text-base font-semibold">Hero Section (Bagian Utama)</h2>
+        <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+          <div className="flex items-center gap-2 text-white">
+            <Sparkles className="h-5 w-5 text-orange-400" />
+            <h2 className="text-base font-semibold">Hero</h2>
+          </div>
+          <AdminLangTabs value={activeLang} onChange={setActiveLang} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Nama Brand / Portfolio Title <span className="text-orange-500">*</span>
+                Nama Brand <span className="text-orange-500">*</span>
               </label>
               <input
                 type="text"
@@ -151,32 +208,32 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
               {fieldErrors.brand_name && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.brand_name[0]}</p>
+                <p className="mt-1 text-xs text-red-400">
+                  {fieldErrors.brand_name[0]}
+                </p>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Greeting Hero
+                  Greeting ({activeLang.toUpperCase()})
                 </label>
                 <input
                   type="text"
-                  required
-                  value={heroGreeting}
-                  onChange={(e) => setHeroGreeting(e.target.value)}
+                  value={heroGreeting[activeLang]}
+                  onChange={(e) => updatePair(setHeroGreeting, e.target.value)}
                   className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Judul Hero (Role)
+                  Role ({activeLang.toUpperCase()})
                 </label>
                 <input
                   type="text"
-                  required
-                  value={heroTitle}
-                  onChange={(e) => setHeroTitle(e.target.value)}
+                  value={heroTitle[activeLang]}
+                  onChange={(e) => updatePair(setHeroTitle, e.target.value)}
                   className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
                 />
               </div>
@@ -184,26 +241,24 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Subtitle Hero
+                Subtitle ({activeLang.toUpperCase()})
               </label>
               <input
                 type="text"
-                required
-                value={heroSubtitle}
-                onChange={(e) => setHeroSubtitle(e.target.value)}
+                value={heroSubtitle[activeLang]}
+                onChange={(e) => updatePair(setHeroSubtitle, e.target.value)}
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
             </div>
 
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Deskripsi Paragraf Hero
+                Deskripsi ({activeLang.toUpperCase()})
               </label>
               <textarea
-                rows={3}
-                required
-                value={heroDescription}
-                onChange={(e) => setHeroDescription(e.target.value)}
+                rows={2}
+                value={heroDescription[activeLang]}
+                onChange={(e) => updatePair(setHeroDescription, e.target.value)}
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
             </div>
@@ -211,7 +266,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
           <div>
             <ImageUploader
-              label="Foto Profil / Ilustrasi Hero"
+              label="Foto Profil"
               value={heroImageUrl}
               onChange={(url) => setHeroImageUrl(url)}
               folder="hero"
@@ -223,34 +278,35 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
       {/* Section 2: About Section */}
       <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
-        <div className="flex items-center gap-2 text-white border-b border-zinc-900 pb-3">
-          <User className="h-5 w-5 text-orange-400" />
-          <h2 className="text-base font-semibold">About Section (Tentang Saya)</h2>
+        <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+          <div className="flex items-center gap-2 text-white">
+            <User className="h-5 w-5 text-orange-400" />
+            <h2 className="text-base font-semibold">Tentang</h2>
+          </div>
+          <AdminLangTabs value={activeLang} onChange={setActiveLang} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Label About (Kecil)
+              Label ({activeLang.toUpperCase()})
             </label>
             <input
               type="text"
-              required
-              value={aboutLabel}
-              onChange={(e) => setAboutLabel(e.target.value)}
+              value={aboutLabel[activeLang]}
+              onChange={(e) => updatePair(setAboutLabel, e.target.value)}
               className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
             />
           </div>
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Heading Utama About
+              Heading ({activeLang.toUpperCase()})
             </label>
             <input
               type="text"
-              required
-              value={aboutHeading}
-              onChange={(e) => setAboutHeading(e.target.value)}
+              value={aboutHeading[activeLang]}
+              onChange={(e) => updatePair(setAboutHeading, e.target.value)}
               className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
             />
           </div>
@@ -258,13 +314,12 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
         <div>
           <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-            Deskripsi Narasi About
+            Deskripsi ({activeLang.toUpperCase()})
           </label>
           <textarea
-            rows={4}
-            required
-            value={aboutDescription}
-            onChange={(e) => setAboutDescription(e.target.value)}
+            rows={3}
+            value={aboutDescription[activeLang]}
+            onChange={(e) => updatePair(setAboutDescription, e.target.value)}
             className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
           />
         </div>
@@ -274,13 +329,13 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
         <div className="flex items-center gap-2 text-white border-b border-zinc-900 pb-3">
           <Mail className="h-5 w-5 text-orange-400" />
-          <h2 className="text-base font-semibold">Kontak & Call to Action (CTA)</h2>
+          <h2 className="text-base font-semibold">Kontak</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Email Kontak Portofolio
+              Email
             </label>
             <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
               <Mail className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
@@ -293,13 +348,15 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               />
             </div>
             {fieldErrors.contact_email && (
-              <p className="mt-1 text-xs text-red-400">{fieldErrors.contact_email[0]}</p>
+              <p className="mt-1 text-xs text-red-400">
+                {fieldErrors.contact_email[0]}
+              </p>
             )}
           </div>
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Nomor WhatsApp (Contoh: 6285806912873) <span className="text-orange-500">*</span>
+              WhatsApp <span className="text-orange-500">*</span>
             </label>
             <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
               <Phone className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
@@ -313,13 +370,15 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               />
             </div>
             {fieldErrors.whatsapp_number && (
-              <p className="mt-1 text-xs text-red-400">{fieldErrors.whatsapp_number[0]}</p>
+              <p className="mt-1 text-xs text-red-400">
+                {fieldErrors.whatsapp_number[0]}
+              </p>
             )}
           </div>
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Tautan Profil GitHub
+              GitHub URL
             </label>
             <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
               <Github className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
@@ -332,13 +391,15 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               />
             </div>
             {fieldErrors.github_url && (
-              <p className="mt-1 text-xs text-red-400">{fieldErrors.github_url[0]}</p>
+              <p className="mt-1 text-xs text-red-400">
+                {fieldErrors.github_url[0]}
+              </p>
             )}
           </div>
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              Tautan Tombol CTA (Contoh: #contact atau mailto:...)
+              URL CTA
             </label>
             <input
               type="text"

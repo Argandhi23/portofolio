@@ -8,7 +8,7 @@ export const serviceSchema = z.object({
   title: z
     .string()
     .min(1, 'Judul layanan wajib diisi')
-    .max(100, 'Judul layanan maksimal 100 karakter'),
+    .max(220, 'Judul layanan maksimal 220 karakter'),
   display_order: z.coerce.number().int().default(0),
   is_active: z.boolean().default(true),
 });

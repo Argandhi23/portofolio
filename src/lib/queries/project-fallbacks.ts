@@ -1,18 +1,39 @@
 import type { Brand, Project, Service, SiteSettings } from '@/types/database.types';
+import {
+  encodeLocalized,
+  pickLocalized,
+  type Locale,
+} from '@/lib/i18n/localized';
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   id: 1,
   brand_name: 'Argandhi.',
-  hero_greeting: "Hey, I'm Faqih Rafasha — Full-Stack &",
+  hero_greeting: encodeLocalized({
+    en: "Hi, I'm Faqih Rafasha",
+    id: 'Halo, saya Faqih Rafasha',
+  }),
   hero_title: 'Software Developer',
-  hero_subtitle: 'Great software should feel effortless.',
-  hero_description:
-    "Informatics Engineering student at UNESA ('24) & Freelance Full-Stack Developer crafting fast, scalable web apps, mobile APKs, and AI-powered software.",
+  hero_subtitle: encodeLocalized({
+    en: 'Clean code. Fast products.',
+    id: 'Kode bersih. Produk cepat.',
+  }),
+  hero_description: encodeLocalized({
+    en: 'Building web apps, Flutter APKs, and AI tools.',
+    id: 'Membangun aplikasi web, APK Flutter, dan sistem AI.',
+  }),
   hero_image_url: null,
-  about_label: 'Behind the Code',
-  about_heading: 'Engineering Digital Products That Solve Real Problems',
-  about_description:
-    "I'm Faqih Rafasha Argandhi, a Full-Stack & Software Developer based in Surabaya. With multiple production-ready websites and mobile APKs running live, I help businesses and clients turn complex ideas into clean, secure, and high-performance applications.",
+  about_label: encodeLocalized({
+    en: 'About',
+    id: 'Tentang',
+  }),
+  about_heading: encodeLocalized({
+    en: 'Building Practical Digital Products',
+    id: 'Membangun Produk Digital Fungsional',
+  }),
+  about_description: encodeLocalized({
+    en: 'Full-Stack Developer in Surabaya turning ideas into fast, reliable web and mobile apps.',
+    id: 'Full-Stack Developer di Surabaya yang mengubah ide menjadi aplikasi web & mobile cepat.',
+  }),
   contact_email: 'argandhi23@gmail.com',
   whatsapp_number: '6285806912873',
   github_url: 'https://github.com/Argandhi23',
@@ -24,7 +45,10 @@ export const DEFAULT_SERVICES: Service[] = [
   {
     id: 's1',
     number_label: '#01',
-    title: 'Web Development',
+    title: encodeLocalized({
+      en: 'Web Development',
+      id: 'Pengembangan Web',
+    }),
     display_order: 1,
     is_active: true,
     created_at: '',
@@ -32,7 +56,10 @@ export const DEFAULT_SERVICES: Service[] = [
   {
     id: 's2',
     number_label: '#02',
-    title: 'Mobile App (APK)',
+    title: encodeLocalized({
+      en: 'Mobile App (APK)',
+      id: 'Aplikasi Mobile (APK)',
+    }),
     display_order: 2,
     is_active: true,
     created_at: '',
@@ -40,7 +67,10 @@ export const DEFAULT_SERVICES: Service[] = [
   {
     id: 's3',
     number_label: '#03',
-    title: 'AI Integration & Engineering',
+    title: encodeLocalized({
+      en: 'AI Engineering',
+      id: 'Sistem & Integrasi AI',
+    }),
     display_order: 3,
     is_active: true,
     created_at: '',
@@ -48,7 +78,10 @@ export const DEFAULT_SERVICES: Service[] = [
   {
     id: 's4',
     number_label: '#04',
-    title: 'UI/UX & Maintenance',
+    title: encodeLocalized({
+      en: 'UI/UX & Maintenance',
+      id: 'UI/UX & Pemeliharaan',
+    }),
     display_order: 4,
     is_active: true,
     created_at: '',
@@ -67,23 +100,32 @@ export const DEFAULT_BRANDS: Brand[] = [
   { id: 'b9', name: 'Vercel', logo_url: null, website_url: 'https://vercel.com', display_order: 9, is_active: true, created_at: '' },
 ];
 
-const GALLERY_CAPTION_PRESETS: Record<string, string[]> = {
+const GALLERY_CAPTION_PRESETS: Record<
+  string,
+  Array<{ en: string; id: string }>
+> = {
   alparfume: [
-    'Best Seller Catalog, Instant Fragrance Search & Obsidian Dark Mode',
-    'Product Detail, Aroma Pyramid (Top / Heart / Base Notes) & Variant Stock',
-    'Zero-Trust Server Checkout, Multi-Courier Shipping & Dynamic QRIS Flow',
+    { en: 'Storefront & Search', id: 'Katalog & Pencarian' },
+    { en: 'Product & Scent Notes', id: 'Detail Produk & Aroma' },
+    { en: 'QRIS & Shipping Checkout', id: 'Checkout QRIS & Ongkir' },
   ],
 };
 
 /**
- * Resolves a human-friendly caption for a gallery snapshot index.
+ * Resolves a concise, localized caption for a gallery snapshot index.
  */
 export function resolveGalleryCaption(
   project: Pick<Project, 'slug' | 'title'>,
-  index: number
+  index: number,
+  locale: Locale = 'en'
 ): string {
   const preset = GALLERY_CAPTION_PRESETS[project.slug]?.[index];
-  if (preset) return preset;
+  if (preset) {
+    return locale === 'id' ? preset.id : preset.en;
+  }
   const numDigits = String(index + 1).padStart(2, '0');
-  return `${project.title} — System Screen #${numDigits}`;
+  const title = pickLocalized(project.title, locale);
+  return locale === 'id'
+    ? `${title} — Layar #${numDigits}`
+    : `${title} — Screen #${numDigits}`;
 }

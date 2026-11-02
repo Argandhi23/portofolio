@@ -138,24 +138,17 @@ export function ProjectTableActions({
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in">
           <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
-            <div className="flex items-center gap-3 text-red-400 mb-4">
+            <div className="flex items-center gap-3 text-red-400 mb-3">
               <div className="h-10 w-10 rounded-xl bg-red-950/50 border border-red-500/20 flex items-center justify-center">
                 <AlertTriangle className="h-5 w-5 text-red-400" />
               </div>
-              <div>
-                <h3 className="text-base font-semibold text-white">
-                  Konfirmasi Hapus Project
-                </h3>
-                <p className="text-xs text-zinc-400">
-                  Tindakan ini tidak dapat dibatalkan.
-                </p>
-              </div>
+              <h3 className="text-base font-semibold text-white">
+                Hapus Project
+              </h3>
             </div>
 
             <p className="text-xs text-zinc-300 leading-relaxed">
-              Apakah Anda yakin ingin menghapus project{' '}
-              <strong className="text-white">&quot;{title}&quot;</strong>? Semua file
-              thumbnail dan galeri di Supabase Storage juga akan otomatis dibersihkan.
+              Hapus project <strong className="text-white">&quot;{title}&quot;</strong> secara permanen?
             </p>
 
             {error && (

@@ -4,7 +4,14 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createProject, updateProject } from '@/actions/project.actions';
+import { AdminLangTabs } from '@/components/admin/AdminLangTabs';
 import { ImageUploader } from '@/components/admin/ImageUploader';
+import {
+  decodeLocalized,
+  encodeLocalized,
+  type Locale,
+  type LocalizedPair,
+} from '@/lib/i18n/localized';
 import { slugify } from '@/lib/utils';
 import type { Project } from '@/types/database.types';
 import type { ProjectInput } from '@/lib/validations/project.schema';
@@ -30,23 +37,20 @@ interface ProjectFormProps {
   isEdit?: boolean;
 }
 
-const CATEGORY_SUGGESTIONS = [
-  'Web Application',
-  'Mobile App (APK)',
-  'AI Software',
-  'Full-Stack System',
-  'Landing Page',
-];
+const CATEGORY_SUGGESTIONS: Record<Locale, string[]> = {
+  en: ['E-Commerce', 'Web App', 'Mobile App (APK)', 'AI Software', 'Landing Page'],
+  id: ['E-Commerce', 'Aplikasi Web', 'Aplikasi Mobile (APK)', 'Sistem AI', 'Landing Page'],
+};
 
 const QUICK_TECH_STACK = [
   'Next.js',
+  'TypeScript',
   'Supabase',
-  'Shadcn UI',
   'Tailwind CSS',
   'Flutter',
   'Firebase',
   'React',
-  'Astro',
+  'PostgreSQL',
   'Vercel',
 ];
 
@@ -55,25 +59,48 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [activeLang, setActiveLang] = useState<Locale>('en');
 
-  // Form state
-  const [title, setTitle] = useState(initialData?.title || '');
+  // Bilingual form state
+  const [titlePair, setTitlePair] = useState<LocalizedPair>(() =>
+    decodeLocalized(initialData?.title)
+  );
+  const [categoryPair, setCategoryPair] = useState<LocalizedPair>(() =>
+    decodeLocalized(initialData?.category)
+  );
+  const [summaryPair, setSummaryPair] = useState<LocalizedPair>(() =>
+    decodeLocalized(initialData?.summary)
+  );
+  const [contentPair, setContentPair] = useState<LocalizedPair>(() =>
+    decodeLocalized(initialData?.content)
+  );
+
+  // Shared metadata state
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [isSlugLocked, setIsSlugLocked] = useState(!isEdit);
-  const [category, setCategory] = useState(initialData?.category || '');
   const [clientName, setClientName] = useState(initialData?.client_name || '');
-  const [summary, setSummary] = useState(initialData?.summary || '');
-  const [content, setContent] = useState(initialData?.content || '');
-  const [thumbnailUrl, setThumbnailUrl] = useState(initialData?.thumbnail_url || '');
-  const [galleryUrls, setGalleryUrls] = useState<string[]>(initialData?.gallery_urls || []);
-  const [techStack, setTechStack] = useState<string[]>(initialData?.tech_stack || []);
+  const [thumbnailUrl, setThumbnailUrl] = useState(
+    initialData?.thumbnail_url || ''
+  );
+  const [galleryUrls, setGalleryUrls] = useState<string[]>(
+    initialData?.gallery_urls || []
+  );
+  const [techStack, setTechStack] = useState<string[]>(
+    initialData?.tech_stack || []
+  );
   const [customTechInput, setCustomTechInput] = useState('');
   const [projectUrl, setProjectUrl] = useState(initialData?.project_url || '');
   const [apkUrl, setApkUrl] = useState(initialData?.apk_url || '');
   const [githubUrl, setGithubUrl] = useState(initialData?.github_url || '');
-  const [isFeatured, setIsFeatured] = useState(initialData?.is_featured || false);
-  const [status, setStatus] = useState<'draft' | 'published'>(initialData?.status || 'draft');
-  const [displayOrder, setDisplayOrder] = useState<number>(initialData?.display_order || 0);
+  const [isFeatured, setIsFeatured] = useState(
+    initialData?.is_featured || false
+  );
+  const [status, setStatus] = useState<'draft' | 'published'>(
+    initialData?.status || 'draft'
+  );
+  const [displayOrder, setDisplayOrder] = useState<number>(
+    initialData?.display_order || 0
+  );
 
   // Active tab for content preview
   const [contentTab, setContentTab] = useState<'write' | 'preview'>('write');
@@ -94,9 +121,10 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
 
   // Auto-slug generator handler
   const handleTitleChange = (val: string) => {
-    setTitle(val);
+    const nextPair = { ...titlePair, [activeLang]: val };
+    setTitlePair(nextPair);
     if (isSlugLocked) {
-      setSlug(slugify(val));
+      setSlug(slugify(nextPair.en || nextPair.id));
     }
   };
 
@@ -122,13 +150,16 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
     setError(null);
     setFieldErrors({});
 
+    const encodedSummary = encodeLocalized(summaryPair);
+    const encodedContent = encodeLocalized(contentPair);
+
     const payload: ProjectInput = {
-      title,
+      title: encodeLocalized(titlePair),
       slug,
-      category,
+      category: encodeLocalized(categoryPair),
       client_name: clientName || null,
-      summary: summary || null,
-      content: content || null,
+      summary: encodedSummary || null,
+      content: encodedContent || null,
       thumbnail_url: thumbnailUrl,
       gallery_urls: galleryUrls.filter(Boolean),
       tech_stack: techStack,
@@ -141,9 +172,10 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
     };
 
     startTransition(async () => {
-      const res = isEdit && initialData?.id
-        ? await updateProject(initialData.id, payload)
-        : await createProject(payload);
+      const res =
+        isEdit && initialData?.id
+          ? await updateProject(initialData.id, payload)
+          : await createProject(payload);
 
       if (!res.success) {
         setError(res.message);
@@ -156,6 +188,8 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
     });
   };
 
+  const currentContent = contentPair[activeLang];
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8" noValidate>
       {/* Top Action Bar */}
@@ -167,29 +201,23 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">
-              {isEdit ? 'Sunting Project' : 'Tambah Project Baru'}
-            </h1>
-            <p className="text-xs text-zinc-400">
-              {isEdit
-                ? `Memperbarui project: ${initialData?.title}`
-                : 'Buat item portofolio baru untuk ditampilkan di website.'}
-            </p>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            {isEdit ? 'Edit Project' : 'Tambah Project'}
+          </h1>
         </div>
 
         <div className="flex items-center gap-3">
+          <AdminLangTabs value={activeLang} onChange={setActiveLang} />
           <Link
             href="/admin/projects"
-            className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition"
+            className="rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition"
           >
             Batal
           </Link>
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-orange-500/10 hover:from-orange-600 hover:to-red-700 transition disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition disabled:opacity-50 cursor-pointer"
           >
             {isPending ? (
               <>
@@ -199,7 +227,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                <span>{isEdit ? 'Simpan Perubahan' : 'Terbitkan Project'}</span>
+                <span>Simpan</span>
               </>
             )}
           </button>
@@ -220,28 +248,43 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
         <div className="space-y-6 lg:col-span-2">
           {/* Title & Slug Box */}
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                Detail ({activeLang.toUpperCase()})
+              </h2>
+              <AdminLangTabs value={activeLang} onChange={setActiveLang} />
+            </div>
+
             <div>
-              <label htmlFor="title" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Judul Project <span className="text-orange-500">*</span>
+              <label
+                htmlFor="title"
+                className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+              >
+                Judul ({activeLang.toUpperCase()}){' '}
+                <span className="text-orange-500">*</span>
               </label>
               <input
                 id="title"
                 type="text"
-                required
-                value={title}
+                value={titlePair[activeLang]}
                 onChange={(e) => handleTitleChange(e.target.value)}
-                placeholder="Contoh: Supa Blox — Brand Redesign"
+                placeholder="Al Parfume"
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
               {fieldErrors.title && (
-                <p className="mt-1 text-xs text-red-400">{fieldErrors.title[0]}</p>
+                <p className="mt-1 text-xs text-red-400">
+                  {fieldErrors.title[0]}
+                </p>
               )}
             </div>
 
             {/* Slug input with auto/manual lock */}
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="slug" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
+                <label
+                  htmlFor="slug"
+                  className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
                   Slug URL <span className="text-orange-500">*</span>
                 </label>
                 <button
@@ -252,12 +295,12 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                   {isSlugLocked ? (
                     <>
                       <Lock className="h-3 w-3" />
-                      <span>Auto-Generate Aktif</span>
+                      <span>Otomatis</span>
                     </>
                   ) : (
                     <>
                       <Unlock className="h-3 w-3 text-orange-400" />
-                      <span className="text-orange-400">Sunting Manual</span>
+                      <span className="text-orange-400">Manual</span>
                     </>
                   )}
                 </button>
@@ -273,7 +316,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                   value={slug}
                   disabled={isSlugLocked}
                   onChange={(e) => setSlug(slugify(e.target.value))}
-                  placeholder="supa-blox-brand-redesign"
+                  placeholder="alparfume"
                   className="flex-1 bg-transparent px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none disabled:text-zinc-400 disabled:cursor-not-allowed"
                 />
               </div>
@@ -285,30 +328,45 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
             {/* Category & Client */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
-                <label htmlFor="category" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Kategori <span className="text-orange-500">*</span>
+                <label
+                  htmlFor="category"
+                  className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
+                  Kategori ({activeLang.toUpperCase()}){' '}
+                  <span className="text-orange-500">*</span>
                 </label>
                 <input
                   id="category"
                   type="text"
-                  required
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="Pilih atau ketik kategori..."
+                  value={categoryPair[activeLang]}
+                  onChange={(e) =>
+                    setCategoryPair((prev) => ({
+                      ...prev,
+                      [activeLang]: e.target.value,
+                    }))
+                  }
+                  placeholder="E-Commerce"
                   className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
                 {fieldErrors.category && (
-                  <p className="mt-1 text-xs text-red-400">{fieldErrors.category[0]}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {fieldErrors.category[0]}
+                  </p>
                 )}
                 {/* Category Chips */}
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {CATEGORY_SUGGESTIONS.map((cat) => (
+                  {CATEGORY_SUGGESTIONS[activeLang].map((cat) => (
                     <button
                       key={cat}
                       type="button"
-                      onClick={() => setCategory(cat)}
+                      onClick={() =>
+                        setCategoryPair((prev) => ({
+                          ...prev,
+                          [activeLang]: cat,
+                        }))
+                      }
                       className={`text-[10px] px-2 py-0.5 rounded-md border transition ${
-                        category === cat
+                        categoryPair[activeLang] === cat
                           ? 'border-orange-500/50 bg-orange-500/10 text-orange-400'
                           : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
@@ -320,15 +378,18 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
               </div>
 
               <div>
-                <label htmlFor="clientName" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Nama Klien (Opsional)
+                <label
+                  htmlFor="clientName"
+                  className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
+                  Klien (Opsional)
                 </label>
                 <input
                   id="clientName"
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                  placeholder="Contoh: PT Supa Blox Global"
+                  placeholder="Al Parfume Official"
                   className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
@@ -336,15 +397,27 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
 
             {/* Summary */}
             <div className="pt-2">
-              <label htmlFor="summary" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Ringkasan Singkat (Summary)
+              <label
+                htmlFor="summary"
+                className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+              >
+                Ringkasan ({activeLang.toUpperCase()})
               </label>
               <textarea
                 id="summary"
                 rows={2}
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                placeholder="Deskripsi singkat yang tampil pada kartu portofolio halaman depan..."
+                value={summaryPair[activeLang]}
+                onChange={(e) =>
+                  setSummaryPair((prev) => ({
+                    ...prev,
+                    [activeLang]: e.target.value,
+                  }))
+                }
+                placeholder={
+                  activeLang === 'en'
+                    ? '1-sentence project summary...'
+                    : 'Ringkasan 1 kalimat...'
+                }
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>
@@ -356,43 +429,40 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
               <div className="flex items-center gap-2">
                 <Code2 className="h-4 w-4 text-orange-400" />
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
-                  Tech Stack &amp; Teknologi
+                  Tech Stack
                 </h3>
               </div>
               <span className="text-[11px] text-zinc-500 font-mono">
-                {techStack.length} dipilih
+                {techStack.length}
               </span>
             </div>
 
             {/* Quick-add chips */}
-            <div>
-              <span className="block text-[11px] font-medium text-zinc-400 mb-2">
-                Klik cepat untuk menambahkan:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {QUICK_TECH_STACK.map((tech) => {
-                  const isSelected = techStack.includes(tech);
-                  return (
-                    <button
-                      key={tech}
-                      type="button"
-                      onClick={() => (isSelected ? handleRemoveTech(tech) : handleAddTech(tech))}
-                      className={`text-xs px-2.5 py-1 rounded-lg border transition flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'border-orange-500/50 bg-orange-500/20 text-orange-300 font-semibold shadow-sm'
-                          : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                      }`}
-                    >
-                      <span>{tech}</span>
-                      {isSelected ? (
-                        <X className="h-3 w-3" />
-                      ) : (
-                        <Plus className="h-3 w-3 opacity-60" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="flex flex-wrap gap-1.5">
+              {QUICK_TECH_STACK.map((tech) => {
+                const isSelected = techStack.includes(tech);
+                return (
+                  <button
+                    key={tech}
+                    type="button"
+                    onClick={() =>
+                      isSelected ? handleRemoveTech(tech) : handleAddTech(tech)
+                    }
+                    className={`text-xs px-2.5 py-1 rounded-lg border transition flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'border-orange-500/50 bg-orange-500/20 text-orange-300 font-semibold shadow-sm'
+                        : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                    }`}
+                  >
+                    <span>{tech}</span>
+                    {isSelected ? (
+                      <X className="h-3 w-3" />
+                    ) : (
+                      <Plus className="h-3 w-3 opacity-60" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Custom input */}
@@ -407,7 +477,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     handleAddTech(customTechInput);
                   }
                 }}
-                placeholder="Tambah teknologi lainnya (misal: Python, Docker, PyTorch)..."
+                placeholder="Tambah teknologi..."
                 className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none"
               />
               <button
@@ -422,65 +492,62 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
 
             {/* Selected badges */}
             {techStack.length > 0 && (
-              <div className="pt-2">
-                <span className="block text-[11px] font-medium text-zinc-500 mb-2">
-                  Daftar Badge Terpilih:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-xs font-semibold text-orange-300"
+              <div className="flex flex-wrap gap-2 pt-1">
+                {techStack.map((tech) => (
+                  <span
+                    key={tech}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-xs font-semibold text-orange-300"
+                  >
+                    <span>{tech}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTech(tech)}
+                      className="text-orange-400 hover:text-red-400 transition"
                     >
-                      <span>{tech}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTech(tech)}
-                        className="text-orange-400 hover:text-red-400 transition"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
               </div>
             )}
           </div>
 
           {/* Markdown Content Box */}
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
-              <div>
-                <label htmlFor="content" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Studi Kasus Lengkap (Markdown)
-                </label>
-                <span className="text-[11px] text-zinc-500">
-                  Mendukung format Markdown: heading (#), list (-), tebal (**), dll.
-                </span>
-              </div>
-              <div className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setContentTab('write')}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition ${
-                    contentTab === 'write'
-                      ? 'bg-zinc-800 text-white'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  Editor
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setContentTab('preview')}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition ${
-                    contentTab === 'preview'
-                      ? 'bg-zinc-800 text-white'
-                      : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                >
-                  Pratinjau
-                </button>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-900 pb-3">
+              <label
+                htmlFor="content"
+                className="block text-xs font-semibold uppercase tracking-wider text-zinc-300"
+              >
+                Studi Kasus Markdown ({activeLang.toUpperCase()})
+              </label>
+
+              <div className="flex items-center gap-2">
+                <AdminLangTabs value={activeLang} onChange={setActiveLang} />
+                <div className="flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setContentTab('write')}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition ${
+                      contentTab === 'write'
+                        ? 'bg-zinc-800 text-white'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    Tulis
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setContentTab('preview')}
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md transition ${
+                      contentTab === 'preview'
+                        ? 'bg-zinc-800 text-white'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    Preview
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -488,17 +555,26 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
               <textarea
                 id="content"
                 rows={12}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="## Tantangan Desain&#10;&#10;Jelaskan latar belakang masalah klien...&#10;&#10;## Solusi Kami&#10;&#10;Langkah visual dan strategi yang diterapkan...&#10;&#10;## Hasil Akhir&#10;&#10;Dampak yang diperoleh..."
+                value={currentContent}
+                onChange={(e) =>
+                  setContentPair((prev) => ({
+                    ...prev,
+                    [activeLang]: e.target.value,
+                  }))
+                }
+                placeholder={
+                  activeLang === 'en'
+                    ? '## Project Goal\n\n...\n\n## Key Features\n\n- ...\n\n## Result\n\n...'
+                    : '## Tujuan Proyek\n\n...\n\n## Fitur Utama\n\n- ...\n\n## Hasil\n\n...'
+                }
                 className="w-full font-mono rounded-lg border border-zinc-800 bg-zinc-900/80 p-3.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 leading-relaxed"
               />
             ) : (
               <div className="min-h-[280px] rounded-lg border border-zinc-800 bg-zinc-900/40 p-4 text-xs text-zinc-200 prose prose-invert max-w-none">
-                {content ? (
-                  <div className="whitespace-pre-wrap">{content}</div>
+                {currentContent ? (
+                  <div className="whitespace-pre-wrap">{currentContent}</div>
                 ) : (
-                  <p className="text-zinc-600 italic">Belum ada konten untuk dipratinjau.</p>
+                  <p className="text-zinc-600 italic">Belum ada konten.</p>
                 )}
               </div>
             )}
@@ -510,13 +586,13 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
           {/* Publishing Settings Box */}
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-5">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
-              Pengaturan Publikasi
+              Publikasi
             </h2>
 
             {/* Status Selector */}
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
-                Status Rilis
+                Status
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -547,14 +623,9 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
 
             {/* Featured Showcase Switch */}
             <div className="pt-2 border-t border-zinc-900 flex items-center justify-between">
-              <div>
-                <span className="block text-xs font-medium text-zinc-200">
-                  Project Unggulan (Featured)
-                </span>
-                <span className="block text-[11px] text-zinc-500">
-                  Tampil pada 3 kartu utama landing page
-                </span>
-              </div>
+              <span className="block text-xs font-medium text-zinc-200">
+                Featured
+              </span>
               <button
                 type="button"
                 onClick={() => setIsFeatured((prev) => !prev)}
@@ -572,26 +643,31 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
 
             {/* Display Order */}
             <div className="pt-2 border-t border-zinc-900">
-              <label htmlFor="displayOrder" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Urutan Tampil (Display Order)
+              <label
+                htmlFor="displayOrder"
+                className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+              >
+                Urutan
               </label>
               <input
                 id="displayOrder"
                 type="number"
                 value={displayOrder}
-                onChange={(e) => setDisplayOrder(parseInt(e.target.value, 10) || 0)}
+                onChange={(e) =>
+                  setDisplayOrder(parseInt(e.target.value, 10) || 0)
+                }
                 className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
               />
-              <span className="text-[11px] text-zinc-500 mt-1 block">
-                Angka lebih kecil tampil lebih awal (0, 1, 2, ...).
-              </span>
             </div>
 
             {/* Tautan Proyek (Live, APK, GitHub) */}
             <div className="pt-3 border-t border-zinc-900 space-y-3">
               <div>
-                <label htmlFor="projectUrl" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Live Website URL (Opsional)
+                <label
+                  htmlFor="projectUrl"
+                  className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
+                  Live URL
                 </label>
                 <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
                   <Globe className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
@@ -600,18 +676,23 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     type="url"
                     value={projectUrl}
                     onChange={(e) => setProjectUrl(e.target.value)}
-                    placeholder="https://app-name.vercel.app"
+                    placeholder="https://..."
                     className="w-full bg-transparent text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none"
                   />
                 </div>
                 {fieldErrors.project_url && (
-                  <p className="mt-1 text-xs text-red-400">{fieldErrors.project_url[0]}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {fieldErrors.project_url[0]}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="apkUrl" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  APK / Mobile App Release URL (Opsional)
+                <label
+                  htmlFor="apkUrl"
+                  className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
+                  APK URL
                 </label>
                 <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
                   <Smartphone className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
@@ -620,18 +701,23 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     type="url"
                     value={apkUrl}
                     onChange={(e) => setApkUrl(e.target.value)}
-                    placeholder="https://.../download/app-release.apk"
+                    placeholder="https://.../app.apk"
                     className="w-full bg-transparent text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none"
                   />
                 </div>
                 {fieldErrors.apk_url && (
-                  <p className="mt-1 text-xs text-red-400">{fieldErrors.apk_url[0]}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {fieldErrors.apk_url[0]}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="githubUrl" className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  GitHub Repository URL (Opsional)
+                <label
+                  htmlFor="githubUrl"
+                  className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
+                >
+                  GitHub URL
                 </label>
                 <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
                   <Github className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
@@ -640,12 +726,14 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     type="url"
                     value={githubUrl}
                     onChange={(e) => setGithubUrl(e.target.value)}
-                    placeholder="https://github.com/Argandhi23/..."
+                    placeholder="https://github.com/..."
                     className="w-full bg-transparent text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none"
                   />
                 </div>
                 {fieldErrors.github_url && (
-                  <p className="mt-1 text-xs text-red-400">{fieldErrors.github_url[0]}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {fieldErrors.github_url[0]}
+                  </p>
                 )}
               </div>
             </div>
@@ -654,35 +742,32 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
           {/* Thumbnail Uploader Box */}
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-3">
             <ImageUploader
-              label="Thumbnail Utama *"
+              label="Thumbnail *"
               value={thumbnailUrl}
               onChange={(url) => setThumbnailUrl(url)}
               folder="projects/thumbnails"
               aspectRatio="video"
             />
             {fieldErrors.thumbnail_url && (
-              <p className="text-xs text-red-400">{fieldErrors.thumbnail_url[0]}</p>
+              <p className="text-xs text-red-400">
+                {fieldErrors.thumbnail_url[0]}
+              </p>
             )}
           </div>
 
           {/* Additional Gallery URLs */}
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
-                  Galeri Foto Tambahan
-                </h3>
-                <span className="text-[11px] text-zinc-500">
-                  {galleryUrls.length} gambar tambahan
-                </span>
-              </div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                Galeri ({galleryUrls.length})
+              </h3>
               <button
                 type="button"
                 onClick={handleAddGalleryUrl}
                 className="inline-flex items-center gap-1 rounded-md border border-zinc-800 bg-zinc-900 px-2 py-1 text-xs text-zinc-300 hover:bg-zinc-800 transition"
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Tambah Foto</span>
+                <span>Tambah</span>
               </button>
             </div>
 
@@ -693,7 +778,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     type="url"
                     value={url}
                     onChange={(e) => handleUpdateGalleryUrl(idx, e.target.value)}
-                    placeholder="https://... URL gambar galeri"
+                    placeholder="https://... atau /projects/..."
                     className="flex-1 rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-orange-500 focus:outline-none"
                   />
                   <button
@@ -706,9 +791,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 </div>
               ))}
               {galleryUrls.length === 0 && (
-                <p className="text-xs text-zinc-600 italic">
-                  Belum ada gambar galeri tambahan.
-                </p>
+                <p className="text-xs text-zinc-600 italic">Belum ada foto.</p>
               )}
             </div>
           </div>

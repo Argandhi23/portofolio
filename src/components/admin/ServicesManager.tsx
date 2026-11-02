@@ -7,6 +7,13 @@ import {
   deleteService,
   toggleServiceActive,
 } from '@/actions/service.actions';
+import { AdminLangTabs } from '@/components/admin/AdminLangTabs';
+import {
+  decodeLocalized,
+  encodeLocalized,
+  type Locale,
+  type LocalizedPair,
+} from '@/lib/i18n/localized';
 import type { Service } from '@/types/database.types';
 import type { ServiceInput } from '@/lib/validations/service.schema';
 import {
@@ -33,18 +40,19 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
   // Form modal state
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const [activeLang, setActiveLang] = useState<Locale>('en');
 
   // Modal input fields
   const [numberLabel, setNumberLabel] = useState('#01');
-  const [title, setTitle] = useState('');
+  const [titlePair, setTitlePair] = useState<LocalizedPair>({ en: '', id: '' });
   const [displayOrder, setDisplayOrder] = useState<number>(0);
   const [isActive, setIsActive] = useState(true);
 
   const openCreateModal = () => {
     setEditingService(null);
-    const nextNumber = `#0${services.length + 1}`;
-    setNumberLabel(nextNumber);
-    setTitle('');
+    setNumberLabel(`#0${services.length + 1}`);
+    setTitlePair({ en: '', id: '' });
+    setActiveLang('en');
     setDisplayOrder(services.length + 1);
     setIsActive(true);
     setError(null);
@@ -54,7 +62,8 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
   const openEditModal = (service: Service) => {
     setEditingService(service);
     setNumberLabel(service.number_label);
-    setTitle(service.title);
+    setTitlePair(decodeLocalized(service.title));
+    setActiveLang('en');
     setDisplayOrder(service.display_order);
     setIsActive(service.is_active);
     setError(null);
@@ -71,9 +80,15 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
     e.preventDefault();
     setError(null);
 
+    const encodedTitle = encodeLocalized(titlePair);
+    if (!encodedTitle) {
+      setError('Judul layanan wajib diisi.');
+      return;
+    }
+
     const payload: ServiceInput = {
       number_label: numberLabel,
-      title,
+      title: encodedTitle,
       display_order: displayOrder,
       is_active: isActive,
     };
@@ -94,7 +109,9 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
         if (!res.success) {
           setError(res.message);
         } else if (res.data) {
-          setServices((prev) => [...prev, res.data!].sort((a, b) => a.display_order - b.display_order));
+          setServices((prev) =>
+            [...prev, res.data!].sort((a, b) => a.display_order - b.display_order)
+          );
           closeModal();
         }
       }
@@ -130,27 +147,22 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
     <div className="space-y-6">
       {/* Top Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-900 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
-              Manajemen Layanan Keahlian
-            </h1>
-            <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs font-semibold text-zinc-300">
-              {services.length} Layanan
-            </span>
-          </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Daftar 4 layanan spesialisasi (#01 - #04) yang tampil di baris atas bawah Hero section.
-          </p>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            Layanan
+          </h1>
+          <span className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs font-semibold text-zinc-300">
+            {services.length}
+          </span>
         </div>
 
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-orange-500/10 hover:from-orange-600 hover:to-red-700 transition"
+          className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition cursor-pointer"
         >
           <Plus className="h-4 w-4" />
-          <span>Tambah Layanan</span>
+          <span>Tambah</span>
         </button>
       </div>
 
@@ -160,7 +172,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
           <thead className="border-b border-zinc-900 bg-zinc-900/40 text-[11px] uppercase tracking-wider text-zinc-400 font-semibold">
             <tr>
               <th scope="col" className="py-3.5 pl-6 pr-3">
-                Nomor Label
+                Label
               </th>
               <th scope="col" className="px-3 py-3.5">
                 Nama Layanan
@@ -169,7 +181,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                 Urutan
               </th>
               <th scope="col" className="px-3 py-3.5 text-center">
-                Status Aktif
+                Status
               </th>
               <th scope="col" className="py-3.5 pl-3 pr-6 text-right">
                 Aksi
@@ -177,63 +189,69 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-900/80 text-zinc-300">
-            {services.map((service) => (
-              <tr key={service.id} className="hover:bg-zinc-900/30 transition">
-                <td className="py-3.5 pl-6 pr-3 font-mono font-semibold text-orange-400">
-                  {service.number_label}
-                </td>
-                <td className="px-3 py-3.5 font-medium text-white">
-                  {service.title}
-                </td>
-                <td className="px-3 py-3.5 text-center font-mono text-zinc-400">
-                  {service.display_order}
-                </td>
-                <td className="px-3 py-3.5 text-center">
-                  <button
-                    type="button"
-                    onClick={() => handleToggle(service)}
-                    disabled={isPending}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition ${
-                      service.is_active
-                        ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/40'
-                        : 'border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-300'
-                    }`}
-                  >
-                    {service.is_active ? (
-                      <>
-                        <CheckCircle2 className="h-3 w-3" />
-                        <span>Aktif</span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="h-3 w-3" />
-                        <span>Nonaktif</span>
-                      </>
+            {services.map((service) => {
+              const decoded = decodeLocalized(service.title);
+              return (
+                <tr key={service.id} className="hover:bg-zinc-900/30 transition">
+                  <td className="py-3.5 pl-6 pr-3 font-mono font-semibold text-orange-400">
+                    {service.number_label}
+                  </td>
+                  <td className="px-3 py-3.5">
+                    <span className="font-medium text-white">{decoded.en}</span>
+                    {decoded.id && decoded.id !== decoded.en && (
+                      <span className="ml-2 text-zinc-400">/ {decoded.id}</span>
                     )}
-                  </button>
-                </td>
-                <td className="py-3.5 pl-3 pr-6 text-right">
-                  <div className="flex items-center justify-end gap-1.5">
+                  </td>
+                  <td className="px-3 py-3.5 text-center font-mono text-zinc-400">
+                    {service.display_order}
+                  </td>
+                  <td className="px-3 py-3.5 text-center">
                     <button
                       type="button"
-                      onClick={() => openEditModal(service)}
-                      className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-700 transition"
-                      title="Sunting Layanan"
+                      onClick={() => handleToggle(service)}
+                      disabled={isPending}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border transition ${
+                        service.is_active
+                          ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/40'
+                          : 'border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-300'
+                      }`}
                     >
-                      <Pencil className="h-3.5 w-3.5" />
+                      {service.is_active ? (
+                        <>
+                          <CheckCircle2 className="h-3 w-3" />
+                          <span>Aktif</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="h-3 w-3" />
+                          <span>Nonaktif</span>
+                        </>
+                      )}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(service.id, service.title)}
-                      className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition"
-                      title="Hapus Layanan"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="py-3.5 pl-3 pr-6 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(service)}
+                        className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-700 transition"
+                        title="Edit"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(service.id, decoded.en)}
+                        className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition"
+                        title="Hapus"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -246,7 +264,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               <div className="flex items-center gap-2 text-white">
                 <Sparkles className="h-5 w-5 text-orange-400" />
                 <h3 className="text-base font-semibold">
-                  {editingService ? 'Sunting Layanan' : 'Tambah Layanan Baru'}
+                  {editingService ? 'Edit Layanan' : 'Tambah Layanan'}
                 </h3>
               </div>
               <button
@@ -268,7 +286,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Label Nomor (Contoh: #01, #02)
+                  Label
                 </label>
                 <input
                   type="text"
@@ -281,15 +299,24 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               </div>
 
               <div>
-                <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Judul Layanan
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
+                    Nama Layanan ({activeLang.toUpperCase()})
+                  </label>
+                  <AdminLangTabs value={activeLang} onChange={setActiveLang} />
+                </div>
                 <input
                   type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Brand Strategy & Positioning"
+                  value={titlePair[activeLang]}
+                  onChange={(e) =>
+                    setTitlePair((prev) => ({
+                      ...prev,
+                      [activeLang]: e.target.value,
+                    }))
+                  }
+                  placeholder={
+                    activeLang === 'en' ? 'Web Development' : 'Pengembangan Web'
+                  }
                   className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
                 />
               </div>
@@ -297,12 +324,14 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                    Urutan Tampil
+                    Urutan
                   </label>
                   <input
                     type="number"
                     value={displayOrder}
-                    onChange={(e) => setDisplayOrder(parseInt(e.target.value, 10) || 0)}
+                    onChange={(e) =>
+                      setDisplayOrder(parseInt(e.target.value, 10) || 0)
+                    }
                     className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
                   />
                 </div>
@@ -337,7 +366,7 @@ export function ServicesManager({ initialServices }: ServicesManagerProps) {
                   className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-xs font-semibold text-white hover:bg-orange-500 transition disabled:opacity-50"
                 >
                   {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                  <span>{editingService ? 'Perbarui Layanan' : 'Tambah Layanan'}</span>
+                  <span>Simpan</span>
                 </button>
               </div>
             </form>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { getPublicEnv } from '@/lib/env';
+import { LanguageProvider } from '@/components/public/LanguageProvider';
 import './globals.css';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -21,20 +22,18 @@ const siteUrl = (() => {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default:
-      'Faqih Rafasha Argandhi (Argandhi.) — Full-Stack Developer & Informatics Student',
+    default: 'Faqih Rafasha Argandhi (Argandhi.) — Software Developer',
     template: '%s',
   },
   description:
-    "Official portfolio of Faqih Rafasha Argandhi. S1 Informatics Engineering UNESA '24 & Freelance Full-Stack Developer specializing in Next.js, Flutter, and AI Systems.",
+    'Portfolio of Faqih Rafasha Argandhi — Full-Stack Web, Flutter Mobile APK, and AI Developer.',
   openGraph: {
     type: 'website',
-    locale: 'id_ID',
+    locale: 'en_US',
     siteName: 'Argandhi.',
-    title:
-      'Faqih Rafasha Argandhi (Argandhi.) — Full-Stack & Software Developer',
+    title: 'Faqih Rafasha Argandhi (Argandhi.) — Software Developer',
     description:
-      "Full-Stack Web (Next.js & Supabase), Mobile App (Flutter APK), and AI Systems Engineering portfolio of Faqih Rafasha Argandhi (UNESA '24).",
+      'Web applications, Flutter mobile APKs, and AI software by Faqih Rafasha Argandhi.',
   },
 };
 
@@ -45,11 +44,11 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="id"
+      lang="en"
       className={`${plusJakartaSans.variable} h-full antialiased dark scroll-smooth`}
     >
       <body className="min-h-full flex flex-col bg-[#080808] text-white font-sans selection:bg-[#FF5510] selection:text-white">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

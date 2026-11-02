@@ -1,5 +1,7 @@
 import { GraduationCap } from 'lucide-react';
 import { getPublicEnv } from '@/lib/env';
+import { pickLocalized } from '@/lib/i18n/localized';
+import { PUBLIC_COPY } from '@/lib/i18n/dictionary';
 import {
   getSiteSettings,
   getServices,
@@ -13,9 +15,12 @@ import { SelectedWorksSection } from '@/components/public/SelectedWorksSection';
 import { ServicesProcessSection } from '@/components/public/ServicesProcessSection';
 import { FooterBookend } from '@/components/public/FooterBookend';
 import { JsonLd } from '@/components/public/JsonLd';
+import {
+  CmsText,
+  LocalizedScrollTextReveal,
+  T,
+} from '@/components/public/LanguageProvider';
 import { ScrollHeroDepth } from '@/components/motion/ScrollHeroDepth';
-import { ScrollTextReveal } from '@/components/motion/ScrollTextReveal';
-import { Reveal } from '@/components/motion/Reveal';
 
 export default async function HomePage() {
   const [settings, services, brands, publishedProjects] = await Promise.all([
@@ -26,13 +31,6 @@ export default async function HomePage() {
   ]);
 
   const { NEXT_PUBLIC_SITE_URL } = getPublicEnv();
-  const aboutLabel = settings.about_label || 'Behind the Code';
-  const aboutHeading =
-    settings.about_heading ||
-    'Engineering Digital Products That Make Life Simpler';
-  const aboutDescription =
-    settings.about_description ||
-    "I'm Faqih Rafasha Argandhi, a Full-Stack & Software Developer based in Surabaya. I focus on building clean, scalable web platforms, mobile APKs, and AI-integrated systems that solve real-world problems.";
   const ctaUrl = settings.cta_url || '#contact';
 
   const personSchema = {
@@ -41,7 +39,8 @@ export default async function HomePage() {
     name: 'Faqih Rafasha Argandhi',
     alternateName: settings.brand_name || 'Argandhi.',
     url: NEXT_PUBLIC_SITE_URL,
-    jobTitle: settings.hero_title || 'Full-Stack & Software Developer',
+    jobTitle:
+      pickLocalized(settings.hero_title, 'en') || 'Software Developer',
     alumniOf: [
       {
         '@type': 'CollegeOrUniversity',
@@ -69,9 +68,6 @@ export default async function HomePage() {
       'PostgreSQL',
       'Flutter',
       'Generative AI',
-      'Machine Learning',
-      'Prompt Engineering',
-      'AI Systems Engineering',
     ],
   };
 
@@ -79,9 +75,7 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[#080808] text-white selection:bg-[#FF5510] selection:text-white">
       <JsonLd data={personSchema} />
 
-      {/* =====================================================================
-          1. TOP LAYER: EXCLUSIVE FIERY HERO + GSAP RECEDING PARALLAX DEPTH
-      ===================================================================== */}
+      {/* 1. HERO + GSAP RECEDING PARALLAX DEPTH */}
       <ScrollHeroDepth>
         <HeroSection
           settings={settings}
@@ -90,89 +84,85 @@ export default async function HomePage() {
         />
       </ScrollHeroDepth>
 
-      {/* =====================================================================
-          2. BEHIND THE CODE (ABOUT) + SCROLL-SCRUBBED MANIFESTO + EDITORIAL CARDS
-             Pure Black Background (#080808)
-      ===================================================================== */}
+      {/* 2. ABOUT + SCROLL-SCRUBBED QUOTE + IDENTITY CARDS */}
       <section
         id="about"
-        className="relative z-20 bg-[#080808] w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-24 sm:pt-28 pb-12 space-y-16"
+        className="relative z-20 bg-[#080808] w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-24 sm:pt-28 pb-12 space-y-14"
       >
         <SectionHeader
-          eyebrow={aboutLabel}
-          heading={aboutHeading}
-          lead={aboutDescription}
-          microLabel={
-            <>
-              Academic Background &amp;
-              <br />
-              Engineering Philosophy
-            </>
+          eyebrow={
+            <CmsText
+              value={settings.about_label}
+              fallbackEn="About"
+              fallbackId="Tentang"
+            />
+          }
+          heading={
+            <CmsText
+              value={settings.about_heading}
+              fallbackEn="Building Practical Digital Products"
+              fallbackId="Membangun Produk Digital Fungsional"
+            />
+          }
+          lead={
+            <CmsText
+              value={settings.about_description}
+              fallbackEn="Full-Stack Developer in Surabaya turning ideas into fast, reliable web and mobile apps."
+              fallbackId="Full-Stack Developer di Surabaya yang mengubah ide menjadi aplikasi web & mobile cepat."
+            />
           }
           ctaHref="/about"
-          ctaLabel="Read full profile"
+          ctaLabel={<T en="Full profile" id="Profil lengkap" />}
           badge={
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="inline-flex items-center gap-2.5 rounded-full bg-[#121212] border border-white/[0.08] px-4 py-2 text-[12px] font-medium text-white/85">
-                <GraduationCap className="w-4 h-4 text-[#FF5510] shrink-0" />
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#121212] border border-white/[0.08] px-3.5 py-1.5 text-[12px] font-medium text-white/85">
+                <GraduationCap className="w-3.5 h-3.5 text-[#FF5510] shrink-0" />
                 <span>
-                  S1 Teknik Informatika — Universitas Negeri Surabaya (&apos;24)
+                  <T
+                    en={PUBLIC_COPY.home.badgeUnesa.en}
+                    id={PUBLIC_COPY.home.badgeUnesa.id}
+                  />
                 </span>
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#121212] border border-[#FF5510]/30 px-3.5 py-2 text-[11.5px] font-medium text-white/90">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#121212] border border-[#FF5510]/30 px-3.5 py-1.5 text-[11.5px] font-medium text-white/90">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
                 <span>
-                  Asah by Dicoding &amp; GoTo — Next-Gen AI Engineer
+                  <T
+                    en={PUBLIC_COPY.home.badgeAsah.en}
+                    id={PUBLIC_COPY.home.badgeAsah.id}
+                  />
                 </span>
               </div>
             </div>
           }
         />
 
-        {/* Scroll-Scrubbed Manifesto Statement (Words illuminate smoothly on scroll) */}
-        <div className="py-6 sm:py-10 border-y border-white/[0.07]">
-          <Reveal variant="fade-up">
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#FF5510] block mb-4">
-              # Engineering Manifesto
-            </span>
-          </Reveal>
-          <ScrollTextReveal
-            text="Software should feel effortless on the surface — powered by clean architecture, strict security, and zero-bloat speed underneath."
-            highlightWords={[
-              'effortless',
-              'clean',
-              'architecture',
-              'security',
-              'zero-bloat',
-              'speed',
-            ]}
+        <div className="py-6 sm:py-9 border-y border-white/[0.07]">
+          <LocalizedScrollTextReveal
+            enText={PUBLIC_COPY.home.manifesto.en}
+            idText={PUBLIC_COPY.home.manifesto.id}
+            enHighlights={PUBLIC_COPY.home.manifesto.enHighlights}
+            idHighlights={PUBLIC_COPY.home.manifesto.idHighlights}
             className="text-[26px] sm:text-[38px] lg:text-[44px]"
           />
         </div>
 
-        {/* 3-Column Monochrome Editorial Showcase Cards with Differential Column Parallax */}
         <EditorialIdentityCards />
       </section>
 
-      {/* =====================================================================
-          3. SELECTED WORKS — DYNAMIC PROJECTS FROM SUPABASE CMS
-      ===================================================================== */}
+      {/* 3. FEATURED PROJECTS */}
       <SelectedWorksSection
         projects={publishedProjects}
         ctaUrl={ctaUrl}
       />
 
-      {/* =====================================================================
-          4. CAPABILITIES & SERVICES (#121212 Rounded-[42px] Surface)
-      ===================================================================== */}
+      {/* 4. SERVICES */}
       <ServicesProcessSection
         services={services}
         ctaUrl={ctaUrl}
       />
 
-      {/* =====================================================================
-          5. CONTACT INQUIRY & FIERY SUNSET GLOW BOOKEND FOOTER
-      ===================================================================== */}
+      {/* 5. CONTACT & BOOKEND FOOTER */}
       <FooterBookend settings={settings} showContactGrid />
     </main>
   );

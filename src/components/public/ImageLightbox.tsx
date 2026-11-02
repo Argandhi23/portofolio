@@ -4,6 +4,7 @@ import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { Maximize2, X } from 'lucide-react';
+import { useLanguage } from '@/components/public/LanguageProvider';
 
 const subscribe = () => () => {};
 const getSnapshot = () => true;
@@ -28,6 +29,7 @@ export function ImageLightbox({
 }: ImageLightboxProps) {
   const [open, setOpen] = useState(false);
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     if (!open) return;
@@ -53,9 +55,6 @@ export function ImageLightbox({
     >
       {/* Top action bar with clear Close button */}
       <div className="absolute top-5 right-5 sm:top-6 sm:right-8 z-10 flex items-center gap-3">
-        <span className="hidden sm:inline-block text-[11px] font-mono text-white/50 tracking-wider">
-          CLICK ANYWHERE OR ESC TO CLOSE
-        </span>
         <button
           type="button"
           aria-label="Close image preview"
@@ -114,7 +113,7 @@ export function ImageLightbox({
           className="pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 px-3 py-1.5 text-[11px] font-semibold text-white/90 shadow-lg group-hover:scale-105 group-hover:border-[#FF5510]/50 group-hover:text-white transition-all duration-200"
         >
           <Maximize2 className="h-3 w-3 text-[#FF5510]" />
-          <span>Inspect UI</span>
+          <span>{lang === 'id' ? 'Perbesar' : 'Zoom'}</span>
         </span>
       </div>
 

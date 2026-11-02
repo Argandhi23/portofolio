@@ -26,7 +26,7 @@ export function LogoutButton() {
       ) : (
         <LogOut className="h-4 w-4" />
       )}
-      <span>{isPending ? 'Memproses keluar...' : 'Keluar (Logout)'}</span>
+      <span>{isPending ? 'Keluar...' : 'Keluar'}</span>
     </button>
   );
 }

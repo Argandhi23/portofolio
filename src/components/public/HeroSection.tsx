@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import type { SiteSettings, Service, Brand } from '@/types/database.types';
+import { decodeLocalized } from '@/lib/i18n/localized';
 import { PublicNavbar } from '@/components/public/PublicNavbar';
 import { HeroSilhouette } from '@/components/public/HeroSilhouette';
+import { CmsText, T } from '@/components/public/LanguageProvider';
 import { HeroAmbientGlow } from '@/components/motion/HeroAmbientGlow';
 import { Reveal } from '@/components/motion/Reveal';
 import { TechLogo } from '@/components/ui/TechLogos';
@@ -20,19 +22,28 @@ function splitServiceNumber(label: string): { hash: string; digits: string } {
   return { hash: '#', digits: trimmed };
 }
 
+function renderSplitHeading(title: string) {
+  const words = title.trim().split(/\s+/);
+  if (words.length >= 2) {
+    return (
+      <>
+        {words[0]}{' '}
+        <br />
+        {words.slice(1).join(' ')}
+      </>
+    );
+  }
+  return title;
+}
+
 export function HeroSection({ settings, services, brands }: HeroSectionProps) {
   const brandName = settings.brand_name || 'Argandhi.';
-  const heroGreeting =
-    settings.hero_greeting || "Hey, I'm Faqih Rafasha —";
-  const heroTitle = settings.hero_title || 'Software Developer';
-  const heroSubtitle =
-    settings.hero_subtitle || 'Great software should feel effortless.';
-  const heroDescription =
-    settings.hero_description ||
-    "Informatics Engineering student at UNESA ('24) & Freelance Full-Stack Developer crafting fast, scalable web apps, mobile APKs, and AI-powered software.";
   const ctaUrl = settings.cta_url || '#contact';
 
-  const heroTitleWords = heroTitle.trim().split(/\s+/);
+  const titlePair = decodeLocalized(
+    settings.hero_title || 'Software Developer'
+  );
+
   const useMarquee = brands.length > 5;
   const displayBrands = useMarquee ? [...brands, ...brands] : brands;
 
@@ -64,21 +75,20 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
           <div className="md:col-span-7">
             <Reveal variant="fade-up" delay={0}>
               <p className="text-white/95 text-[20px] sm:text-[23px] font-semibold tracking-[-0.02em] mb-2">
-                {heroGreeting}
+                <CmsText
+                  value={settings.hero_greeting}
+                  fallbackEn="Hi, I'm Faqih Rafasha"
+                  fallbackId="Halo, saya Faqih Rafasha"
+                />
               </p>
             </Reveal>
 
             <Reveal variant="mask-up" delay={120}>
               <h1 className="text-white font-bold text-[54px] sm:text-[76px] lg:text-[84px] leading-[0.93] tracking-[-0.04em]">
-                {heroTitleWords.length >= 2 ? (
-                  <>
-                    {heroTitleWords[0]}
-                    <br />
-                    {heroTitleWords.slice(1).join(' ')}
-                  </>
-                ) : (
-                  heroTitle
-                )}
+                <T
+                  en={renderSplitHeading(titlePair.en)}
+                  id={renderSplitHeading(titlePair.id)}
+                />
               </h1>
             </Reveal>
           </div>
@@ -89,11 +99,19 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
             delay={360}
             className="md:col-span-5 md:pl-8 pb-1"
           >
-            <h2 className="text-white font-bold text-[20px] sm:text-[24px] leading-[1.22] tracking-[-0.02em] mb-3 max-w-[300px]">
-              {heroSubtitle}
+            <h2 className="text-white font-bold text-[20px] sm:text-[24px] leading-[1.22] tracking-[-0.02em] mb-2.5 max-w-[300px]">
+              <CmsText
+                value={settings.hero_subtitle}
+                fallbackEn="Clean code. Fast products."
+                fallbackId="Kode bersih. Produk cepat."
+              />
             </h2>
-            <p className="text-white/75 text-[12.5px] sm:text-[13.5px] leading-[1.55] max-w-[310px] font-normal">
-              {heroDescription}
+            <p className="text-white/75 text-[13px] sm:text-[14px] leading-[1.55] max-w-[300px] font-normal">
+              <CmsText
+                value={settings.hero_description}
+                fallbackEn="Building web apps, Flutter APKs, and AI tools."
+                fallbackId="Membangun aplikasi web, APK Flutter, dan sistem AI."
+              />
             </p>
           </Reveal>
         </div>
@@ -110,7 +128,7 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
                     <span className="text-white">{digits}</span>
                   </div>
                   <p className="text-white/85 group-hover/svc:text-white transition-colors text-[12.5px] sm:text-[13.5px] font-medium">
-                    {svc.title}
+                    <CmsText value={svc.title} />
                   </p>
                 </div>
               </Reveal>
@@ -120,17 +138,14 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
       </section>
 
       {/* ==========================================
-          TRUSTED TECH STACK & ECOSYSTEM STRIP
-          Inside #121212 Rounded Bottom 42px Layer
+          TECH STACK STRIP
       =========================================== */}
-      <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-9 pb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-        <div className="text-white/90 text-[11.5px] sm:text-[12px] font-semibold leading-[1.35] shrink-0">
-          Core Tech Stack &amp;
-          <br />
-          Ecosystem I Build With
+      <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-8 pb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="text-white/85 text-[12px] font-semibold tracking-tight shrink-0">
+          <T en="Tech Stack" id="Tech Stack" />
         </div>
 
-        <div className="logo-strip-mask w-full sm:max-w-[78%] overflow-hidden py-1">
+        <div className="logo-strip-mask w-full sm:max-w-[84%] overflow-hidden py-1">
           <div
             className={
               useMarquee

@@ -103,11 +103,8 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#181818] border border-white/[0.08] text-[#FF5510]">
             <Inbox className="h-5 w-5" />
           </div>
-          <p className="text-sm font-bold text-white">
-            Belum ada pesan pada kategori ini
-          </p>
-          <p className="text-xs text-white/55 max-w-md mx-auto">
-            Setiap project brief yang dikirim calon klien dari formulir kontak publik akan muncul secara real-time di halaman ini.
+          <p className="text-sm font-semibold text-white">
+            Belum ada pesan
           </p>
         </div>
       ) : (

@@ -6,6 +6,7 @@ import { PillButton } from '@/components/public/PillButton';
 import { ContactForm } from '@/components/public/ContactForm';
 import { CopyEmailButton } from '@/components/public/CopyEmailButton';
 import { SectionHeader } from '@/components/public/SectionHeader';
+import { T } from '@/components/public/LanguageProvider';
 import { Reveal } from '@/components/motion/Reveal';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
 
@@ -36,46 +37,28 @@ export function FooterBookend({
   const githubUrl = settings.github_url || 'https://github.com/Argandhi23';
 
   const whatsappCleaned = whatsappNumber.replace(/\D/g, '');
-  const whatsappLink = `https://wa.me/${whatsappCleaned}?text=Halo%20Faqih,%20saya%20tertarik%20untuk%20berdiskusi%20tentang%20proyek%20software%20/%20website`;
+  const whatsappLink = `https://wa.me/${whatsappCleaned}?text=Halo%20Faqih,%20saya%20ingin%20berdiskusi%20tentang%20proyek%20software`;
   const whatsappDisplay = formatWhatsAppDisplay(whatsappNumber);
   const currentYear = new Date().getFullYear();
 
   return (
     <div id="contact" className="bg-[#080808] pt-16">
-      {/* =====================================================================
-          OPTIONAL CONTACT & DIRECT CHANNELS SECTION (ON #080808)
-      ===================================================================== */}
       {showContactGrid && (
         <section className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pb-20 sm:pb-24 space-y-14">
           <SectionHeader
-            eyebrow="Get in Touch"
-            heading={
-              <>
-                Let&apos;s Engineer Your
-                <br />
-                Next Digital Product
-              </>
-            }
+            eyebrow={<T en="Contact" id="Kontak" />}
+            heading={<T en="Start a Project" id="Mulai Proyek" />}
             lead={
-              <>
-                Available for freelance web platforms, mobile APK development,
-                and software architecture consultations from Surabaya to
-                anywhere.
-              </>
-            }
-            microLabel={
-              <>
-                Fast Response via
-                <br />
-                WhatsApp or System Inbox
-              </>
+              <T
+                en="Available for freelance projects and collaborations."
+                id="Tersedia untuk proyek freelance dan kolaborasi."
+              />
             }
             ctaHref={whatsappLink}
-            ctaLabel="Chat on WhatsApp"
+            ctaLabel={<T en="Chat on WhatsApp" id="Chat WhatsApp" />}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left 7 Columns: Database-Backed Folioblox Project Inquiry Form */}
             <Reveal variant="fade-up" className="lg:col-span-7">
               <ContactForm
                 recipientEmail={contactEmail}
@@ -83,7 +66,6 @@ export function FooterBookend({
               />
             </Reveal>
 
-            {/* Right 5 Columns: 3 Direct Channels (#121212 Rounded-[24px] Cards) */}
             <div className="lg:col-span-5 space-y-4">
               {/* 1. WhatsApp */}
               <Reveal variant="fade-up" delay={70}>
@@ -102,11 +84,9 @@ export function FooterBookend({
                       </span>
                     </div>
 
-                    <div>
-                      <p className="text-white font-bold text-[19px] tracking-[-0.02em]">
-                        {whatsappDisplay}
-                      </p>
-                    </div>
+                    <p className="text-white font-bold text-[19px] tracking-[-0.02em]">
+                      {whatsappDisplay}
+                    </p>
 
                     <a
                       href={whatsappLink}
@@ -114,7 +94,9 @@ export function FooterBookend({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-white/80 hover:text-[#FF5510] transition"
                     >
-                      <span>Open WhatsApp Chat</span>
+                      <span>
+                        <T en="Chat on WhatsApp" id="Chat WhatsApp" />
+                      </span>
                       <ArrowUpRight className="w-3.5 h-3.5 text-[#FF5510]" />
                     </a>
                   </div>
@@ -132,17 +114,17 @@ export function FooterBookend({
                       <CopyEmailButton email={contactEmail} />
                     </div>
 
-                    <div>
-                      <p className="text-white font-bold text-[18px] tracking-[-0.02em] truncate">
-                        {contactEmail}
-                      </p>
-                    </div>
+                    <p className="text-white font-bold text-[18px] tracking-[-0.02em] truncate">
+                      {contactEmail}
+                    </p>
 
                     <a
                       href={`mailto:${contactEmail}`}
                       className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-white/80 hover:text-[#FF5510] transition"
                     >
-                      <span>Compose Direct Email</span>
+                      <span>
+                        <T en="Send Email" id="Kirim Email" />
+                      </span>
                       <ArrowUpRight className="w-3.5 h-3.5 text-[#FF5510]" />
                     </a>
                   </div>
@@ -166,11 +148,9 @@ export function FooterBookend({
                       </span>
                     </div>
 
-                    <div>
-                      <p className="text-white font-bold text-[18px] tracking-[-0.02em]">
-                        github.com/Argandhi23
-                      </p>
-                    </div>
+                    <p className="text-white font-bold text-[18px] tracking-[-0.02em]">
+                      github.com/Argandhi23
+                    </p>
 
                     <a
                       href={githubUrl}
@@ -178,7 +158,9 @@ export function FooterBookend({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-white/80 hover:text-[#FF5510] transition"
                     >
-                      <span>Explore GitHub Profile</span>
+                      <span>
+                        <T en="GitHub Profile" id="Profil GitHub" />
+                      </span>
                       <ArrowUpRight className="w-3.5 h-3.5 text-[#FF5510]" />
                     </a>
                   </div>
@@ -191,16 +173,14 @@ export function FooterBookend({
 
       {/* =====================================================================
           FIERY SUNSET GLOW BOOKEND FOOTER
-          Clean, Static Warm Radial Gradient with Massive "Let's Talk." Display
       ===================================================================== */}
       <footer className="footer-bookend-card px-6 sm:px-12 pt-16 sm:pt-24 pb-12">
         <div className="relative z-10 w-full max-w-[1140px] mx-auto space-y-14">
-          {/* Top Giant Display Bookend Callout */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4">
             <div className="space-y-3 max-w-3xl">
               <Reveal variant="fade-up">
                 <p className="text-white/85 text-[15px] sm:text-[18px] font-semibold tracking-[-0.02em]">
-                  Ready to build something extraordinary?
+                  <T en="Have a project in mind?" id="Punya ide proyek?" />
                 </p>
               </Reveal>
               <Reveal variant="mask-up" delay={120}>
@@ -221,12 +201,11 @@ export function FooterBookend({
                 external
                 className="!text-[14px] !py-2.5 !px-6 shadow-2xl"
               >
-                Get in touch
+                <T en="Get in touch" id="Hubungi" />
               </PillButton>
             </Reveal>
           </div>
 
-          {/* Bottom Ultra-Minimal Copyright Bar */}
           <div className="pt-8 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-white/70">
             <Link
               href="/"
@@ -236,7 +215,8 @@ export function FooterBookend({
             </Link>
 
             <p className="text-white/60 text-center sm:text-right">
-              &copy; {currentYear} {brandName} All rights reserved.
+              &copy; {currentYear} {brandName}{' '}
+              <T en="All rights reserved." id="Hak cipta dilindungi." />
             </p>
           </div>
         </div>

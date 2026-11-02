@@ -14,37 +14,37 @@ import {
 
 const navItems = [
   {
-    name: 'Ringkasan Dashboard',
+    name: 'Dashboard',
     href: '/admin',
     icon: LayoutDashboard,
     exact: true,
   },
   {
-    name: 'Projects Portofolio',
+    name: 'Projects',
     href: '/admin/projects',
     icon: FolderGit2,
     exact: false,
   },
   {
-    name: 'Kotak Masuk Klien',
+    name: 'Pesan',
     href: '/admin/inquiries',
     icon: Inbox,
     exact: false,
   },
   {
-    name: 'Layanan (#01-#04)',
+    name: 'Layanan',
     href: '/admin/services',
     icon: Sparkles,
     exact: false,
   },
   {
-    name: 'Tech Stack & Ekosistem',
+    name: 'Tech Stack',
     href: '/admin/brands',
     icon: Code2,
     exact: false,
   },
   {
-    name: 'Pengaturan Profil & Teks',
+    name: 'Pengaturan',
     href: '/admin/settings',
     icon: Settings,
     exact: false,
@@ -55,7 +55,7 @@ export function AdminSidebarNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex-1 space-y-1.5 px-3.5 py-5">
+    <nav className="flex-1 space-y-1 px-3 py-4">
       {navItems.map((item) => {
         const isActive = item.exact
           ? pathname === item.href
@@ -85,13 +85,13 @@ export function AdminSidebarNav() {
         );
       })}
 
-      <div className="pt-4 mt-4 border-t border-white/[0.07]">
+      <div className="pt-3 mt-3 border-t border-white/[0.07]">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center justify-between rounded-2xl px-3.5 py-2 text-xs font-medium text-white/50 hover:bg-[#181818] hover:text-white transition"
+          className="flex items-center justify-between rounded-2xl px-3.5 py-2 text-xs font-medium text-white/55 hover:bg-[#181818] hover:text-white transition"
         >
-          <span>Lihat Website Publik</span>
+          <span>Lihat Web</span>
           <ExternalLink className="h-3.5 w-3.5 text-[#FF5510]" />
         </Link>
       </div>

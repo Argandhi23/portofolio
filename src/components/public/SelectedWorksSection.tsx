@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUpRight, Globe, Layers, Smartphone } from 'lucide-react';
+import { ArrowUpRight, Globe, Smartphone } from 'lucide-react';
 import type { Project } from '@/types/database.types';
+import { pickLocalized } from '@/lib/i18n/localized';
 import { formatDisplayDomain } from '@/lib/utils';
 import { SectionHeader } from '@/components/public/SectionHeader';
-import { PillButton } from '@/components/public/PillButton';
+import { CmsText, T } from '@/components/public/LanguageProvider';
 import { Reveal } from '@/components/motion/Reveal';
 import { ParallaxMedia } from '@/components/motion/ParallaxMedia';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
@@ -34,7 +35,6 @@ function BrowserPreviewFrame({
 }: BrowserPreviewFrameProps) {
   return (
     <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.1] bg-[#0B0B0B] shadow-[0_20px_50px_rgba(0,0,0,0.65)] flex flex-col">
-      {/* Normal-flow Browser Top Chrome Bar (Never overlaps screenshot) */}
       <div className="h-8 shrink-0 bg-[#111111] border-b border-white/[0.07] px-3.5 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
@@ -54,7 +54,6 @@ function BrowserPreviewFrame({
         <div className="w-9" />
       </div>
 
-      {/* Dedicated 16:10 Viewport Canvas with Continuous ScrollTrigger Parallax */}
       <ParallaxMedia
         intensity={18}
         className="aspect-[16/10] w-full bg-[#141414]"
@@ -72,7 +71,7 @@ function BrowserPreviewFrame({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-[#7A7A7A] text-xs font-medium">
-            Project Preview
+            Preview
           </div>
         )}
       </ParallaxMedia>
@@ -94,42 +93,26 @@ export function SelectedWorksSection({
       id="projects"
       className="bg-[#080808] w-full max-w-[1140px] mx-auto px-6 sm:px-12 py-20 sm:py-24 space-y-14"
     >
-      {/* 2-Column Folioblox Section Header */}
       <SectionHeader
-        eyebrow="Selected Works"
-        heading={
-          <>
-            Production-Ready
-            <br />
-            Systems &amp; Case Studies
-          </>
-        }
+        eyebrow={<T en="Projects" id="Proyek" />}
+        heading={<T en="Featured Projects" id="Proyek Pilihan" />}
         lead={
-          <>
-            Every project is engineered for speed, security, and real-world
-            impact — from full-stack D2C e-commerce platforms to cross-platform
-            mobile APKs.
-          </>
-        }
-        microLabel={
-          <>
-            Browse All Case Studies
-            <br />
-            &amp; Filter by Discipline
-          </>
+          <T
+            en="Real-world web apps, mobile APKs, and systems shipped to production."
+            id="Aplikasi web, APK mobile, dan sistem nyata di produksi."
+          />
         }
         ctaHref="/projects"
-        ctaLabel="View full archive"
+        ctaLabel={<T en="All projects" id="Semua proyek" />}
       />
 
-      {/* Featured Bento / Rounded Cards (#121212, rounded-[28px]) */}
       {primaryProjects.length > 0 ? (
         <div className="space-y-6">
           {primaryProjects.map((project, index) => {
             const numDigits = String(index + 1).padStart(2, '0');
             const isHeroBento = index === 0 && primaryProjects.length !== 2;
             const domain = formatDisplayDomain(project.project_url, project.slug);
-            const totalScreens = 1 + (project.gallery_urls?.length || 0);
+            const cleanAlt = pickLocalized(project.title, 'en');
 
             if (isHeroBento) {
               return (
@@ -139,11 +122,10 @@ export function SelectedWorksSection({
                       href={`/projects/${project.slug}`}
                       className="relative z-10 group grid grid-cols-1 lg:grid-cols-12"
                     >
-                      {/* Left 7 Columns: Studio Framed 16:10 Browser Showcase */}
                       <div className="lg:col-span-7 bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[#0E0E0E] p-3.5 sm:p-6 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.06]">
                         <BrowserPreviewFrame
                           src={project.thumbnail_url}
-                          alt={project.title}
+                          alt={cleanAlt}
                           domain={domain}
                           isLive={Boolean(project.project_url)}
                           sizes="(max-width: 1024px) 100vw, 640px"
@@ -151,9 +133,8 @@ export function SelectedWorksSection({
                         />
                       </div>
 
-                      {/* Right 5 Columns: Case Study Details */}
                       <div className="lg:col-span-5 p-7 sm:p-9 flex flex-col justify-between space-y-6">
-                        <div className="space-y-4">
+                        <div className="space-y-3.5">
                           <div className="flex items-center justify-between gap-3">
                             <div className="inline-flex items-center gap-2">
                               <span className="text-[14px] font-bold tracking-tight">
@@ -162,7 +143,7 @@ export function SelectedWorksSection({
                               </span>
                               <span className="h-1 w-1 rounded-full bg-white/25" />
                               <span className="text-[12px] font-semibold text-[#FF5510]">
-                                {project.category}
+                                <CmsText value={project.category} />
                               </span>
                             </div>
 
@@ -171,19 +152,13 @@ export function SelectedWorksSection({
                             </span>
                           </div>
 
-                          {project.client_name && (
-                            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#7A7A7A]">
-                              Client: {project.client_name}
-                            </p>
-                          )}
-
                           <h3 className="text-white font-bold text-[24px] sm:text-[28px] leading-[1.16] tracking-[-0.025em] group-hover:text-[#FF5510] transition-colors">
-                            {project.title}
+                            <CmsText value={project.title} />
                           </h3>
 
                           {project.summary && (
-                            <p className="text-white/72 text-[13.5px] leading-[1.62] line-clamp-4">
-                              {project.summary}
+                            <p className="text-white/72 text-[13.5px] leading-[1.6] line-clamp-3">
+                              <CmsText value={project.summary} />
                             </p>
                           )}
                         </div>
@@ -217,23 +192,17 @@ export function SelectedWorksSection({
                             {project.apk_url && (
                               <span className="inline-flex items-center gap-1.5">
                                 <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
-                                <span>Mobile APK</span>
+                                <span>APK</span>
                               </span>
                             )}
                             {project.github_url && (
                               <span className="inline-flex items-center gap-1.5">
                                 <Github className="w-3.5 h-3.5 text-white/80" />
-                                <span>Source</span>
-                              </span>
-                            )}
-                            {totalScreens > 1 && (
-                              <span className="inline-flex items-center gap-1 text-[#7A7A7A]">
-                                <Layers className="w-3.5 h-3.5" />
-                                <span>{totalScreens} Screens</span>
+                                <span>Code</span>
                               </span>
                             )}
                             <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
-                              View Case Study &rarr;
+                              <T en="View" id="Lihat" /> &rarr;
                             </span>
                           </div>
                         </div>
@@ -247,7 +216,6 @@ export function SelectedWorksSection({
             return null;
           })}
 
-          {/* Secondary Featured Pair (2-Column Rounded-[28px] Cards) */}
           {primaryProjects.length > 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {primaryProjects
@@ -261,6 +229,7 @@ export function SelectedWorksSection({
                     project.project_url,
                     project.slug
                   );
+                  const cleanAlt = pickLocalized(project.title, 'en');
 
                   return (
                     <Reveal
@@ -277,7 +246,7 @@ export function SelectedWorksSection({
                           <div className="bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] p-3.5 sm:p-4 border-b border-white/[0.06]">
                             <BrowserPreviewFrame
                               src={project.thumbnail_url}
-                              alt={project.title}
+                              alt={cleanAlt}
                               domain={domain}
                               isLive={Boolean(project.project_url)}
                               sizes="(max-width: 768px) 100vw, 520px"
@@ -294,7 +263,7 @@ export function SelectedWorksSection({
                                   </span>
                                   <span className="h-1 w-1 rounded-full bg-white/25" />
                                   <span className="text-[12px] font-semibold text-[#FF5510]">
-                                    {project.category}
+                                    <CmsText value={project.category} />
                                   </span>
                                 </div>
 
@@ -304,12 +273,12 @@ export function SelectedWorksSection({
                               </div>
 
                               <h3 className="text-white font-bold text-[21px] sm:text-[23px] leading-[1.2] tracking-[-0.02em] group-hover:text-[#FF5510] transition-colors">
-                                {project.title}
+                                <CmsText value={project.title} />
                               </h3>
 
                               {project.summary && (
-                                <p className="text-white/70 text-[13px] leading-[1.58] line-clamp-3">
-                                  {project.summary}
+                                <p className="text-white/70 text-[13px] leading-[1.58] line-clamp-2">
+                                  <CmsText value={project.summary} />
                                 </p>
                               )}
                             </div>
@@ -349,7 +318,7 @@ export function SelectedWorksSection({
                                   </span>
                                 )}
                                 <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
-                                  Case Study &rarr;
+                                  <T en="View" id="Lihat" /> &rarr;
                                 </span>
                               </div>
                             </div>
@@ -365,27 +334,32 @@ export function SelectedWorksSection({
       ) : (
         <div className="rounded-[28px] bg-[#121212] border border-white/[0.07] p-12 text-center space-y-2">
           <p className="text-white font-semibold text-[15px]">
-            Daftar proyek sedang disiapkan
+            <T
+              en="Projects coming soon"
+              id="Daftar proyek sedang disiapkan"
+            />
           </p>
           <p className="text-[#7A7A7A] text-[13px]">
-            Tambahkan dan publikasikan studi kasus melalui Panel Admin untuk menampilkannya di sini.
+            <T
+              en="Publish projects from the Admin Panel to display them here."
+              id="Publikasikan proyek dari Panel Admin untuk menampilkannya di sini."
+            />
           </p>
         </div>
       )}
 
-      {/* Additional Archive Projects (3-Column Grid) */}
       {moreProjects.length > 0 && (
-        <div className="space-y-6 pt-6">
+        <div className="space-y-6 pt-4">
           <div className="flex items-center justify-between border-b border-white/[0.07] pb-4">
             <p className="text-white font-semibold text-[15px] tracking-[-0.01em]">
-              More Archive Projects{' '}
+              <T en="More Projects" id="Proyek Lainnya" />{' '}
               <span className="text-[#FF5510] ml-1">({moreProjects.length})</span>
             </p>
             <Link
               href="/projects"
               className="text-xs font-semibold text-white/70 hover:text-[#FF5510] transition"
             >
-              Filter all in Archive &rarr;
+              <T en="View all" id="Lihat semua" /> &rarr;
             </Link>
           </div>
 
@@ -395,6 +369,7 @@ export function SelectedWorksSection({
                 2,
                 '0'
               );
+              const cleanAlt = pickLocalized(project.title, 'en');
               return (
                 <Reveal key={project.id} variant="fade-up" delay={idx * 65}>
                   <SpotlightCard className="h-full rounded-[24px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/40 overflow-hidden transition-all duration-300 hover:-translate-y-1">
@@ -406,7 +381,7 @@ export function SelectedWorksSection({
                         {project.thumbnail_url && (
                           <Image
                             src={project.thumbnail_url}
-                            alt={project.title}
+                            alt={cleanAlt}
                             fill
                             className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
                             sizes="(max-width: 768px) 100vw, 360px"
@@ -426,12 +401,12 @@ export function SelectedWorksSection({
                               <span className="text-white">{numDigits}</span>
                             </span>
                             <span className="text-[#FF5510] font-medium text-[11.5px]">
-                              {project.category}
+                              <CmsText value={project.category} />
                             </span>
                           </div>
 
                           <h4 className="text-white font-bold text-[17px] leading-[1.25] tracking-[-0.015em] group-hover:text-[#FF5510] transition-colors">
-                            {project.title}
+                            <CmsText value={project.title} />
                           </h4>
                         </div>
 
@@ -456,13 +431,6 @@ export function SelectedWorksSection({
           </div>
         </div>
       )}
-
-      {/* Subtle Archive Footer Callout */}
-      <Reveal variant="fade-up" className="pt-2 flex justify-center">
-        <PillButton href="/projects" variant="orange">
-          Explore complete portfolio archive
-        </PillButton>
-      </Reveal>
     </section>
   );
 }

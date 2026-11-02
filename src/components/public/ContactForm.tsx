@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react';
 import { AlertCircle, CheckCircle2, Loader2, MessageSquare } from 'lucide-react';
 import { submitInquiry } from '@/actions/inquiry.actions';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
+import { useLanguage } from '@/components/public/LanguageProvider';
+import { PUBLIC_COPY, tPick } from '@/lib/i18n/dictionary';
 
 interface ContactFormProps {
   recipientEmail: string;
@@ -14,6 +16,7 @@ export function ContactForm({
   recipientEmail,
   whatsappNumber = '6285806912873',
 }: ContactFormProps) {
+  const { lang } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -61,9 +64,9 @@ export function ContactForm({
       }
 
       const preparedWaText = encodeURIComponent(
-        `Halo Faqih, saya ${formData.name.trim()} (${formData.email.trim()}). Saya baru saja mengirim project brief di website portofolio Anda${
+        `Halo Faqih, saya ${formData.name.trim()} (${formData.email.trim()}). Saya baru saja mengirim pesan di portofolio Anda${
           formData.subject.trim() ? ` terkait "${formData.subject.trim()}"` : ''
-        } dan ingin berdiskusi lebih lanjut.`
+        }.`
       );
 
       setStatusMessage({
@@ -85,17 +88,9 @@ export function ContactForm({
   return (
     <SpotlightCard className="rounded-[28px] bg-[#121212] border border-white/[0.07] p-7 sm:p-9 shadow-2xl overflow-hidden">
       <div className="relative z-10">
-        <div className="space-y-2 mb-7">
-          <p className="text-[#FF5510] font-semibold text-[13px] tracking-[-0.01em]">
-            # Project Inquiry Form
-          </p>
-          <h3 className="text-white font-bold text-[22px] sm:text-[26px] leading-[1.18] tracking-[-0.025em]">
-            Send Your Project Brief
-          </h3>
-          <p className="text-[#7A7A7A] text-[13px] leading-[1.55]">
-            Share your product goals, timeline, or technical scope directly into my system inbox.
-          </p>
-        </div>
+        <h3 className="text-white font-bold text-[22px] sm:text-[25px] leading-[1.18] tracking-[-0.025em] mb-6">
+          {tPick(PUBLIC_COPY.contactForm.title, lang)}
+        </h3>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {/* Hidden Anti-Bot Honeypot Field */}
@@ -122,12 +117,12 @@ export function ContactForm({
                 htmlFor="contact-name"
                 className="block text-[12px] font-semibold text-white/85"
               >
-                Your Name
+                {tPick(PUBLIC_COPY.contactForm.nameLabel, lang)}
               </label>
               <input
                 id="contact-name"
                 type="text"
-                placeholder="e.g. Budi Pratama"
+                placeholder={tPick(PUBLIC_COPY.contactForm.namePlaceholder, lang)}
                 required
                 disabled={isPending}
                 value={formData.name}
@@ -146,12 +141,12 @@ export function ContactForm({
                 htmlFor="contact-email"
                 className="block text-[12px] font-semibold text-white/85"
               >
-                Email Address
+                {tPick(PUBLIC_COPY.contactForm.emailLabel, lang)}
               </label>
               <input
                 id="contact-email"
                 type="email"
-                placeholder="name@company.com"
+                placeholder={tPick(PUBLIC_COPY.contactForm.emailPlaceholder, lang)}
                 required
                 disabled={isPending}
                 value={formData.email}
@@ -171,12 +166,12 @@ export function ContactForm({
               htmlFor="contact-subject"
               className="block text-[12px] font-semibold text-white/85"
             >
-              Scope / Subject
+              {tPick(PUBLIC_COPY.contactForm.subjectLabel, lang)}
             </label>
             <input
               id="contact-subject"
               type="text"
-              placeholder="e.g. Web Platform, Mobile APK, or AI Integration"
+              placeholder={tPick(PUBLIC_COPY.contactForm.subjectPlaceholder, lang)}
               disabled={isPending}
               value={formData.subject}
               onChange={(e) =>
@@ -191,14 +186,14 @@ export function ContactForm({
               htmlFor="contact-message"
               className="block text-[12px] font-semibold text-white/85"
             >
-              Project Details
+              {tPick(PUBLIC_COPY.contactForm.messageLabel, lang)}
             </label>
             <textarea
               id="contact-message"
               rows={4}
               required
               disabled={isPending}
-              placeholder="Tell me about the system features, target launch, or problem you want to solve..."
+              placeholder={tPick(PUBLIC_COPY.contactForm.messagePlaceholder, lang)}
               value={formData.message}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, message: e.target.value }))
@@ -237,25 +232,26 @@ export function ContactForm({
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF5510] hover:text-[#FF6B2B] transition"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
-                    <span>Ping Faqih di WhatsApp sekarang &rarr;</span>
+                    <span>
+                      {tPick(PUBLIC_COPY.contactForm.pingWa, lang)} &rarr;
+                    </span>
                   </a>
                 </div>
               )}
             </div>
           )}
 
-          <div className="pt-2 flex items-center justify-between gap-4 flex-wrap">
-            <span className="text-[11.5px] text-[#7A7A7A]">
-              Encrypted &amp; synced to{' '}
-              <span className="text-white/80">{recipientEmail}</span>
-            </span>
-
+          <div className="pt-2 flex justify-end">
             <button
               type="submit"
               disabled={isPending}
               className="pill-btn inline-flex items-center gap-3 bg-[#FF5510] hover:bg-[#FF6B2B] text-white pl-5 pr-1.5 py-1.5 rounded-full text-[13px] font-semibold shadow-lg shadow-[#FF5510]/20 cursor-pointer disabled:opacity-60"
             >
-              <span>{isPending ? 'Sending brief...' : 'Send inquiry'}</span>
+              <span>
+                {isPending
+                  ? tPick(PUBLIC_COPY.contactForm.sending, lang)
+                  : tPick(PUBLIC_COPY.contactForm.submit, lang)}
+              </span>
               <span className="arrow-circle w-7 h-7 rounded-full bg-white text-[#FF5510] flex items-center justify-center">
                 {isPending ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />

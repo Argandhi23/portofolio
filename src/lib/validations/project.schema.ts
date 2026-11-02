@@ -21,7 +21,7 @@ export const projectSchema = z.object({
   title: z
     .string()
     .min(1, 'Judul project wajib diisi')
-    .max(150, 'Judul project maksimal 150 karakter'),
+    .max(300, 'Judul project maksimal 300 karakter'),
   slug: z
     .string()
     .min(1, 'Slug wajib diisi')
@@ -32,7 +32,7 @@ export const projectSchema = z.object({
   category: z
     .string()
     .min(1, 'Kategori project wajib diisi')
-    .max(100, 'Kategori maksimal 100 karakter'),
+    .max(200, 'Kategori maksimal 200 karakter'),
   client_name: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
   content: z.string().nullable().optional(),

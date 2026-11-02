@@ -1,5 +1,6 @@
 import { Reveal } from '@/components/motion/Reveal';
 import { ParallaxColumn } from '@/components/motion/ParallaxColumn';
+import { T } from '@/components/public/LanguageProvider';
 
 export function EditorialIdentityCards() {
   return (
@@ -135,11 +136,11 @@ export function EditorialIdentityCards() {
               <span className="text-[#FF5510]">#</span>
               <span className="text-white">01</span>
               <span className="text-white/60 font-medium ml-1.5 uppercase tracking-wider text-[10px]">
-                Web Systems
+                Web
               </span>
             </span>
             <p className="text-white font-bold text-[15px] tracking-[-0.02em]">
-              Next.js &amp; Cloud Architecture
+              Next.js &amp; Supabase
             </p>
           </div>
         </div>
@@ -271,11 +272,11 @@ export function EditorialIdentityCards() {
               <span className="text-[#FF5510]">#</span>
               <span className="text-white">02</span>
               <span className="text-white/60 font-medium ml-1.5 uppercase tracking-wider text-[10px]">
-                Mobile APK
+                Mobile
               </span>
             </span>
             <p className="text-white font-bold text-[15px] tracking-[-0.02em]">
-              Flutter &amp; Native Experience
+              <T en="Flutter APK" id="APK Flutter" />
             </p>
           </div>
         </div>
@@ -392,11 +393,11 @@ export function EditorialIdentityCards() {
               <span className="text-[#FF5510]">#</span>
               <span className="text-white">03</span>
               <span className="text-white/60 font-medium ml-1.5 uppercase tracking-wider text-[10px]">
-                AI &amp; Engineering
+                AI
               </span>
             </span>
             <p className="text-white font-bold text-[15px] tracking-[-0.02em]">
-              Intelligent Systems &amp; UNESA &apos;24
+              <T en="Smart Automation" id="Otomasi Cerdas" />
             </p>
           </div>
         </div>

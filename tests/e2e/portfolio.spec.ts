@@ -37,8 +37,8 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
     });
     await expect(menuButton).toBeVisible();
 
-    // Verify 2-line bars inside the button
-    const bars = menuButton.locator('span');
+    // Verify 2-line SVG bars inside the button
+    const bars = menuButton.locator('svg line');
     await expect(bars).toHaveCount(2);
 
     // Click to open
@@ -57,7 +57,10 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
       })
       .last();
     await expect(closeButton).toBeVisible();
-    await expect(closeButton.locator('span').first()).toHaveClass(/rotate-45/);
+    await expect(closeButton.locator('svg line').first()).toHaveAttribute(
+      'style',
+      /rotate\(45deg\)/
+    );
 
     await mobileNav.getByRole('link', { name: 'About' }).click();
     await expect(page).toHaveURL(/\/about$/);
@@ -196,5 +199,34 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
     await page.locator('header nav a[href="/about"]').first().click();
     await expect(page).toHaveURL(/\/about$/);
     await expect(page.getByTestId('intro-preloader')).toHaveCount(0);
+  });
+
+  test('switches UI and CMS copy cleanly between EN and ID via Navbar LanguageToggle', async ({
+    page,
+  }) => {
+    await page.goto('/projects');
+    await expect(page.locator('h1')).toContainText(/Selected Works/i);
+
+    // Switch to Bahasa Indonesia (ID)
+    const idBtn = page
+      .locator('header')
+      .getByRole('button', { name: 'Bahasa Indonesia' })
+      .first();
+    await idBtn.click();
+
+    await expect(page.locator('h1')).toContainText(/Daftar Proyek/i);
+    await expect(page.getByRole('tab', { name: 'Semua' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+
+    // Switch back to English (EN)
+    const enBtn = page
+      .locator('header')
+      .getByRole('button', { name: 'English' })
+      .first();
+    await enBtn.click();
+
+    await expect(page.locator('h1')).toContainText(/Selected Works/i);
   });
 });

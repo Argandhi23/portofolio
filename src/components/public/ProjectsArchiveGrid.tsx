@@ -12,7 +12,9 @@ import {
   Smartphone,
 } from 'lucide-react';
 import type { Project } from '@/types/database.types';
+import { pickLocalized } from '@/lib/i18n/localized';
 import { formatDisplayDomain } from '@/lib/utils';
+import { useLanguage } from '@/components/public/LanguageProvider';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
 import { Reveal } from '@/components/motion/Reveal';
 import { ParallaxMedia } from '@/components/motion/ParallaxMedia';
@@ -27,6 +29,7 @@ type ViewMode = 'gallery' | 'list';
 
 interface ArchiveBrowserFrameProps {
   project: Project;
+  alt: string;
   domain: string;
   aspectClass?: string;
   sizes: string;
@@ -35,6 +38,7 @@ interface ArchiveBrowserFrameProps {
 
 function ArchiveBrowserFrame({
   project,
+  alt,
   domain,
   aspectClass = 'aspect-[16/10]',
   sizes,
@@ -69,7 +73,7 @@ function ArchiveBrowserFrame({
         {project.thumbnail_url ? (
           <Image
             src={project.thumbnail_url}
-            alt={project.title}
+            alt={alt}
             fill
             priority={priority}
             className="object-cover object-top group-hover:scale-[1.03] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -81,7 +85,7 @@ function ArchiveBrowserFrame({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-[#7A7A7A] text-xs">
-            Project Preview
+            Preview
           </div>
         )}
       </ParallaxMedia>
@@ -90,12 +94,12 @@ function ArchiveBrowserFrame({
 }
 
 export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
+  const { lang } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [query, setQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
 
-  // Zero-rerender cursor-following floating preview refs for Index List mode
   const floatingRef = useRef<HTMLDivElement | null>(null);
   const targetPos = useRef({ x: 0, y: 0 });
   const currentPos = useRef({ x: 0, y: 0 });
@@ -103,29 +107,49 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
 
   const categories = useMemo(() => {
     const unique = Array.from(
-      new Set(projects.map((p) => p.category.trim()).filter(Boolean))
+      new Set(
+        projects
+          .map((p) => pickLocalized(p.category, 'en').trim())
+          .filter(Boolean)
+      )
     );
     return ['All', ...unique];
   }, [projects]);
 
+  const categoryLabels = useMemo(() => {
+    const map = new Map<string, string>();
+    map.set('All', lang === 'id' ? 'Semua' : 'All');
+    projects.forEach((p) => {
+      const key = pickLocalized(p.category, 'en').trim();
+      if (key) {
+        map.set(key, pickLocalized(p.category, lang).trim());
+      }
+    });
+    return map;
+  }, [projects, lang]);
+
   const filteredProjects = useMemo(() => {
     const q = query.trim().toLowerCase();
     return projects.filter((project) => {
+      const catEn = pickLocalized(project.category, 'en').trim().toLowerCase();
       const matchCat =
         selectedCategory === 'All' ||
-        project.category.trim().toLowerCase() ===
-          selectedCategory.toLowerCase();
+        catEn === selectedCategory.toLowerCase();
       if (!matchCat) return false;
       if (!q) return true;
 
+      const titleLoc = pickLocalized(project.title, lang).toLowerCase();
+      const catLoc = pickLocalized(project.category, lang).toLowerCase();
+      const sumLoc = pickLocalized(project.summary, lang).toLowerCase();
+
       return (
-        project.title.toLowerCase().includes(q) ||
-        project.category.toLowerCase().includes(q) ||
-        (project.summary?.toLowerCase().includes(q) ?? false) ||
+        titleLoc.includes(q) ||
+        catLoc.includes(q) ||
+        sumLoc.includes(q) ||
         project.tech_stack.some((t) => t.toLowerCase().includes(q))
       );
     });
-  }, [projects, selectedCategory, query]);
+  }, [projects, selectedCategory, query, lang]);
 
   const startFloatingLoop = useCallback(() => {
     if (rafRef.current !== null) return;
@@ -189,6 +213,9 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
   ) => {
     const numDigits = String(realIndex + 1).padStart(2, '0');
     const domain = formatDisplayDomain(project.project_url, project.slug);
+    const titleLoc = pickLocalized(project.title, lang);
+    const catLoc = pickLocalized(project.category, lang);
+    const summaryLoc = pickLocalized(project.summary, lang);
 
     return (
       <Reveal
@@ -204,6 +231,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
             <div className="bg-gradient-to-br from-[#1A1A1A] to-[#0E0E0E] p-3.5 sm:p-5 border-b border-white/[0.06]">
               <ArchiveBrowserFrame
                 project={project}
+                alt={titleLoc}
                 domain={domain}
                 aspectClass={
                   tallVariant ? 'aspect-[16/11.4]' : 'aspect-[16/9.8]'
@@ -222,7 +250,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                     </span>
                     <span className="h-1 w-1 rounded-full bg-white/25" />
                     <span className="text-[12px] font-semibold text-[#FF5510]">
-                      {project.category}
+                      {catLoc}
                     </span>
                   </div>
 
@@ -232,12 +260,12 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 </div>
 
                 <h2 className="text-white font-bold text-[22px] sm:text-[25px] leading-[1.18] tracking-[-0.025em] group-hover:text-[#FF5510] transition-colors">
-                  {project.title}
+                  {titleLoc}
                 </h2>
 
-                {project.summary && (
-                  <p className="text-white/70 text-[13.5px] leading-[1.62] line-clamp-3">
-                    {project.summary}
+                {summaryLoc && (
+                  <p className="text-white/70 text-[13.5px] leading-[1.6] line-clamp-2">
+                    {summaryLoc}
                   </p>
                 )}
               </div>
@@ -276,7 +304,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                     </span>
                   )}
                   <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
-                    Inspect Study &rarr;
+                    {lang === 'id' ? 'Lihat' : 'View'} &rarr;
                   </span>
                 </div>
               </div>
@@ -289,12 +317,8 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
 
   return (
     <div className="space-y-12">
-      {/* =====================================================================
-          EXHIBITION CONTROL CONSOLE (CATEGORY TABS + SEARCH + VIEW SWITCHER)
-      ===================================================================== */}
       <Reveal variant="fade-up" delay={140}>
         <div className="rounded-[26px] bg-[#111111] border border-white/[0.08] p-3.5 sm:p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
-          {/* Category Filter Pills */}
           <div
             role="tablist"
             aria-label="Filter projects by category"
@@ -315,20 +339,19 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                       : 'bg-[#181818] text-white/70 border border-white/[0.07] hover:text-white hover:border-white/20'
                   }`}
                 >
-                  {cat}
+                  {categoryLabels.get(cat) || cat}
                 </button>
               );
             })}
           </div>
 
-          {/* Search + View Mode Toggle (Gallery vs Magazine Index List) */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <div className="relative flex-1 sm:w-64">
+            <div className="relative flex-1 sm:w-60">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#7A7A7A]" />
               <input
                 type="search"
                 aria-label="Search projects by title or tech stack"
-                placeholder="Search stack or project..."
+                placeholder={lang === 'id' ? 'Cari proyek...' : 'Search projects...'}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full rounded-full bg-[#181818] border border-white/[0.08] pl-10 pr-4 py-2 text-[12.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#FF5510] transition"
@@ -354,7 +377,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
-                <span>Gallery</span>
+                <span>Grid</span>
               </button>
               <button
                 type="button"
@@ -367,23 +390,17 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
-                <span>Index List</span>
+                <span>List</span>
               </button>
             </div>
           </div>
         </div>
       </Reveal>
 
-      {/* =====================================================================
-          EMPTY FILTER STATE
-      ===================================================================== */}
       {filteredProjects.length === 0 ? (
         <div className="rounded-[28px] bg-[#121212] border border-white/[0.07] p-14 text-center space-y-3">
           <p className="text-white font-bold text-base">
-            Tidak ada proyek yang cocok dengan filter
-          </p>
-          <p className="text-[#7A7A7A] text-xs max-w-md mx-auto">
-            Coba pilih kategori lain atau hapus kata kunci pencarian.
+            {lang === 'id' ? 'Proyek tidak ditemukan' : 'No matching projects'}
           </p>
           <button
             type="button"
@@ -393,15 +410,11 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
             }}
             className="mt-2 inline-flex items-center rounded-full bg-[#FF5510] px-4 py-2 text-xs font-semibold text-white cursor-pointer"
           >
-            Reset Filter
+            Reset
           </button>
         </div>
       ) : viewMode === 'gallery' ? (
-        /* =====================================================================
-           MODE 1: VARIED ASYMMETRIC EXHIBITION GALLERY + DIFFERENTIAL PARALLAX
-        ===================================================================== */
         <div className="space-y-12">
-          {/* 1A. Panoramic Lead Spotlight Stage (#01) */}
           {leadProject && (
             <Reveal variant="curtain-up">
               <SpotlightCard className="rounded-[34px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-500 shadow-2xl">
@@ -412,6 +425,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                   <div className="lg:col-span-7 bg-gradient-to-br from-[#1C1C1C] via-[#131313] to-[#0D0D0D] p-4 sm:p-7 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.06]">
                     <ArchiveBrowserFrame
                       project={leadProject}
+                      alt={pickLocalized(leadProject.title, lang)}
                       domain={formatDisplayDomain(
                         leadProject.project_url,
                         leadProject.slug
@@ -422,14 +436,16 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                   </div>
 
                   <div className="lg:col-span-5 p-7 sm:p-10 flex flex-col justify-between space-y-8">
-                    <div className="space-y-4">
+                    <div className="space-y-3.5">
                       <div className="flex items-center justify-between gap-3">
                         <div className="inline-flex items-center gap-2.5">
-                          <span className="rounded-full bg-[#FF5510]/15 border border-[#FF5510]/35 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-wider text-[#FF5510]">
-                            #01 · Lead Showcase
+                          <span className="text-[14px] font-mono font-bold tracking-tight">
+                            <span className="text-[#FF5510]">#</span>
+                            <span className="text-white">01</span>
                           </span>
-                          <span className="text-[12px] font-semibold text-white/75">
-                            {leadProject.category}
+                          <span className="h-1 w-1 rounded-full bg-white/25" />
+                          <span className="text-[12px] font-semibold text-[#FF5510]">
+                            {pickLocalized(leadProject.category, lang)}
                           </span>
                         </div>
 
@@ -438,19 +454,13 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                         </span>
                       </div>
 
-                      {leadProject.client_name && (
-                        <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#7A7A7A]">
-                          CLIENT // {leadProject.client_name}
-                        </p>
-                      )}
-
                       <h2 className="text-white font-bold text-[26px] sm:text-[32px] leading-[1.12] tracking-[-0.03em] group-hover:text-[#FF5510] transition-colors">
-                        {leadProject.title}
+                        {pickLocalized(leadProject.title, lang)}
                       </h2>
 
                       {leadProject.summary && (
-                        <p className="text-white/72 text-[14px] leading-[1.68] line-clamp-4">
-                          {leadProject.summary}
+                        <p className="text-white/72 text-[14px] leading-[1.65] line-clamp-3">
+                          {pickLocalized(leadProject.summary, lang)}
                         </p>
                       )}
                     </div>
@@ -485,17 +495,17 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                         {leadProject.apk_url && (
                           <span className="inline-flex items-center gap-1.5">
                             <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
-                            <span>Android APK</span>
+                            <span>APK</span>
                           </span>
                         )}
                         {leadProject.github_url && (
                           <span className="inline-flex items-center gap-1.5">
                             <Github className="w-3.5 h-3.5 text-white/80" />
-                            <span>Source</span>
+                            <span>Code</span>
                           </span>
                         )}
                         <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
-                          Open Case Study &rarr;
+                          {lang === 'id' ? 'Lihat' : 'View'} &rarr;
                         </span>
                       </div>
                     </div>
@@ -505,10 +515,8 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
             </Reveal>
           )}
 
-          {/* 1B. Varied Staggered Columns with Differential Scroll Parallax */}
           {remainingProjects.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-7 lg:gap-9 items-start pt-2">
-              {/* Left 6 Columns (Positive Parallax Glide) */}
               <ParallaxColumn
                 offsetPx={18}
                 className="md:col-span-6 space-y-8"
@@ -525,7 +533,6 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 })}
               </ParallaxColumn>
 
-              {/* Right 6 Columns (Staggered Vertical Offset + Counter-Parallax Glide) */}
               <ParallaxColumn
                 offsetPx={-26}
                 className="md:col-span-6 md:pt-14 space-y-8"
@@ -545,9 +552,6 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
           )}
         </div>
       ) : (
-        /* =====================================================================
-           MODE 2: INTERACTIVE MAGAZINE INDEX LIST + FLOATING HOVER PREVIEW
-        ===================================================================== */
         <div
           onPointerMove={handleListPointerMove}
           onPointerLeave={() => setHoveredProject(null)}
@@ -578,7 +582,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                         setHoveredProject(project);
                       }
                     }}
-                    className="group py-7 sm:py-9 px-3 sm:px-5 border-b border-white/[0.1] hover:bg-white/[0.025] transition-colors duration-300 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center"
+                    className="group py-7 sm:py-8 px-3 sm:px-5 border-b border-white/[0.1] hover:bg-white/[0.025] transition-colors duration-300 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center"
                   >
                     <div className="md:col-span-1 text-[14px] font-mono font-bold text-white/35 group-hover:text-[#FF5510] transition-colors">
                       {numDigits}
@@ -586,18 +590,14 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
 
                     <div className="md:col-span-5 space-y-1">
                       <h2 className="text-white font-bold text-[22px] sm:text-[26px] leading-[1.15] tracking-[-0.025em] group-hover:text-[#FF5510] group-hover:translate-x-1.5 transition-all duration-300">
-                        {project.title}
+                        {pickLocalized(project.title, lang)}
                       </h2>
-                      {project.client_name && (
-                        <p className="text-[12px] text-[#7A7A7A]">
-                          {project.client_name} &bull; {domain}
-                        </p>
-                      )}
+                      <p className="text-[12px] text-[#7A7A7A]">{domain}</p>
                     </div>
 
                     <div className="md:col-span-2">
                       <span className="inline-flex items-center rounded-full bg-[#141414] border border-white/[0.08] px-3 py-1 text-[11.5px] font-semibold text-[#FF5510]">
-                        {project.category}
+                        {pickLocalized(project.category, lang)}
                       </span>
                     </div>
 
@@ -624,7 +624,6 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
             })}
           </div>
 
-          {/* Cursor-Following Floating Preview Window (Desktop Fine-Pointer Only) */}
           <div
             ref={floatingRef}
             aria-hidden="true"
@@ -639,7 +638,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 <div className="relative aspect-[16/10] w-full rounded-[13px] overflow-hidden bg-[#161616]">
                   <Image
                     src={hoveredProject.thumbnail_url}
-                    alt={hoveredProject.title}
+                    alt={pickLocalized(hoveredProject.title, lang)}
                     fill
                     className="object-cover object-top"
                     sizes="350px"
@@ -651,10 +650,10 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 </div>
                 <div className="px-1.5 pb-0.5 flex items-center justify-between text-[11px]">
                   <span className="font-semibold text-white truncate">
-                    {hoveredProject.title}
+                    {pickLocalized(hoveredProject.title, lang)}
                   </span>
                   <span className="font-mono text-[#FF5510] shrink-0 ml-2">
-                    Inspect &rarr;
+                    {lang === 'id' ? 'Lihat' : 'View'} &rarr;
                   </span>
                 </div>
               </div>

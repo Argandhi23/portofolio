@@ -5,6 +5,11 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PillButton } from '@/components/public/PillButton';
+import {
+  LanguageToggle,
+  useLanguage,
+} from '@/components/public/LanguageProvider';
+import { PUBLIC_COPY, tPick } from '@/lib/i18n/dictionary';
 import { cn } from '@/lib/utils';
 
 const emptySubscribe = () => () => {};
@@ -90,11 +95,12 @@ function MobileMenuButton({
 export function PublicNavbar({
   brandName,
   ctaUrl = '#contact',
-  ctaLabel = 'Get in touch',
+  ctaLabel,
   isSubPage = false,
   surfaceVariant = 'fiery',
 }: PublicNavbarProps) {
   const pathname = usePathname();
+  const { lang } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mounted = useIsMounted();
@@ -102,22 +108,31 @@ export function PublicNavbar({
 
   const resolvedCta =
     isSubPage && ctaUrl.startsWith('#') ? `/${ctaUrl}` : ctaUrl;
+  const resolvedCtaLabel = ctaLabel ?? tPick(PUBLIC_COPY.nav.cta, lang);
 
   const navLinks = [
-    { label: 'Home', href: '/', active: pathname === '/' },
-    { label: 'About', href: '/about', active: pathname === '/about' },
     {
-      label: 'Projects',
+      label: tPick(PUBLIC_COPY.nav.home, lang),
+      href: '/',
+      active: pathname === '/',
+    },
+    {
+      label: tPick(PUBLIC_COPY.nav.about, lang),
+      href: '/about',
+      active: pathname === '/about',
+    },
+    {
+      label: tPick(PUBLIC_COPY.nav.projects, lang),
       href: '/projects',
       active: pathname.startsWith('/projects'),
     },
     {
-      label: 'Services',
+      label: tPick(PUBLIC_COPY.nav.services, lang),
       href: isSubPage ? '/#services' : '#services',
       active: false,
     },
     {
-      label: 'Contact',
+      label: tPick(PUBLIC_COPY.nav.contact, lang),
       href: isSubPage ? '/#contact' : '#contact',
       active: false,
     },
@@ -213,12 +228,13 @@ export function PublicNavbar({
             ))}
           </nav>
 
-          <div className="hidden sm:block">
+          <div className="hidden sm:flex items-center gap-3">
+            <LanguageToggle variant={isObsidian ? 'obsidian' : 'fiery'} />
             <PillButton
               href={resolvedCta}
               variant={isObsidian ? 'orange' : 'white'}
             >
-              {ctaLabel}
+              {resolvedCtaLabel}
             </PillButton>
           </div>
 
@@ -306,12 +322,15 @@ export function PublicNavbar({
                   ))}
                 </nav>
 
-                <PillButton
-                  href={resolvedCta}
-                  variant="orange"
-                >
-                  {ctaLabel}
-                </PillButton>
+                <div className="flex items-center gap-2.5">
+                  <LanguageToggle variant="obsidian" />
+                  <PillButton
+                    href={resolvedCta}
+                    variant="orange"
+                  >
+                    {resolvedCtaLabel}
+                  </PillButton>
+                </div>
               </div>
             </div>
 
@@ -384,23 +403,24 @@ export function PublicNavbar({
                 ))}
               </nav>
 
-              {/* Fullscreen Mobile Menu Bottom CTA (Surabaya removed, Get in touch in orange) */}
+              {/* Fullscreen Mobile Menu Bottom Language Switcher & CTA */}
               <div
                 style={{
                   transitionDelay: mobileOpen ? '280ms' : '0ms',
                 }}
                 className={cn(
-                  'pt-4 pb-2 flex items-center justify-center transition-all duration-300',
+                  'pt-4 pb-2 flex flex-col items-center gap-4 transition-all duration-300',
                   mobileOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
                 )}
               >
+                <LanguageToggle variant="mobile" />
                 <div onClick={() => setMobileOpen(false)} className="w-full">
                   <PillButton
                     href={resolvedCta}
                     variant="orange"
                     className="w-full justify-center !py-2.5 !text-[13px] shadow-[0_4px_20px_rgba(255,85,16,0.25)]"
                   >
-                    {ctaLabel}
+                    {resolvedCtaLabel}
                   </PillButton>
                 </div>
               </div>

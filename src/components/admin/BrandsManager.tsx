@@ -100,7 +100,9 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
         if (!res.success) {
           setError(res.message);
         } else if (res.data) {
-          setBrands((prev) => [...prev, res.data!].sort((a, b) => a.display_order - b.display_order));
+          setBrands((prev) =>
+            [...prev, res.data!].sort((a, b) => a.display_order - b.display_order)
+          );
           closeModal();
         }
       }
@@ -120,7 +122,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
   };
 
   const handleDelete = (id: string, brandName: string) => {
-    if (!window.confirm(`Hapus brand "${brandName}"? Logo terkait juga akan dihapus dari storage.`)) return;
+    if (!window.confirm(`Hapus "${brandName}"?`)) return;
 
     startTransition(async () => {
       const res = await deleteBrand(id);
@@ -136,27 +138,22 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-900 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
-              Tech Stack &amp; Ecosystem
-            </h1>
-            <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs font-semibold text-zinc-300">
-              {brands.length} Teknologi
-            </span>
-          </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Daftar teknologi dan ekosistem software development (&quot;Core Tech Stack &amp; Ecosystem&quot;) di halaman utama.
-          </p>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            Tech Stack
+          </h1>
+          <span className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs font-semibold text-zinc-300">
+            {brands.length}
+          </span>
         </div>
 
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-orange-500/10 hover:from-orange-600 hover:to-red-700 transition"
+          className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition cursor-pointer"
         >
           <Plus className="h-4 w-4" />
-          <span>Tambah Tech Stack</span>
+          <span>Tambah</span>
         </button>
       </div>
 
@@ -166,10 +163,10 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
           <thead className="border-b border-zinc-900 bg-zinc-900/40 text-[11px] uppercase tracking-wider text-zinc-400 font-semibold">
             <tr>
               <th scope="col" className="py-3.5 pl-6 pr-3">
-                Logo &amp; Nama Teknologi
+                Teknologi
               </th>
               <th scope="col" className="px-3 py-3.5">
-                Tautan Situs / Dokumentasi
+                URL
               </th>
               <th scope="col" className="px-3 py-3.5 text-center">
                 Urutan
@@ -195,7 +192,10 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                           fill
                           className="object-contain p-1"
                           sizes="48px"
-                          unoptimized={brand.logo_url.startsWith('data:') || brand.logo_url.endsWith('.svg')}
+                          unoptimized={
+                            brand.logo_url.startsWith('data:') ||
+                            brand.logo_url.endsWith('.svg')
+                          }
                         />
                       ) : (
                         <span className="text-[10px] font-bold text-zinc-600 uppercase">
@@ -254,7 +254,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                       type="button"
                       onClick={() => openEditModal(brand)}
                       className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-700 transition"
-                      title="Sunting Brand"
+                      title="Edit"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
@@ -262,7 +262,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                       type="button"
                       onClick={() => handleDelete(brand.id, brand.name)}
                       className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition"
-                      title="Hapus Brand"
+                      title="Hapus"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -282,7 +282,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
               <div className="flex items-center gap-2 text-white">
                 <Code2 className="h-5 w-5 text-orange-400" />
                 <h3 className="text-base font-semibold">
-                  {editingBrand ? 'Sunting Tech Stack' : 'Tambah Tech Stack Baru'}
+                  {editingBrand ? 'Edit Tech Stack' : 'Tambah Tech Stack'}
                 </h3>
               </div>
               <button
@@ -304,21 +304,21 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Nama Teknologi / Framework <span className="text-orange-500">*</span>
+                  Nama <span className="text-orange-500">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Contoh: Next.js"
+                  placeholder="Next.js"
                   className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
                 />
               </div>
 
               <div>
                 <ImageUploader
-                  label="Logo Teknologi (SVG / PNG)"
+                  label="Logo (SVG / PNG)"
                   value={logoUrl}
                   onChange={(url) => setLogoUrl(url)}
                   folder="brands/logos"
@@ -328,7 +328,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
 
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Tautan Situs / Dokumentasi Resmi (Opsional)
+                  URL (Opsional)
                 </label>
                 <input
                   type="url"
@@ -342,7 +342,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                    Urutan Tampil
+                    Urutan
                   </label>
                   <input
                     type="number"
@@ -382,7 +382,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                   className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-xs font-semibold text-white hover:bg-orange-500 transition disabled:opacity-50"
                 >
                   {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                  <span>{editingBrand ? 'Simpan Perubahan' : 'Tambah Teknologi'}</span>
+                  <span>Simpan</span>
                 </button>
               </div>
             </form>

@@ -157,10 +157,7 @@ export function ImageUploader({
                 <UploadCloud className="h-5 w-5" />
               </div>
               <p className="text-xs font-medium text-zinc-300">
-                Klik atau seret gambar ke sini
-              </p>
-              <p className="text-[11px] text-zinc-500">
-                Foto &gt; 1MB akan otomatis dikompres ke WebP resolusi tajam
+                Klik untuk unggah gambar
               </p>
             </div>
           )}
@@ -186,7 +183,7 @@ export function ImageUploader({
 
       {/* Manual URL input fallback */}
       <div className="flex items-center gap-2 pt-1">
-        <span className="text-[11px] text-zinc-500">Atau masukkan URL gambar:</span>
+        <span className="text-[11px] text-zinc-500">URL gambar:</span>
         <input
           type="text"
           placeholder="https://... atau /projects/..."
