@@ -59,6 +59,7 @@ export async function createProject(
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
     revalidatePath('/');
+    revalidatePath('/projects');
     revalidatePath('/admin/projects');
 
     return {
@@ -158,6 +159,7 @@ export async function updateProject(
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
     revalidatePath('/');
+    revalidatePath('/projects');
     revalidatePath('/admin/projects');
     revalidatePath(`/admin/projects/${id}/edit`);
     revalidatePath(`/projects/${data.slug}`);
@@ -214,6 +216,7 @@ export async function deleteProject(id: string): Promise<ActionResult> {
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
     revalidatePath('/');
+    revalidatePath('/projects');
     revalidatePath('/admin/projects');
     if (project?.slug) {
       revalidatePath(`/projects/${project.slug}`);
@@ -259,6 +262,7 @@ export async function toggleProjectStatus(
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
     revalidatePath('/');
+    revalidatePath('/projects');
     revalidatePath('/admin/projects');
 
     return {
@@ -301,6 +305,7 @@ export async function toggleProjectFeatured(
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
     revalidatePath('/');
+    revalidatePath('/projects');
     revalidatePath('/admin/projects');
 
     return {

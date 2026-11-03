@@ -128,6 +128,24 @@ const GALLERY_CAPTION_PRESETS: Record<
     { en: 'Saved Listings & Client-Side Wishlist', id: 'Daftar Kost Tersimpan (Wishlist Lokal)' },
     { en: 'About the Initiative & PMW UNESA Story', id: 'Latar Belakang & Inisiatif PMW UNESA' },
   ],
+  'desa-bogem': [
+    { en: 'Homepage & Citizen Shortcuts', id: 'Beranda & Pintasan Layanan Warga' },
+    { en: 'Interactive Geospatial Satellite Map (BIG Boundary)', id: 'Peta Spasial Satelit Interaktif (Batas Resmi BIG)' },
+    { en: 'Village Administration & SOTK Hierarchy', id: 'Struktur Organisasi SOTK & Aparatur Desa' },
+    { en: 'Self-Service Letter Administration & Tracking', id: 'Pelayanan Surat Mandiri Online & Cek Resi' },
+    { en: 'Village Economic Showcase ("Beli Dari Desa")', id: 'Etalase Potensi & Produk UMKM Warga' },
+    { en: 'Demographic Statistics & IDM Classification', id: 'Infografis Demografi & Indeks Desa Membangun' },
+    { en: 'Community News & Public Transparency Portal', id: 'Warta Informasi & Agenda Kegiatan Desa' },
+  ],
+  fajartrans: [
+    { en: 'Floating Car Hero & Trust Badges', id: 'Hero Utama, Mobil Floating & Trust Badges' },
+    { en: 'Interactive 4-Step Booking Timeline (GSAP)', id: 'Linimasa Alur Pemesanan 4 Langkah (Animasi GSAP)' },
+    { en: 'Complete Fleet Catalog & Pricing (/armada)', id: 'Katalog Armada Lengkap & Tarif Sewa (/armada)' },
+    { en: 'Featured Services (Self-Drive & Tour)', id: 'Layanan Unggulan (Lepas Kunci & Paket Wisata)' },
+    { en: 'Company Profile & Trust Factors (/tentang-kami)', id: 'Profil Perusahaan & Bento Grid (/tentang-kami)' },
+    { en: 'Quick WhatsApp Booking & Garage (/kontak)', id: 'Pemesanan Instan WhatsApp & Lokasi Garasi (/kontak)' },
+    { en: 'Client Testimonials & Satisfaction Reviews', id: 'Testimoni Pelanggan & Ulasan Nyata' },
+  ],
 };
 
 /**
