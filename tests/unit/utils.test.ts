@@ -3,6 +3,7 @@ import {
   cn,
   extractStoragePath,
   formatDisplayDomain,
+  isMobileProject,
   slugify,
 } from '@/lib/utils';
 
@@ -61,6 +62,28 @@ describe('src/lib/utils.ts', () => {
       expect(
         extractStoragePath('https://images.unsplash.com/photo-123.jpg')
       ).toBeNull();
+    });
+  });
+
+  describe('isMobileProject()', () => {
+    it('returns true when apk_url is provided', () => {
+      expect(isMobileProject({ apk_url: 'https://drive.google.com/xyz' })).toBe(true);
+    });
+
+    it('returns true when category or tech_stack indicates mobile', () => {
+      expect(isMobileProject({ category: 'Mobile App (Flutter)' })).toBe(true);
+      expect(isMobileProject({ tech_stack: ['Flutter', 'Dart'] })).toBe(true);
+    });
+
+    it('returns false for desktop web projects with no mobile indicators', () => {
+      expect(
+        isMobileProject({
+          apk_url: null,
+          category: 'E-Commerce',
+          tech_stack: ['Next.js', 'PostgreSQL'],
+        })
+      ).toBe(false);
+      expect(isMobileProject(null)).toBe(false);
     });
   });
 });

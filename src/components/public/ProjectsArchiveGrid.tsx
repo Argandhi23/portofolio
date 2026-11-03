@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import type { Project } from '@/types/database.types';
 import { pickLocalized } from '@/lib/i18n/localized';
-import { formatDisplayDomain } from '@/lib/utils';
+import { formatDisplayDomain, isMobileProject } from '@/lib/utils';
 import { useLanguage } from '@/components/public/LanguageProvider';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
 import { Reveal } from '@/components/motion/Reveal';
@@ -44,22 +44,44 @@ function ArchiveBrowserFrame({
   sizes,
   priority = false,
 }: ArchiveBrowserFrameProps) {
+  const isMobile = isMobileProject(project);
+
   return (
     <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.1] bg-[#0B0B0B] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.65)]">
       <div className="h-8 shrink-0 bg-[#111111] border-b border-white/[0.07] px-3.5 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
-        </div>
+        {isMobile ? (
+          <div className="flex items-center gap-1.5">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5510]">
+              Mobile APK
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
+          </div>
+        )}
 
         <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-0.5 max-w-[210px]">
-          {project.project_url && (
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+          {isMobile ? (
+            <>
+              <Smartphone className="w-2.5 h-2.5 text-[#FF5510] shrink-0" />
+              <span className="text-[10px] font-mono text-white/65 truncate">
+                {project.slug}.apk
+              </span>
+            </>
+          ) : (
+            <>
+              {project.project_url && (
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+              )}
+              <span className="text-[10.5px] font-mono text-white/65 truncate">
+                {domain}
+              </span>
+            </>
           )}
-          <span className="text-[10.5px] font-mono text-white/65 truncate">
-            {domain}
-          </span>
         </div>
 
         <div className="w-8" />

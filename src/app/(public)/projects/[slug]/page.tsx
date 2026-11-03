@@ -18,7 +18,8 @@ import {
   getSiteSettings,
 } from '@/lib/queries/portfolio.queries';
 import { resolveGalleryCaption } from '@/lib/queries/project-fallbacks';
-import { formatDisplayDomain } from '@/lib/utils';
+import { formatDisplayDomain, isMobileProject } from '@/lib/utils';
+import { PhoneFrame } from '@/components/public/PhoneFrame';
 import { Github } from '@/components/ui/Icons';
 import { PublicNavbar } from '@/components/public/PublicNavbar';
 import { PillButton } from '@/components/public/PillButton';
@@ -94,6 +95,7 @@ export default async function ProjectDetailPage({
   const galleryCount = project.gallery_urls?.length || 0;
   const cleanTitleEn = pickLocalized(project.title, 'en');
   const cleanSummaryEn = pickLocalized(project.summary, 'en');
+  const isMobile = isMobileProject(project);
 
   const caseStudySchema = {
     '@context': 'https://schema.org',
@@ -214,17 +216,37 @@ export default async function ProjectDetailPage({
               >
                 <div className="rounded-[20px] overflow-hidden border border-white/[0.1] bg-[#0B0B0B] flex flex-col">
                   <div className="h-9 shrink-0 bg-[#111111] border-b border-white/[0.07] px-4 flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
-                      <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
-                    </div>
+                    {isMobile ? (
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-2 w-2 rounded-full bg-[#FF5510]" />
+                        <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#FF5510]">
+                          Mobile APK • Flutter
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
+                        <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
+                      </div>
+                    )}
 
                     <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.06] px-3.5 py-0.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      <span className="text-[11px] font-mono text-white/70 truncate">
-                        https://{displayDomain}
-                      </span>
+                      {isMobile ? (
+                        <>
+                          <Smartphone className="w-3 h-3 text-[#FF5510]" />
+                          <span className="text-[11px] font-mono text-white/70 truncate">
+                            {project.slug}.apk
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          <span className="text-[11px] font-mono text-white/70 truncate">
+                            https://{displayDomain}
+                          </span>
+                        </>
+                      )}
                     </div>
 
                     <div className="w-10" />
@@ -336,84 +358,126 @@ export default async function ProjectDetailPage({
 
       {/* 4. SCREENSHOTS GALLERY */}
       {project.gallery_urls && galleryCount > 0 && (
-        <section className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-14 pb-12 border-t border-white/[0.08] space-y-8">
+        <section
+          id="gallery"
+          className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-14 pb-12 border-t border-white/[0.08] space-y-8"
+        >
           <Reveal variant="fade-up">
             <h2 className="text-white font-bold text-[28px] sm:text-[38px] leading-[1.08] tracking-[-0.03em]">
               <T en="Screenshots" id="Tampilan Sistem" />
             </h2>
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
-            {project.gallery_urls.map((imgUrl, idx) => {
-              const isFullSpan =
-                galleryCount % 2 === 1 && idx === galleryCount - 1;
-              const numDigits = String(idx + 1).padStart(2, '0');
-              const captionEn = resolveGalleryCaption(project, idx, 'en');
-              const captionId = resolveGalleryCaption(project, idx, 'id');
+          {isMobile ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 items-start">
+              {project.gallery_urls.map((imgUrl, idx) => {
+                const numDigits = String(idx + 1).padStart(2, '0');
+                const captionEn = resolveGalleryCaption(project, idx, 'en');
+                const captionId = resolveGalleryCaption(project, idx, 'id');
 
-              return (
-                <Reveal
-                  key={idx}
-                  variant="curtain-up"
-                  delay={(idx % 2) * 140}
-                  className={isFullSpan ? 'md:col-span-2' : ''}
-                >
-                  <SpotlightCard className="group rounded-[28px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/40 p-3.5 sm:p-4 transition-colors shadow-xl flex flex-col gap-3.5 overflow-hidden">
-                    <div className="relative z-10 rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#0B0B0B] flex flex-col">
-                      <div className="h-7 shrink-0 bg-[#111111] border-b border-white/[0.06] px-3 flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2 w-2 rounded-full bg-white/25" />
-                          <span className="h-2 w-2 rounded-full bg-white/15" />
-                          <span className="h-2 w-2 rounded-full bg-white/10" />
-                        </div>
-                        <span className="text-[10px] font-mono text-white/45 truncate">
-                          {displayDomain}
-                        </span>
-                        <div className="w-6" />
+                return (
+                  <Reveal
+                    key={idx}
+                    variant="curtain-up"
+                    delay={(idx % 4) * 100}
+                  >
+                    <SpotlightCard className="group rounded-[32px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/45 p-4 sm:p-5 transition-all duration-300 shadow-2xl flex flex-col gap-4 overflow-hidden">
+                      <div className="py-2 flex items-center justify-center">
+                        <PhoneFrame
+                          src={imgUrl}
+                          alt={captionEn}
+                          caption={captionEn}
+                          size="md"
+                        />
                       </div>
 
-                      <ImageLightbox
-                        src={imgUrl}
-                        alt={captionEn}
-                        caption={captionEn}
-                      >
-                        <ParallaxMedia
-                          intensity={16}
-                          className="aspect-[16/10] w-full bg-[#141414]"
-                          innerClassName="relative h-full w-full"
-                        >
-                          <Image
-                            src={imgUrl}
-                            alt={captionEn}
-                            fill
-                            className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                            sizes={
-                              isFullSpan
-                                ? '(max-width: 1140px) 100vw, 1040px'
-                                : '(max-width: 768px) 100vw, 510px'
-                            }
-                            unoptimized={
-                              imgUrl.startsWith('data:') || imgUrl.endsWith('.svg')
-                            }
-                          />
-                        </ParallaxMedia>
-                      </ImageLightbox>
-                    </div>
+                      <div className="relative z-10 px-1 pt-2 pb-0.5 flex items-center gap-2.5 min-w-0 border-t border-white/[0.06]">
+                        <span className="text-[12px] font-mono font-bold tracking-tight shrink-0">
+                          <span className="text-[#FF5510]">#</span>
+                          <span className="text-white">{numDigits}</span>
+                        </span>
+                        <p className="text-white/85 text-[12.5px] font-medium truncate">
+                          <T en={captionEn} id={captionId} />
+                        </p>
+                      </div>
+                    </SpotlightCard>
+                  </Reveal>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+              {project.gallery_urls.map((imgUrl, idx) => {
+                const isFullSpan =
+                  galleryCount % 2 === 1 && idx === galleryCount - 1;
+                const numDigits = String(idx + 1).padStart(2, '0');
+                const captionEn = resolveGalleryCaption(project, idx, 'en');
+                const captionId = resolveGalleryCaption(project, idx, 'id');
 
-                    <div className="relative z-10 px-1.5 pb-0.5 flex items-center gap-2.5 min-w-0">
-                      <span className="text-[12.5px] font-mono font-bold tracking-tight shrink-0">
-                        <span className="text-[#FF5510]">#</span>
-                        <span className="text-white">{numDigits}</span>
-                      </span>
-                      <p className="text-white/85 text-[13px] font-medium truncate">
-                        <T en={captionEn} id={captionId} />
-                      </p>
-                    </div>
-                  </SpotlightCard>
-                </Reveal>
-              );
-            })}
-          </div>
+                return (
+                  <Reveal
+                    key={idx}
+                    variant="curtain-up"
+                    delay={(idx % 2) * 140}
+                    className={isFullSpan ? 'md:col-span-2' : ''}
+                  >
+                    <SpotlightCard className="group rounded-[28px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/40 p-3.5 sm:p-4 transition-colors shadow-xl flex flex-col gap-3.5 overflow-hidden">
+                      <div className="relative z-10 rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#0B0B0B] flex flex-col">
+                        <div className="h-7 shrink-0 bg-[#111111] border-b border-white/[0.06] px-3 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="h-2 w-2 rounded-full bg-white/25" />
+                            <span className="h-2 w-2 rounded-full bg-white/15" />
+                            <span className="h-2 w-2 rounded-full bg-white/10" />
+                          </div>
+                          <span className="text-[10px] font-mono text-white/45 truncate">
+                            {displayDomain}
+                          </span>
+                          <div className="w-6" />
+                        </div>
+
+                        <ImageLightbox
+                          src={imgUrl}
+                          alt={captionEn}
+                          caption={captionEn}
+                        >
+                          <ParallaxMedia
+                            intensity={16}
+                            className="aspect-[16/10] w-full bg-[#141414]"
+                            innerClassName="relative h-full w-full"
+                          >
+                            <Image
+                              src={imgUrl}
+                              alt={captionEn}
+                              fill
+                              className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+                              sizes={
+                                isFullSpan
+                                  ? '(max-width: 1140px) 100vw, 1040px'
+                                  : '(max-width: 768px) 100vw, 510px'
+                              }
+                              unoptimized={
+                                imgUrl.startsWith('data:') || imgUrl.endsWith('.svg')
+                              }
+                            />
+                          </ParallaxMedia>
+                        </ImageLightbox>
+                      </div>
+
+                      <div className="relative z-10 px-1.5 pb-0.5 flex items-center gap-2.5 min-w-0">
+                        <span className="text-[12.5px] font-mono font-bold tracking-tight shrink-0">
+                          <span className="text-[#FF5510]">#</span>
+                          <span className="text-white">{numDigits}</span>
+                        </span>
+                        <p className="text-white/85 text-[13px] font-medium truncate">
+                          <T en={captionEn} id={captionId} />
+                        </p>
+                      </div>
+                    </SpotlightCard>
+                  </Reveal>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 

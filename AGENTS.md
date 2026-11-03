@@ -244,3 +244,13 @@ Saat pengguna meminta pembangunan sistem, kerjakan secara bertahap sesuai urutan
 - **FASE 3 (Data Engine & Storage):** Skema validasi Zod, `storage.actions.ts` (upload + hapus file lama), seluruh CRUD Server Actions (`project`, `service`, `brand`, `settings`), serta `portfolio.queries.ts` dengan `unstable_cache`.
 - **FASE 4 (Admin Dashboard UI):** Layout `/admin`, tabel manajemen `/admin/projects` (lengkap dengan form tambah/edit, auto-slug, upload gambar + preview, toggle draft/published & featured), serta halaman CRUD `/admin/services`, `/admin/brands`, dan `/admin/settings`.
 - **FASE 5 (Public Frontend "Folioblox"):** Membangun UI halaman publik `/` dan `/projects/[slug]` sesuai referensi desain (Dark theme `#0a0a0a`, gradasi oranye-merah hangat di Hero, tipografi kontras tinggi, daftar `#01-#04` services, bar logo klien, dan grid kartu portofolio).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ArrowUpRight, Globe, Smartphone } from 'lucide-react';
 import type { Project } from '@/types/database.types';
 import { pickLocalized } from '@/lib/i18n/localized';
-import { formatDisplayDomain } from '@/lib/utils';
+import { formatDisplayDomain, isMobileProject } from '@/lib/utils';
 import { SectionHeader } from '@/components/public/SectionHeader';
 import { CmsText, T } from '@/components/public/LanguageProvider';
 import { Reveal } from '@/components/motion/Reveal';
@@ -21,6 +21,8 @@ interface BrowserPreviewFrameProps {
   alt: string;
   domain: string;
   isLive?: boolean;
+  isMobile?: boolean;
+  slug?: string;
   sizes: string;
   priority?: boolean;
 }
@@ -30,25 +32,47 @@ function BrowserPreviewFrame({
   alt,
   domain,
   isLive = false,
+  isMobile = false,
+  slug,
   sizes,
   priority = false,
 }: BrowserPreviewFrameProps) {
   return (
     <div className="w-full rounded-[18px] overflow-hidden border border-white/[0.1] bg-[#0B0B0B] shadow-[0_20px_50px_rgba(0,0,0,0.65)] flex flex-col">
       <div className="h-8 shrink-0 bg-[#111111] border-b border-white/[0.07] px-3.5 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
-        </div>
+        {isMobile ? (
+          <div className="flex items-center gap-1.5">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5510]">
+              Mobile APK
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
+          </div>
+        )}
 
         <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-0.5 max-w-[200px]">
-          {isLive && (
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+          {isMobile ? (
+            <>
+              <Smartphone className="w-2.5 h-2.5 text-[#FF5510] shrink-0" />
+              <span className="text-[10px] font-mono text-white/65 truncate">
+                {slug ? `${slug}.apk` : 'app.apk'}
+              </span>
+            </>
+          ) : (
+            <>
+              {isLive && (
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+              )}
+              <span className="text-[10.5px] font-mono text-white/65 truncate">
+                {domain}
+              </span>
+            </>
           )}
-          <span className="text-[10.5px] font-mono text-white/65 truncate">
-            {domain}
-          </span>
         </div>
 
         <div className="w-9" />
@@ -128,6 +152,8 @@ export function SelectedWorksSection({
                           alt={cleanAlt}
                           domain={domain}
                           isLive={Boolean(project.project_url)}
+                          isMobile={isMobileProject(project)}
+                          slug={project.slug}
                           sizes="(max-width: 1024px) 100vw, 640px"
                           priority
                         />
@@ -249,6 +275,8 @@ export function SelectedWorksSection({
                               alt={cleanAlt}
                               domain={domain}
                               isLive={Boolean(project.project_url)}
+                              isMobile={isMobileProject(project)}
+                              slug={project.slug}
                               sizes="(max-width: 768px) 100vw, 520px"
                             />
                           </div>

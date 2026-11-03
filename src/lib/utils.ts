@@ -41,6 +41,36 @@ export function formatDisplayDomain(
 }
 
 /**
+ * Detects whether a project is a mobile application (Flutter / React Native / APK).
+ */
+export function isMobileProject(
+  project?: {
+    apk_url?: string | null;
+    category?: string | null;
+    tech_stack?: string[] | null;
+  } | null
+): boolean {
+  if (!project) return false;
+  if (Boolean(project.apk_url)) return true;
+  const category = (project.category || '').toLowerCase();
+  if (
+    category.includes('mobile') ||
+    category.includes('apk') ||
+    category.includes('flutter')
+  ) {
+    return true;
+  }
+  const stack = (project.tech_stack || []).map((t) => t.toLowerCase());
+  return stack.some(
+    (t) =>
+      t.includes('flutter') ||
+      t.includes('react native') ||
+      t.includes('android') ||
+      t.includes('ios')
+  );
+}
+
+/**
  * Extracts storage relative file path from a Supabase public storage URL.
  * Example: https://xyz.supabase.co/storage/v1/object/public/portfolio-media/uploads/file.webp
  * Returns: uploads/file.webp

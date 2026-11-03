@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { Maximize2, X } from 'lucide-react';
 import { useLanguage } from '@/components/public/LanguageProvider';
+import { cn } from '@/lib/utils';
 
 const subscribe = () => () => {};
 const getSnapshot = () => true;
@@ -14,6 +15,7 @@ interface ImageLightboxProps {
   src: string;
   alt: string;
   caption?: string;
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -25,6 +27,7 @@ export function ImageLightbox({
   src,
   alt,
   caption,
+  className,
   children,
 }: ImageLightboxProps) {
   const [open, setOpen] = useState(false);
@@ -104,7 +107,10 @@ export function ImageLightbox({
             setOpen(true);
           }
         }}
-        className="relative w-full cursor-zoom-in group focus:outline-none"
+        className={cn(
+          'relative w-full cursor-zoom-in group focus:outline-none',
+          className
+        )}
       >
         {children}
 

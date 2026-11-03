@@ -109,6 +109,25 @@ const GALLERY_CAPTION_PRESETS: Record<
     { en: 'Product & Scent Notes', id: 'Detail Produk & Aroma' },
     { en: 'QRIS & Shipping Checkout', id: 'Checkout QRIS & Ongkir' },
   ],
+  vetsy: [
+    { en: 'Onboarding & Introduction', id: 'Onboarding & Pengenalan Aplikasi' },
+    { en: 'Firebase Authentication', id: 'Autentikasi Firebase & Keamanan' },
+    { en: 'Patient Home Dashboard', id: 'Beranda & Rekomendasi Klinik' },
+    { en: 'Clinic Profile & Veterinarians', id: 'Detail Klinik & Profil Dokter' },
+    { en: 'Services & Direct Booking', id: 'Katalog Layanan & Reservasi' },
+    { en: 'Pet Health Profiles & Records', id: 'Profil Hewan & Rekam Medis' },
+    { en: 'Real-Time Appointment Tracking', id: 'Jadwal & Status Janji Temu' },
+    { en: 'Admin Operations Dashboard', id: 'Dashboard Moderasi Admin' },
+  ],
+  griyanesa: [
+    { en: 'Homepage & Instant Radius Search', id: 'Beranda & Pencarian Berbasis Radius' },
+    { en: 'Interactive Leaflet Campus Map', id: 'Peta Interaktif Kampus UNESA 5 (Leaflet)' },
+    { en: 'Multi-Criteria Kost Filters & Catalog', id: 'Filter Spesifik & Katalog Kost Terkurasi' },
+    { en: 'Kost Specification & Distance Meter', id: 'Detail Kamar & Jarak Presisi dari Kampus' },
+    { en: 'Instant WhatsApp Booking Modal (Zero Login)', id: 'Modal Booking WhatsApp Instan Tanpa Login' },
+    { en: 'Saved Listings & Client-Side Wishlist', id: 'Daftar Kost Tersimpan (Wishlist Lokal)' },
+    { en: 'About the Initiative & PMW UNESA Story', id: 'Latar Belakang & Inisiatif PMW UNESA' },
+  ],
 };
 
 /**
