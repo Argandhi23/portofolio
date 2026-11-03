@@ -1,4 +1,3 @@
-import { GraduationCap } from 'lucide-react';
 import { getPublicEnv } from '@/lib/env';
 import { pickLocalized } from '@/lib/i18n/localized';
 import { PUBLIC_COPY } from '@/lib/i18n/dictionary';
@@ -113,28 +112,6 @@ export default async function HomePage() {
           }
           ctaHref="/about"
           ctaLabel={<T en="Full profile" id="Profil lengkap" />}
-          badge={
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#121212] border border-white/[0.08] px-3.5 py-1.5 text-[12px] font-medium text-white/85">
-                <GraduationCap className="w-3.5 h-3.5 text-[#FF5510] shrink-0" />
-                <span>
-                  <T
-                    en={PUBLIC_COPY.home.badgeUnesa.en}
-                    id={PUBLIC_COPY.home.badgeUnesa.id}
-                  />
-                </span>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#121212] border border-[#FF5510]/30 px-3.5 py-1.5 text-[11.5px] font-medium text-white/90">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
-                <span>
-                  <T
-                    en={PUBLIC_COPY.home.badgeAsah.en}
-                    id={PUBLIC_COPY.home.badgeAsah.id}
-                  />
-                </span>
-              </div>
-            </div>
-          }
         />
 
         <div className="py-6 sm:py-9 border-y border-white/[0.07]">

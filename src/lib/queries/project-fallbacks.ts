@@ -146,6 +146,14 @@ const GALLERY_CAPTION_PRESETS: Record<
     { en: 'Quick WhatsApp Booking & Garage (/kontak)', id: 'Pemesanan Instan WhatsApp & Lokasi Garasi (/kontak)' },
     { en: 'Client Testimonials & Satisfaction Reviews', id: 'Testimoni Pelanggan & Ulasan Nyata' },
   ],
+  sumberwangi: [
+    { en: 'Storefront Hero & Artisanal Gold Identity', id: 'Hero Beranda & Identitas Emas Artisanal' },
+    { en: 'Popular Fragrance Showcase', id: 'Koleksi Varian Parfum Populer' },
+    { en: '3-Step Frictionless Ordering Flow', id: 'Alur Pemesanan 3 Langkah Mudah' },
+    { en: 'Complete 11-Variant Catalog & Category Filter', id: 'Katalog 11 Varian & Filter Kategori (/produk)' },
+    { en: 'Product Specification & Direct WhatsApp Dispatch', id: 'Detail Aroma & Pemesanan Instan WhatsApp' },
+    { en: 'Brand Heritage & Quality Principles', id: 'Filosofi Brand & Prinsip Mutu (/tentang)' },
+  ],
 };
 
 /**
