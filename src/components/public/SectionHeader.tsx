@@ -23,10 +23,13 @@ export function SectionHeader({
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
       {/* Left Column: Orange Eyebrow + Large H2 Title */}
       <Reveal variant="fade-up" className="md:col-span-6">
-        <p className="text-[#FF5510] font-semibold text-[16px] sm:text-[17px] leading-[1.3] tracking-[-0.01em] mb-2.5">
+        <p className="text-[#9E1B32] font-semibold text-[16px] sm:text-[17px] leading-[1.3] tracking-[-0.01em] mb-2.5">
           {eyebrow}
         </p>
-        <h2 className="text-white font-bold text-[34px] sm:text-[44px] leading-[1.08] tracking-[-0.03em]">
+        <h2
+          style={{ color: 'var(--sec-fg, #ffffff)' }}
+          className="font-bold text-[34px] sm:text-[44px] leading-[1.08] tracking-[-0.03em]"
+        >
           {heading}
         </h2>
         {badge && <div className="mt-4">{badge}</div>}
@@ -38,7 +41,10 @@ export function SectionHeader({
         delay={150}
         className="md:col-span-6 md:pl-6 flex flex-col justify-between h-full pt-1"
       >
-        <div className="text-white/90 font-semibold text-[17px] sm:text-[20px] leading-[1.42] tracking-[-0.015em] mb-6">
+        <div
+          style={{ color: 'var(--sec-muted, rgba(255, 255, 255, 0.9))' }}
+          className="font-semibold text-[17px] sm:text-[20px] leading-[1.42] tracking-[-0.015em] mb-6"
+        >
           {lead}
         </div>
 

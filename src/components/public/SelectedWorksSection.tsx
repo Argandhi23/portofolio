@@ -6,8 +6,9 @@ import { pickLocalized } from '@/lib/i18n/localized';
 import { formatDisplayDomain, isMobileProject } from '@/lib/utils';
 import { SectionHeader } from '@/components/public/SectionHeader';
 import { CmsText, T } from '@/components/public/LanguageProvider';
-import { Reveal } from '@/components/motion/Reveal';
 import { ParallaxMedia } from '@/components/motion/ParallaxMedia';
+import { ScrollPerspectiveCard } from '@/components/motion/ScrollPerspectiveCard';
+import { StickyProjectCard } from '@/components/motion/StickyProjectStack';
 import { SpotlightCard } from '@/components/motion/SpotlightCard';
 import { Github } from '@/components/ui/Icons';
 
@@ -42,8 +43,8 @@ function BrowserPreviewFrame({
       <div className="h-8 shrink-0 bg-[#111111] border-b border-white/[0.07] px-3.5 flex items-center justify-between">
         {isMobile ? (
           <div className="flex items-center gap-1.5">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5510]">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-[#9E1B32]" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#9E1B32]">
               Mobile APK
             </span>
           </div>
@@ -58,7 +59,7 @@ function BrowserPreviewFrame({
         <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-0.5 max-w-[200px]">
           {isMobile ? (
             <>
-              <Smartphone className="w-2.5 h-2.5 text-[#FF5510] shrink-0" />
+              <Smartphone className="w-2.5 h-2.5 text-[#9E1B32] shrink-0" />
               <span className="text-[10px] font-mono text-white/65 truncate">
                 {slug ? `${slug}.apk` : 'app.apk'}
               </span>
@@ -79,7 +80,7 @@ function BrowserPreviewFrame({
       </div>
 
       <ParallaxMedia
-        intensity={18}
+        intensity={28}
         className="aspect-[16/10] w-full bg-[#141414]"
         innerClassName="relative h-full w-full"
       >
@@ -113,10 +114,7 @@ export function SelectedWorksSection({
   const moreProjects = projects.filter((p) => !primaryIds.has(p.id));
 
   return (
-    <section
-      id="projects"
-      className="bg-[#080808] w-full max-w-[1140px] mx-auto px-6 sm:px-12 py-20 sm:py-24 space-y-14"
-    >
+    <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 py-20 sm:py-28 space-y-16">
       <SectionHeader
         eyebrow={<T en="Projects" id="Proyek" />}
         heading={<T en="Featured Projects" id="Proyek Pilihan" />}
@@ -130,234 +128,109 @@ export function SelectedWorksSection({
         ctaLabel={<T en="All projects" id="Semua proyek" />}
       />
 
+      {/* AWWWARDS STICKY CARD STACK (#01 -> #02 -> #03) */}
       {primaryProjects.length > 0 ? (
-        <div className="space-y-6">
+        <div className="relative">
           {primaryProjects.map((project, index) => {
             const numDigits = String(index + 1).padStart(2, '0');
-            const isHeroBento = index === 0 && primaryProjects.length !== 2;
             const domain = formatDisplayDomain(project.project_url, project.slug);
             const cleanAlt = pickLocalized(project.title, 'en');
 
-            if (isHeroBento) {
-              return (
-                <Reveal key={project.id} variant="curtain-up">
-                  <SpotlightCard className="rounded-[32px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-300 shadow-2xl">
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      className="relative z-10 group grid grid-cols-1 lg:grid-cols-12"
-                    >
-                      <div className="lg:col-span-7 bg-gradient-to-br from-[#1A1A1A] via-[#141414] to-[#0E0E0E] p-3.5 sm:p-6 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.06]">
-                        <BrowserPreviewFrame
-                          src={project.thumbnail_url}
-                          alt={cleanAlt}
-                          domain={domain}
-                          isLive={Boolean(project.project_url)}
-                          isMobile={isMobileProject(project)}
-                          slug={project.slug}
-                          sizes="(max-width: 1024px) 100vw, 640px"
-                          priority
-                        />
-                      </div>
+            return (
+              <StickyProjectCard
+                key={project.id}
+                index={index}
+                total={primaryProjects.length}
+              >
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="relative z-10 group grid grid-cols-1 lg:grid-cols-12"
+                >
+                  <div className="lg:col-span-7 bg-gradient-to-br from-[#181818] via-[#121212] to-[#0C0C0C] p-3.5 sm:p-6 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/[0.07]">
+                    <BrowserPreviewFrame
+                      src={project.thumbnail_url}
+                      alt={cleanAlt}
+                      domain={domain}
+                      isLive={Boolean(project.project_url)}
+                      isMobile={isMobileProject(project)}
+                      slug={project.slug}
+                      sizes="(max-width: 1024px) 100vw, 640px"
+                      priority={index === 0}
+                    />
+                  </div>
 
-                      <div className="lg:col-span-5 p-7 sm:p-9 flex flex-col justify-between space-y-6">
-                        <div className="space-y-3.5">
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="inline-flex items-center gap-2">
-                              <span className="text-[14px] font-bold tracking-tight">
-                                <span className="text-[#FF5510]">#</span>
-                                <span className="text-white">{numDigits}</span>
-                              </span>
-                              <span className="h-1 w-1 rounded-full bg-white/25" />
-                              <span className="text-[12px] font-semibold text-[#FF5510]">
-                                <CmsText value={project.category} />
-                              </span>
-                            </div>
-
-                            <span className="w-9 h-9 rounded-full bg-[#181818] border border-white/[0.08] group-hover:bg-[#FF5510] group-hover:border-[#FF5510] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12 shrink-0">
-                              <ArrowUpRight className="w-4 h-4" />
-                            </span>
-                          </div>
-
-                          <h3 className="text-white font-bold text-[24px] sm:text-[28px] leading-[1.16] tracking-[-0.025em] group-hover:text-[#FF5510] transition-colors">
-                            <CmsText value={project.title} />
-                          </h3>
-
-                          {project.summary && (
-                            <p className="text-white/72 text-[13.5px] leading-[1.6] line-clamp-3">
-                              <CmsText value={project.summary} />
-                            </p>
-                          )}
+                  <div className="lg:col-span-5 p-7 sm:p-9 flex flex-col justify-between space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="inline-flex items-center gap-2.5">
+                          <span className="inline-flex items-center justify-center rounded-full bg-white/[0.06] border border-white/[0.1] px-3 py-1 text-[13px] font-mono font-bold tracking-tight">
+                            <span className="text-[#E04D70]">#</span>
+                            <span className="text-white">{numDigits}</span>
+                          </span>
+                          <span className="text-[12.5px] font-semibold text-[#E04D70]">
+                            <CmsText value={project.category} />
+                          </span>
                         </div>
 
-                        <div className="space-y-4 pt-2">
-                          {project.tech_stack && project.tech_stack.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5">
-                              {project.tech_stack.slice(0, 6).map((tech) => (
-                                <span
-                                  key={tech}
-                                  className="rounded-full bg-[#181818] border border-white/[0.07] px-3 py-1 text-[11px] font-medium text-white/85"
-                                >
-                                  {tech}
-                                </span>
-                              ))}
-                              {project.tech_stack.length > 6 && (
-                                <span className="rounded-full bg-[#181818] border border-white/[0.07] px-2.5 py-1 text-[11px] font-medium text-[#7A7A7A]">
-                                  +{project.tech_stack.length - 6}
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          <div className="flex flex-wrap items-center gap-3.5 pt-4 border-t border-white/[0.07] text-[12px] text-white/75">
-                            {project.project_url && (
-                              <span className="inline-flex items-center gap-1.5">
-                                <Globe className="w-3.5 h-3.5 text-[#FF5510]" />
-                                <span>{domain}</span>
-                              </span>
-                            )}
-                            {project.apk_url && (
-                              <span className="inline-flex items-center gap-1.5">
-                                <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
-                                <span>APK</span>
-                              </span>
-                            )}
-                            {project.github_url && (
-                              <span className="inline-flex items-center gap-1.5">
-                                <Github className="w-3.5 h-3.5 text-white/80" />
-                                <span>Code</span>
-                              </span>
-                            )}
-                            <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
-                              <T en="View" id="Lihat" /> &rarr;
-                            </span>
-                          </div>
-                        </div>
+                        <span className="w-10 h-10 rounded-full bg-white/[0.06] border border-white/[0.1] group-hover:bg-[#9E1B32] group-hover:border-[#9E1B32] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12 shrink-0">
+                          <ArrowUpRight className="w-4 h-4" />
+                        </span>
                       </div>
-                    </Link>
-                  </SpotlightCard>
-                </Reveal>
-              );
-            }
 
-            return null;
+                      <h3 className="text-white font-bold text-[26px] sm:text-[32px] leading-[1.12] tracking-[-0.03em] group-hover:text-[#E04D70] transition-colors">
+                        <CmsText value={project.title} />
+                      </h3>
+
+                      {project.summary && (
+                        <p className="text-white/78 text-[14px] sm:text-[15px] leading-[1.62] line-clamp-3">
+                          <CmsText value={project.summary} />
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      {project.tech_stack && project.tech_stack.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {project.tech_stack.slice(0, 6).map((tech) => (
+                            <span
+                              key={tech}
+                              className="rounded-full bg-black/35 border border-white/[0.09] px-3 py-1 text-[11px] font-medium text-white/90"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-3.5 pt-4 border-t border-white/[0.09] text-[12px] text-white/80">
+                        {project.project_url && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Globe className="w-3.5 h-3.5 text-[#E04D70]" />
+                            <span>{domain}</span>
+                          </span>
+                        )}
+                        {project.apk_url && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Smartphone className="w-3.5 h-3.5 text-[#E04D70]" />
+                            <span>APK</span>
+                          </span>
+                        )}
+                        {project.github_url && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <Github className="w-3.5 h-3.5 text-white/80" />
+                            <span>Code</span>
+                          </span>
+                        )}
+                        <span className="ml-auto font-semibold text-white group-hover:text-[#E04D70] transition-colors">
+                          <T en="View case study" id="Lihat detail" /> &rarr;
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </StickyProjectCard>
+            );
           })}
-
-          {primaryProjects.length > 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {primaryProjects
-                .filter((_, idx) => !(idx === 0 && primaryProjects.length !== 2))
-                .map((project, subIdx) => {
-                  const realIndex = primaryProjects.findIndex(
-                    (p) => p.id === project.id
-                  );
-                  const numDigits = String(realIndex + 1).padStart(2, '0');
-                  const domain = formatDisplayDomain(
-                    project.project_url,
-                    project.slug
-                  );
-                  const cleanAlt = pickLocalized(project.title, 'en');
-
-                  return (
-                    <Reveal
-                      key={project.id}
-                      variant="curtain-up"
-                      delay={subIdx * 160}
-                      className="h-full"
-                    >
-                      <SpotlightCard className="h-full rounded-[28px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-xl">
-                        <Link
-                          href={`/projects/${project.slug}`}
-                          className="relative z-10 group flex flex-col h-full"
-                        >
-                          <div className="bg-gradient-to-br from-[#1A1A1A] to-[#0F0F0F] p-3.5 sm:p-4 border-b border-white/[0.06]">
-                            <BrowserPreviewFrame
-                              src={project.thumbnail_url}
-                              alt={cleanAlt}
-                              domain={domain}
-                              isLive={Boolean(project.project_url)}
-                              isMobile={isMobileProject(project)}
-                              slug={project.slug}
-                              sizes="(max-width: 768px) 100vw, 520px"
-                            />
-                          </div>
-
-                          <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-5">
-                            <div className="space-y-3">
-                              <div className="flex items-center justify-between gap-3">
-                                <div className="inline-flex items-center gap-2">
-                                  <span className="text-[13px] font-bold tracking-tight">
-                                    <span className="text-[#FF5510]">#</span>
-                                    <span className="text-white">{numDigits}</span>
-                                  </span>
-                                  <span className="h-1 w-1 rounded-full bg-white/25" />
-                                  <span className="text-[12px] font-semibold text-[#FF5510]">
-                                    <CmsText value={project.category} />
-                                  </span>
-                                </div>
-
-                                <span className="w-8 h-8 rounded-full bg-[#181818] border border-white/[0.08] group-hover:bg-[#FF5510] group-hover:border-[#FF5510] text-white flex items-center justify-center transition-colors duration-300">
-                                  <ArrowUpRight className="w-3.5 h-3.5" />
-                                </span>
-                              </div>
-
-                              <h3 className="text-white font-bold text-[21px] sm:text-[23px] leading-[1.2] tracking-[-0.02em] group-hover:text-[#FF5510] transition-colors">
-                                <CmsText value={project.title} />
-                              </h3>
-
-                              {project.summary && (
-                                <p className="text-white/70 text-[13px] leading-[1.58] line-clamp-2">
-                                  <CmsText value={project.summary} />
-                                </p>
-                              )}
-                            </div>
-
-                            <div className="space-y-3.5">
-                              {project.tech_stack &&
-                                project.tech_stack.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5">
-                                    {project.tech_stack.slice(0, 4).map((tech) => (
-                                      <span
-                                        key={tech}
-                                        className="rounded-full bg-[#181818] border border-white/[0.07] px-2.5 py-0.5 text-[11px] font-medium text-white/75"
-                                      >
-                                        {tech}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-
-                              <div className="flex items-center gap-3.5 pt-3.5 border-t border-white/[0.07] text-[11.5px] text-white/70">
-                                {project.project_url && (
-                                  <span className="inline-flex items-center gap-1">
-                                    <Globe className="w-3.5 h-3.5 text-[#FF5510]" />
-                                    <span>{domain}</span>
-                                  </span>
-                                )}
-                                {project.apk_url && (
-                                  <span className="inline-flex items-center gap-1">
-                                    <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
-                                    <span>APK</span>
-                                  </span>
-                                )}
-                                {project.github_url && (
-                                  <span className="inline-flex items-center gap-1">
-                                    <Github className="w-3.5 h-3.5 text-white/80" />
-                                    <span>Code</span>
-                                  </span>
-                                )}
-                                <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
-                                  <T en="View" id="Lihat" /> &rarr;
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      </SpotlightCard>
-                    </Reveal>
-                  );
-                })}
-            </div>
-          )}
         </div>
       ) : (
         <div className="rounded-[28px] bg-[#121212] border border-white/[0.07] p-12 text-center space-y-2">
@@ -377,15 +250,15 @@ export function SelectedWorksSection({
       )}
 
       {moreProjects.length > 0 && (
-        <div className="space-y-6 pt-4">
-          <div className="flex items-center justify-between border-b border-white/[0.07] pb-4">
+        <div className="relative z-20 space-y-6 pt-4">
+          <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
             <p className="text-white font-semibold text-[15px] tracking-[-0.01em]">
               <T en="More Projects" id="Proyek Lainnya" />{' '}
-              <span className="text-[#FF5510] ml-1">({moreProjects.length})</span>
+              <span className="text-[#9E1B32] ml-1">({moreProjects.length})</span>
             </p>
             <Link
               href="/projects"
-              className="text-xs font-semibold text-white/70 hover:text-[#FF5510] transition"
+              className="text-xs font-semibold text-white/70 hover:text-[#9E1B32] transition"
             >
               <T en="View all" id="Lihat semua" /> &rarr;
             </Link>
@@ -399,8 +272,12 @@ export function SelectedWorksSection({
               );
               const cleanAlt = pickLocalized(project.title, 'en');
               return (
-                <Reveal key={project.id} variant="fade-up" delay={idx * 65}>
-                  <SpotlightCard className="h-full rounded-[24px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/40 overflow-hidden transition-all duration-300 hover:-translate-y-1">
+                <ScrollPerspectiveCard
+                  key={project.id}
+                  intensity={0.85}
+                  className="h-full"
+                >
+                  <SpotlightCard className="h-full rounded-[24px] bg-[#121212] border border-white/[0.07] hover:border-[#9E1B32]/45 overflow-hidden transition-all duration-300 hover:-translate-y-1">
                     <Link
                       href={`/projects/${project.slug}`}
                       className="relative z-10 group flex flex-col h-full"
@@ -425,15 +302,15 @@ export function SelectedWorksSection({
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-[12px]">
                             <span className="font-bold">
-                              <span className="text-[#FF5510]">#</span>
+                              <span className="text-[#9E1B32]">#</span>
                               <span className="text-white">{numDigits}</span>
                             </span>
-                            <span className="text-[#FF5510] font-medium text-[11.5px]">
+                            <span className="text-[#9E1B32] font-medium text-[11.5px]">
                               <CmsText value={project.category} />
                             </span>
                           </div>
 
-                          <h4 className="text-white font-bold text-[17px] leading-[1.25] tracking-[-0.015em] group-hover:text-[#FF5510] transition-colors">
+                          <h4 className="text-white font-bold text-[17px] leading-[1.25] tracking-[-0.015em] group-hover:text-[#9E1B32] transition-colors">
                             <CmsText value={project.title} />
                           </h4>
                         </div>
@@ -453,12 +330,12 @@ export function SelectedWorksSection({
                       </div>
                     </Link>
                   </SpotlightCard>
-                </Reveal>
+                </ScrollPerspectiveCard>
               );
             })}
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }

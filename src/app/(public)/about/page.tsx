@@ -152,13 +152,13 @@ function EditorialMonographPortrait({
         <span className="text-[11.5px] font-mono text-white/65">
           profile.ts
         </span>
-        <span className="h-2 w-2 rounded-full bg-[#FF5510]" />
+        <span className="h-2 w-2 rounded-full bg-[#9E1B32]" />
       </div>
 
       <div className="p-6 sm:p-7 space-y-5 font-mono text-[12.5px] leading-[1.7]">
         <div className="space-y-1 text-white/80">
           <p>
-            <span className="text-[#FF5510]">const</span>{' '}
+            <span className="text-[#9E1B32]">const</span>{' '}
             <span className="text-white font-semibold">developer</span> = &#123;
           </p>
           <div className="pl-4 space-y-1">
@@ -168,7 +168,7 @@ function EditorialMonographPortrait({
             </p>
             <p>
               <span className="text-white/45">role:</span>{' '}
-              <span className="text-[#FF5510]">&apos;Software Developer&apos;</span>,
+              <span className="text-[#9E1B32]">&apos;Software Developer&apos;</span>,
             </p>
             <p>
               <span className="text-white/45">base:</span>{' '}
@@ -210,7 +210,7 @@ export default async function AboutPage() {
   const brandName = settings.brand_name || 'Argandhi.';
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#FF5510] selection:text-white">
+    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#9E1B32] selection:text-white">
       {/* 1. TOP NAVIGATION */}
       <div className="pt-7 px-6 sm:px-12">
         <PublicNavbar
@@ -227,7 +227,7 @@ export default async function AboutPage() {
           <div className="lg:col-span-7 space-y-8 pt-2">
             <div className="space-y-4">
               <Reveal variant="fade-up" delay={80}>
-                <p className="text-[12px] font-mono uppercase tracking-[0.2em] text-[#FF5510]">
+                <p className="text-[12px] font-mono uppercase tracking-[0.2em] text-[#9E1B32]">
                   <T en="About" id="Tentang" />
                 </p>
               </Reveal>
@@ -239,14 +239,14 @@ export default async function AboutPage() {
                       <>
                         Engineering{' '}
                         <br />
-                        With Clarity<span className="text-[#FF5510]">.</span>
+                        With Clarity<span className="text-[#9E1B32]">.</span>
                       </>
                     }
                     id={
                       <>
                         Membangun{' '}
                         <br />
-                        Dengan Jelas<span className="text-[#FF5510]">.</span>
+                        Dengan Jelas<span className="text-[#9E1B32]">.</span>
                       </>
                     }
                   />
@@ -279,7 +279,7 @@ export default async function AboutPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#FF5510] block">
+                  <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#9E1B32] block">
                     Cohort
                   </span>
                   <p className="text-white font-semibold text-[14.5px]">
@@ -302,7 +302,7 @@ export default async function AboutPage() {
                   <span>
                     <T en="Contact me" id="Hubungi saya" />
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-[#FF5510]" />
+                  <ArrowUpRight className="w-4 h-4 text-[#9E1B32]" />
                 </Link>
               </div>
             </Reveal>
@@ -335,7 +335,7 @@ export default async function AboutPage() {
       {/* 4. EXPERIENCE & EDUCATION */}
       <section className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 py-18 sm:py-22 border-t border-white/[0.09] space-y-12">
         <Reveal variant="fade-up" className="space-y-2">
-          <span className="text-[12px] font-mono uppercase tracking-[0.2em] text-[#FF5510] block">
+          <span className="text-[12px] font-mono uppercase tracking-[0.2em] text-[#9E1B32] block">
             <T en="Background" id="Perjalanan" />
           </span>
           <h2 className="text-white font-bold text-[32px] sm:text-[42px] leading-[1.08] tracking-[-0.03em]">
@@ -356,12 +356,12 @@ export default async function AboutPage() {
               >
                 <div className="md:col-span-3 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[11.5px] font-mono font-semibold tracking-[0.14em] text-[#FF5510] block">
+                    <span className="text-[11.5px] font-mono font-semibold tracking-[0.14em] text-[#9E1B32] block">
                       <T en={item.periodEn} id={item.periodId} />
                     </span>
                     {item.badgeEn && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF5510]/15 border border-[#FF5510]/35 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5510]">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-[#9E1B32]/15 border border-[#9E1B32]/35 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#9E1B32]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#9E1B32]" />
                         <T
                           en={item.badgeEn}
                           id={item.badgeId || item.badgeEn}
@@ -375,7 +375,7 @@ export default async function AboutPage() {
                 </div>
 
                 <div className="md:col-span-4">
-                  <h3 className="text-white font-bold text-[19px] sm:text-[21px] leading-[1.24] tracking-[-0.02em] group-hover:text-[#FF5510] transition-colors duration-500">
+                  <h3 className="text-white font-bold text-[19px] sm:text-[21px] leading-[1.24] tracking-[-0.02em] group-hover:text-[#9E1B32] transition-colors duration-500">
                     <T en={item.roleEn} id={item.roleId} />
                   </h3>
                 </div>
@@ -414,13 +414,13 @@ export default async function AboutPage() {
                 <TechLogo
                   name={brand.name}
                   monochrome
-                  className="h-4 w-4 text-white/80 group-hover:text-[#FF5510] transition-colors shrink-0"
+                  className="h-4 w-4 text-white/80 group-hover:text-[#9E1B32] transition-colors shrink-0"
                 />
                 <span className="text-[14px] font-semibold text-white/90 group-hover:text-white truncate">
                   {brand.name}
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-white/25 group-hover:text-[#FF5510] transition-colors">
+              <span className="text-[10px] font-mono text-white/25 group-hover:text-[#9E1B32] transition-colors">
                 {String(idx + 1).padStart(2, '0')}
               </span>
             </Reveal>

@@ -62,7 +62,7 @@ export function ImageLightbox({
           type="button"
           aria-label="Close image preview"
           onClick={() => setOpen(false)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1A1A] border border-white/20 text-white hover:bg-[#FF5510] hover:border-[#FF5510] transition-colors cursor-pointer shadow-xl"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1A1A] border border-white/20 text-white hover:bg-[#9E1B32] hover:border-[#9E1B32] transition-colors cursor-pointer shadow-xl"
         >
           <X className="h-4 w-4" />
         </button>
@@ -116,9 +116,9 @@ export function ImageLightbox({
 
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 px-3 py-1.5 text-[11px] font-semibold text-white/90 shadow-lg group-hover:scale-105 group-hover:border-[#FF5510]/50 group-hover:text-white transition-all duration-200"
+          className="pointer-events-none absolute bottom-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/75 backdrop-blur-md border border-white/20 px-3 py-1.5 text-[11px] font-semibold text-white/90 shadow-lg group-hover:scale-105 group-hover:border-[#9E1B32]/50 group-hover:text-white transition-all duration-200"
         >
-          <Maximize2 className="h-3 w-3 text-[#FF5510]" />
+          <Maximize2 className="h-3 w-3 text-[#9E1B32]" />
           <span>{lang === 'id' ? 'Perbesar' : 'Zoom'}</span>
         </span>
       </div>

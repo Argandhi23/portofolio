@@ -30,14 +30,14 @@ export default async function AdminProjectsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-white">
             Projects
           </h1>
-          <span className="rounded-full bg-[#181818] border border-white/[0.08] px-2.5 py-0.5 text-xs font-bold text-[#FF5510]">
+          <span className="rounded-full bg-[#181818] border border-white/[0.08] px-2.5 py-0.5 text-xs font-bold text-[#9E1B32]">
             {projectList.length}
           </span>
         </div>
 
         <Link
           href="/admin/projects/new"
-          className="pill-btn inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition cursor-pointer"
+          className="pill-btn inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#9E1B32]/20 transition cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Tambah Project</span>
@@ -49,14 +49,14 @@ export default async function AdminProjectsPage() {
         {projectList.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 text-center">
             <div className="h-12 w-12 rounded-2xl bg-[#181818] border border-white/[0.08] flex items-center justify-center text-white/40 mb-3">
-              <FolderGit2 className="h-6 w-6 text-[#FF5510]" />
+              <FolderGit2 className="h-6 w-6 text-[#9E1B32]" />
             </div>
             <h3 className="text-sm font-semibold text-white mb-4">
               Belum ada project
             </h3>
             <Link
               href="/admin/projects/new"
-              className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] px-4 py-2 text-xs font-bold text-white hover:bg-[#FF6B2B] transition"
+              className="inline-flex items-center gap-2 rounded-full bg-[#9E1B32] px-4 py-2 text-xs font-bold text-white hover:bg-[#B8233E] transition"
             >
               <Plus className="h-4 w-4" />
               <span>Tambah Project</span>
@@ -122,7 +122,7 @@ export default async function AdminProjectsPage() {
                           <div className="min-w-0 max-w-sm">
                             <Link
                               href={`/admin/projects/${project.id}/edit`}
-                              className="font-semibold text-white hover:text-[#FF5510] transition truncate block text-sm"
+                              className="font-semibold text-white hover:text-[#9E1B32] transition truncate block text-sm"
                             >
                               {cleanTitle}
                             </Link>
@@ -131,7 +131,7 @@ export default async function AdminProjectsPage() {
                                 /{project.slug}
                               </span>
                               {project.tech_stack && project.tech_stack.length > 0 && (
-                                <span className="text-[10px] text-[#FF5510] bg-[#FF5510]/10 border border-[#FF5510]/20 px-2 py-0.5 rounded-full font-mono">
+                                <span className="text-[10px] text-[#9E1B32] bg-[#9E1B32]/10 border border-[#9E1B32]/20 px-2 py-0.5 rounded-full font-mono">
                                   {project.tech_stack.slice(0, 2).join(', ')}
                                   {project.tech_stack.length > 2
                                     ? ` +${project.tech_stack.length - 2}`

@@ -38,7 +38,7 @@ export function ReadingProgressBar() {
       <div
         ref={barRef}
         style={{ transform: 'scaleX(0)' }}
-        className="h-full w-full origin-left bg-gradient-to-r from-[#FF5510] via-[#FF7A3D] to-[#FF5510]"
+        className="h-full w-full origin-left bg-gradient-to-r from-[#9E1B32] via-[#D6335C] to-[#9E1B32]"
       />
     </div>
   );

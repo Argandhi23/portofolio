@@ -101,7 +101,7 @@ const SKIP_FINISH_MS = 540;
 
 /**
  * IntroPreloader — Zero-bloat SVG Stroke-Draw & Curtain Slide-Up Reveal ("Argandhi.")
- * - Pure solid black (#000000) curtain with full brand-orange (#FF5510) vector outline.
+ * - Pure solid black (#000000) curtain with full brand-orange (#9E1B32) vector outline.
  * - Mounted in PublicLayout so it plays on initial entry / hard refresh (F5),
  *   never replays across client-side SPA route transitions, and unmounts completely after exit.
  */
@@ -234,7 +234,7 @@ export function IntroPreloader() {
                     d={d}
                     pathLength={1}
                     fill="none"
-                    stroke="#FF5510"
+                    stroke="#9E1B32"
                     strokeWidth={1.95}
                     strokeLinecap="round"
                     strokeLinejoin="round"

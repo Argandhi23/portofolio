@@ -151,7 +151,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#9E1B32]/20 transition disabled:opacity-50 cursor-pointer"
           >
             {isPending ? (
               <>
@@ -188,7 +188,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-6">
         <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
           <div className="flex items-center gap-2 text-white">
-            <Sparkles className="h-5 w-5 text-orange-400" />
+            <Sparkles className="h-5 w-5 text-[#C7254E]" />
             <h2 className="text-base font-semibold">Hero</h2>
           </div>
           <AdminLangTabs value={activeLang} onChange={setActiveLang} />
@@ -198,14 +198,14 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                Nama Brand <span className="text-orange-500">*</span>
+                Nama Brand <span className="text-[#9E1B32]">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
               />
               {fieldErrors.brand_name && (
                 <p className="mt-1 text-xs text-red-400">
@@ -223,7 +223,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                   type="text"
                   value={heroGreeting[activeLang]}
                   onChange={(e) => updatePair(setHeroGreeting, e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
                 />
               </div>
               <div>
@@ -234,7 +234,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                   type="text"
                   value={heroTitle[activeLang]}
                   onChange={(e) => updatePair(setHeroTitle, e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
                 />
               </div>
             </div>
@@ -247,7 +247,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 type="text"
                 value={heroSubtitle[activeLang]}
                 onChange={(e) => updatePair(setHeroSubtitle, e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
               />
             </div>
 
@@ -259,7 +259,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 rows={2}
                 value={heroDescription[activeLang]}
                 onChange={(e) => updatePair(setHeroDescription, e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
               />
             </div>
           </div>
@@ -280,7 +280,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
           <div className="flex items-center gap-2 text-white">
-            <User className="h-5 w-5 text-orange-400" />
+            <User className="h-5 w-5 text-[#C7254E]" />
             <h2 className="text-base font-semibold">Tentang</h2>
           </div>
           <AdminLangTabs value={activeLang} onChange={setActiveLang} />
@@ -295,7 +295,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               type="text"
               value={aboutLabel[activeLang]}
               onChange={(e) => updatePair(setAboutLabel, e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
             />
           </div>
 
@@ -307,7 +307,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               type="text"
               value={aboutHeading[activeLang]}
               onChange={(e) => updatePair(setAboutHeading, e.target.value)}
-              className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
             />
           </div>
         </div>
@@ -320,7 +320,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             rows={3}
             value={aboutDescription[activeLang]}
             onChange={(e) => updatePair(setAboutDescription, e.target.value)}
-            className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+            className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
           />
         </div>
       </div>
@@ -328,7 +328,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       {/* Section 3: Contact & CTA */}
       <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
         <div className="flex items-center gap-2 text-white border-b border-zinc-900 pb-3">
-          <Mail className="h-5 w-5 text-orange-400" />
+          <Mail className="h-5 w-5 text-[#C7254E]" />
           <h2 className="text-base font-semibold">Kontak</h2>
         </div>
 
@@ -337,7 +337,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
               Email
             </label>
-            <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+            <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
               <Mail className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
               <input
                 type="email"
@@ -356,9 +356,9 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-              WhatsApp <span className="text-orange-500">*</span>
+              WhatsApp <span className="text-[#9E1B32]">*</span>
             </label>
-            <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+            <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
               <Phone className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
               <input
                 type="text"
@@ -380,7 +380,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
             <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
               GitHub URL
             </label>
-            <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+            <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
               <Github className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
               <input
                 type="url"
@@ -406,7 +406,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               value={ctaUrl}
               onChange={(e) => setCtaUrl(e.target.value)}
               placeholder="#contact"
-              className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+              className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
             />
           </div>
         </div>

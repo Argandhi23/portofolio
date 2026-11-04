@@ -50,12 +50,20 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
   return (
     <div
       id="home"
-      className="bg-[#121212] rounded-b-[42px] border-b border-white/[0.06] relative z-10 pb-8"
+      className="
+        relative z-10 flex min-h-[100svh] flex-col justify-between
+        rounded-b-[42px] border-b border-white/[0.06] bg-[#121212] pb-4 sm:pb-5
+      "
     >
       {/* ==========================================
           HERO CARD (Fiery Radial Gradient + Rounded Bottom 42px)
       =========================================== */}
-      <section className="hero-card px-6 sm:px-12 pt-7 pb-11 min-h-[610px] sm:min-h-[660px] flex flex-col justify-between">
+      <section
+        className="
+          hero-card flex flex-1 flex-col justify-between px-6 pt-6 pb-8
+          sm:px-12 sm:pt-7 sm:pb-10
+        "
+      >
         {/* Interactive Damped Studio Glow + Bottom Vignette */}
         <HeroAmbientGlow />
         <div className="hero-glow-bottom" aria-hidden="true" />
@@ -67,12 +75,32 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
         />
 
         {/* 1. TOP NAVBAR */}
-        <PublicNavbar brandName={brandName} ctaUrl={ctaUrl} />
+        <div
+          data-gp-front="nav"
+          style={{
+            transform: 'translate(0, calc(var(--gp-scrub, 0) * -26px))',
+          }}
+          className="relative z-20"
+        >
+          <PublicNavbar brandName={brandName} ctaUrl={ctaUrl} />
+        </div>
 
-        {/* 2. HERO CENTER CONTENT (Choreographed Staggered Reveal) */}
-        <div className="relative z-10 w-full max-w-[1140px] mx-auto my-auto pt-14 pb-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
+        {/* 2. HERO CENTER CONTENT (Choreographed Staggered Reveal + Smooth Scroll-Scrubbed Exit) */}
+        <div
+          data-gp-front="center"
+          className="
+            relative z-10 mx-auto my-auto grid w-full max-w-[1140px]
+            grid-cols-1 items-end gap-8 pt-10 pb-8 md:grid-cols-12 sm:pt-12 sm:pb-10
+          "
+        >
           {/* Left Main Display Heading */}
-          <div className="md:col-span-7">
+          <div
+            style={{
+              transform:
+                'translate(calc(var(--gp-scrub, 0) * -52px), calc(var(--gp-scrub, 0) * -34px)) scale(calc(1 - var(--gp-scrub, 0) * 0.04))',
+            }}
+            className="md:col-span-7 origin-left"
+          >
             <Reveal variant="fade-up" delay={0}>
               <p className="text-white/95 text-[20px] sm:text-[23px] font-semibold tracking-[-0.02em] mb-2">
                 <CmsText
@@ -94,37 +122,47 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
           </div>
 
           {/* Right Supporting Statement */}
-          <Reveal
-            variant="fade-up"
-            delay={360}
-            className="md:col-span-5 md:pl-8 pb-1"
+          <div
+            style={{
+              transform:
+                'translate(calc(var(--gp-scrub, 0) * 52px), calc(var(--gp-scrub, 0) * -26px)) scale(calc(1 - var(--gp-scrub, 0) * 0.04))',
+            }}
+            className="md:col-span-5 md:pl-8 pb-1 origin-right"
           >
-            <h2 className="text-white font-bold text-[20px] sm:text-[24px] leading-[1.22] tracking-[-0.02em] mb-2.5 max-w-[300px]">
-              <CmsText
-                value={settings.hero_subtitle}
-                fallbackEn="Clean code. Fast products."
-                fallbackId="Kode bersih. Produk cepat."
-              />
-            </h2>
-            <p className="text-white/75 text-[13px] sm:text-[14px] leading-[1.55] max-w-[300px] font-normal">
-              <CmsText
-                value={settings.hero_description}
-                fallbackEn="Building web apps, Flutter APKs, and AI tools."
-                fallbackId="Membangun aplikasi web, APK Flutter, dan sistem AI."
-              />
-            </p>
-          </Reveal>
+            <Reveal variant="fade-up" delay={360}>
+              <h2 className="text-white font-bold text-[20px] sm:text-[24px] leading-[1.22] tracking-[-0.02em] mb-2.5 max-w-[300px]">
+                <CmsText
+                  value={settings.hero_subtitle}
+                  fallbackEn="Clean code. Fast products."
+                  fallbackId="Kode bersih. Produk cepat."
+                />
+              </h2>
+              <p className="text-white/75 text-[13px] sm:text-[14px] leading-[1.55] max-w-[300px] font-normal">
+                <CmsText
+                  value={settings.hero_description}
+                  fallbackEn="Building web apps, Flutter APKs, and AI tools."
+                  fallbackId="Membangun aplikasi web, APK Flutter, dan sistem AI."
+                />
+              </p>
+            </Reveal>
+          </div>
         </div>
 
         {/* 3. HERO BOTTOM 4-COLUMN SERVICES ROW (#01 - #04) */}
-        <div className="relative z-10 w-full max-w-[1140px] mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4">
+        <div
+          data-gp-front="services"
+          style={{
+            transform: 'translate(0, calc(var(--gp-scrub, 0) * 28px))',
+          }}
+          className="relative z-10 w-full max-w-[1140px] mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 pt-3"
+        >
           {services.map((svc, idx) => {
             const { hash, digits } = splitServiceNumber(svc.number_label);
             return (
               <Reveal key={svc.id} variant="fade-up" delay={460 + idx * 110}>
                 <div className="group/svc">
                   <div className="text-[12.5px] sm:text-[13px] font-bold tracking-tight mb-1">
-                    <span className="text-[#FF5510]">{hash}</span>
+                    <span className="text-[#9E1B32]">{hash}</span>
                     <span className="text-white">{digits}</span>
                   </div>
                   <p className="text-white/85 group-hover/svc:text-white transition-colors text-[12.5px] sm:text-[13.5px] font-medium">
@@ -140,7 +178,17 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
       {/* ==========================================
           TECH STACK STRIP
       =========================================== */}
-      <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-8 pb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div
+        data-gp-front="tech"
+        style={{
+          transform: 'translate(0, calc(var(--gp-scrub, 0) * 34px))',
+        }}
+        className="
+          mx-auto flex w-full max-w-[1140px] flex-col items-start
+          justify-between gap-4 px-6 pt-4 pb-1 sm:flex-row
+          sm:items-center sm:gap-6 sm:px-12 sm:pt-5
+        "
+      >
         <div className="text-white/85 text-[12px] font-semibold tracking-tight shrink-0">
           <T en="Tech Stack" id="Tech Stack" />
         </div>

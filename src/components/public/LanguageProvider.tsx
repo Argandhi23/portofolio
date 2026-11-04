@@ -135,7 +135,7 @@ export function LanguageToggle({
               active
                 ? isFiery
                   ? 'bg-white text-[#080808] shadow-sm'
-                  : 'bg-[#FF5510] text-white shadow-sm'
+                  : 'bg-[#9E1B32] text-white shadow-sm'
                 : 'text-white/65 hover:text-white'
             )}
           >
@@ -231,7 +231,7 @@ export function LocalizedCaseStudyArticle({
                     href={`#${ch.id}`}
                     className="group flex items-baseline gap-3 text-[13px] text-white/60 hover:text-white transition py-1"
                   >
-                    <span className="font-mono text-[11px] font-bold text-[#FF5510]">
+                    <span className="font-mono text-[11px] font-bold text-[#9E1B32]">
                       {ch.num}
                     </span>
                     <span className="group-hover:translate-x-1 transition-transform">
@@ -293,7 +293,7 @@ export function LocalizedCaseStudyArticle({
                             delay={i * 75}
                             className="flex items-start gap-3.5 text-white/80 text-[14.5px] sm:text-[15px] leading-[1.65] rounded-2xl bg-[#111111] border border-white/[0.07] p-4"
                           >
-                            <CheckCircle2 className="h-4 w-4 text-[#FF5510] shrink-0 mt-1" />
+                            <CheckCircle2 className="h-4 w-4 text-[#9E1B32] shrink-0 mt-1" />
                             <span>
                               {hasLead ? (
                                 <>

@@ -27,7 +27,7 @@ export function ParallaxMedia({
   children,
   className,
   innerClassName,
-  intensity = 16,
+  intensity = 30,
   cinemaExpand = false,
 }: ParallaxMediaProps) {
   const outerRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +64,7 @@ export function ParallaxMedia({
             const shiftY = (traverse - 0.5) * 2 * intensity;
             inner.style.transform = `translate3d(0, ${shiftY.toFixed(
               1
-            )}px, 0) scale(1.06)`;
+            )}px, 0) scale(1.09)`;
           }
         }
 

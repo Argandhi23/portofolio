@@ -5,8 +5,8 @@
   --bg-primary-black: #080808;
   --bg-surface-elevated: #121212;
   --bg-surface-card: #181818;
-  --accent-orange: #FF5510;
-  --accent-orange-hover: #FF6B2B;
+  --accent-orange: #9E1B32;
+  --accent-orange-hover: #B8233E;
   --text-primary: #FFFFFF;
   --text-secondary: rgba(255, 255, 255, 0.72);
   --text-muted: #7A7A7A;
@@ -24,8 +24,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand-orange: #FF5510;
-  --color-brand-orange-hover: #FF6B2B;
+  --color-brand-orange: #9E1B32;
+  --color-brand-orange-hover: #B8233E;
   --color-brand-dark: #080808;
   --color-brand-surface: #121212;
   --color-brand-card: #181818;
@@ -91,16 +91,16 @@ html.lenis body {
    FOLIOBLOX SIGNATURE ATMOSPHERIC SURFACES & COMPONENTS
    ========================================================================== */
 
-/* Hero Fiery Gradient & Atmospheric Lighting */
+/* Hero Burgundy Gradient & Atmospheric Lighting */
 .hero-card {
   position: relative;
   background: radial-gradient(
     circle at 26% 24%,
-    #FF6B24 0%,
-    #F43E0B 30%,
-    #9E1B06 62%,
-    #2B0804 92%,
-    #170503 100%
+    #B81D3D 0%,
+    #88132A 30%,
+    #520A18 62%,
+    #24040B 92%,
+    #120206 100%
   );
   border-bottom-left-radius: 42px;
   border-bottom-right-radius: 42px;
@@ -114,11 +114,11 @@ html.lenis body {
   position: relative;
   background: radial-gradient(
     circle at 24% 20%,
-    #FF6B24 0%,
-    #E63709 34%,
-    #8C1705 66%,
-    #240703 92%,
-    #140402 100%
+    #B81D3D 0%,
+    #7D1128 34%,
+    #4A0916 66%,
+    #1F0409 92%,
+    #100205 100%
   );
   border-bottom-left-radius: 42px;
   border-bottom-right-radius: 42px;
@@ -127,16 +127,16 @@ html.lenis body {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 
-/* Bookend Fiery Footer Surface */
+/* Bookend Burgundy Footer Surface */
 .footer-bookend-card {
   position: relative;
   background: radial-gradient(
     circle at 74% 22%,
-    #FF6B24 0%,
-    #F43E0B 30%,
-    #9E1B06 62%,
-    #2B0804 92%,
-    #170503 100%
+    #B81D3D 0%,
+    #88132A 30%,
+    #520A18 62%,
+    #24040B 92%,
+    #120206 100%
   );
   border-top-left-radius: 42px;
   border-top-right-radius: 42px;
@@ -144,7 +144,7 @@ html.lenis body {
   box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6);
 }
 
-/* Ambient Warm Glow Overlays inside Fiery Surfaces */
+/* Ambient Warm Glow Overlays inside Burgundy Surfaces */
 .hero-glow-left {
   position: absolute;
   top: -10%;
@@ -153,8 +153,8 @@ html.lenis body {
   height: 85%;
   background: radial-gradient(
     circle,
-    rgba(255, 115, 40, 0.65) 0%,
-    rgba(235, 55, 10, 0.25) 50%,
+    rgba(184, 29, 61, 0.65) 0%,
+    rgba(136, 19, 42, 0.25) 50%,
     transparent 75%
   );
   pointer-events: none;
@@ -182,8 +182,8 @@ html.lenis body {
   height: 42%;
   background: linear-gradient(
     to top,
-    rgba(16, 4, 2, 0.78) 0%,
-    rgba(45, 10, 4, 0.35) 55%,
+    rgba(16, 2, 6, 0.78) 0%,
+    rgba(36, 4, 11, 0.35) 55%,
     transparent 100%
   );
   pointer-events: none;
@@ -220,8 +220,8 @@ html.lenis body {
 
 .bw-card:hover {
   transform: translate3d(0, -5px, 0);
-  border-color: rgba(255, 85, 16, 0.45);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.85), 0 0 32px -4px rgba(255, 85, 16, 0.15);
+  border-color: rgba(158, 27, 50, 0.45);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.85), 0 0 32px -4px rgba(158, 27, 50, 0.15);
 }
 
 .bw-card img,
@@ -300,8 +300,8 @@ html.lenis body {
 .cinema-horizon-glow {
   background: radial-gradient(
     ellipse 70% 48% at 50% 35%,
-    rgba(255, 85, 16, 0.22) 0%,
-    rgba(158, 27, 6, 0.08) 48%,
+    rgba(158, 27, 50, 0.22) 0%,
+    rgba(82, 10, 24, 0.08) 48%,
     transparent 80%
   );
 }
@@ -377,7 +377,7 @@ html.lenis body {
     border-radius: inherit;
     background: radial-gradient(
       480px circle at var(--spot-x, -999px) var(--spot-y, -999px),
-      var(--spot-color, rgba(255, 85, 16, 0.13)),
+      var(--spot-color, rgba(158, 27, 50, 0.15)),
       transparent 55%
     );
     opacity: 0;
@@ -422,7 +422,7 @@ html.lenis body {
 }
 
 /* ==========================================================================
-   INTRO PRELOADER — PURE BLACK CURTAIN & FULL ORANGE (#FF5510) STROKE-DRAW
+   INTRO PRELOADER — PURE BLACK CURTAIN & FULL ORANGE (#9E1B32) STROKE-DRAW
    ========================================================================== */
 
 .intro-preloader {
@@ -436,10 +436,10 @@ html.lenis body {
   background-color: #000000;
   border-bottom-left-radius: 68px;
   border-bottom-right-radius: 68px;
-  border-bottom: 2px solid rgba(255, 85, 16, 0.65);
+  border-bottom: 2px solid rgba(158, 27, 50, 0.65);
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.9),
-    0 6px 28px rgba(255, 85, 16, 0.28);
+    0 6px 28px rgba(158, 27, 50, 0.28);
   will-change: transform;
   cursor: pointer;
   user-select: none;

@@ -19,7 +19,7 @@ export default function NotFound() {
         </header>
 
         <div className="relative z-10 w-full max-w-[1140px] mx-auto my-auto py-16 space-y-5">
-          <span className="inline-flex items-center rounded-full bg-black/30 backdrop-blur-md border border-white/15 px-3.5 py-1.5 text-xs font-bold text-[#FF5510]">
+          <span className="inline-flex items-center rounded-full bg-black/30 backdrop-blur-md border border-white/15 px-3.5 py-1.5 text-xs font-bold text-[#9E1B32]">
             #404
           </span>
 

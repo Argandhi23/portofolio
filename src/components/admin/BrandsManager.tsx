@@ -150,7 +150,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#9E1B32]/20 transition cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Tambah</span>
@@ -212,7 +212,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                       href={brand.website_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-zinc-400 hover:text-orange-400 transition"
+                      className="inline-flex items-center gap-1 text-zinc-400 hover:text-[#C7254E] transition"
                     >
                       <span className="truncate max-w-[200px]">{brand.website_url}</span>
                       <ExternalLink className="h-3 w-3 shrink-0" />
@@ -280,7 +280,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
           <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-900 pb-4 mb-4">
               <div className="flex items-center gap-2 text-white">
-                <Code2 className="h-5 w-5 text-orange-400" />
+                <Code2 className="h-5 w-5 text-[#C7254E]" />
                 <h3 className="text-base font-semibold">
                   {editingBrand ? 'Edit Tech Stack' : 'Tambah Tech Stack'}
                 </h3>
@@ -304,7 +304,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
             <form onSubmit={handleSave} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium uppercase tracking-wider text-zinc-400">
-                  Nama <span className="text-orange-500">*</span>
+                  Nama <span className="text-[#9E1B32]">*</span>
                 </label>
                 <input
                   type="text"
@@ -312,7 +312,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Next.js"
-                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
                 />
               </div>
 
@@ -335,7 +335,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   placeholder="https://nextjs.org"
-                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
                 />
               </div>
 
@@ -348,7 +348,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                     type="number"
                     value={displayOrder}
                     onChange={(e) => setDisplayOrder(parseInt(e.target.value, 10) || 0)}
-                    className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                    className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
                   />
                 </div>
 
@@ -359,7 +359,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                   <select
                     value={isActive ? 'active' : 'inactive'}
                     onChange={(e) => setIsActive(e.target.value === 'active')}
-                    className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                    className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
                   >
                     <option value="active">Aktif</option>
                     <option value="inactive">Nonaktif</option>
@@ -379,7 +379,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-xs font-semibold text-white hover:bg-orange-500 transition disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#9E1B32] px-5 py-2 text-xs font-semibold text-white hover:bg-[#B8233E] transition disabled:opacity-50"
                 >
                   {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                   <span>Simpan</span>

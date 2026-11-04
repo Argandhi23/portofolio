@@ -47,12 +47,12 @@ export function CompactHero({
                 href={backHref}
                 className="inline-flex items-center gap-2 rounded-full bg-black/30 hover:bg-black/45 backdrop-blur-md border border-white/15 px-3.5 py-1.5 text-[12px] font-semibold text-white/90 hover:text-white transition"
               >
-                <ArrowLeft className="w-3.5 h-3.5 text-[#FF5510]" />
+                <ArrowLeft className="w-3.5 h-3.5 text-[#9E1B32]" />
                 <span>{backLabel}</span>
               </Link>
 
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-1.5 text-[12px] font-semibold text-white">
-                <span className="text-[#FF5510] font-bold">#</span>
+                <span className="text-[#9E1B32] font-bold">#</span>
                 <span>{eyebrow}</span>
               </span>
 

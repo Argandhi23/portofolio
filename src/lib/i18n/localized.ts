@@ -122,10 +122,22 @@ const LEGACY_EXACT_PRESETS: Record<string, LocalizedPair> = {
     en: 'E-Commerce',
     id: 'E-Commerce',
   },
+  'E-Commerce': {
+    en: 'E-Commerce',
+    id: 'E-Commerce',
+  },
+  'Web App': {
+    en: 'Web App',
+    id: 'Aplikasi Web',
+  },
+  'Mobile App': {
+    en: 'Mobile App',
+    id: 'Aplikasi Mobile',
+  },
   'Platform e-commerce parfum D2C produksi aktif dengan katalog editorial Light/Dark mode, piramida aroma, kalkulasi ongkir otomatis hingga tingkat kecamatan, pembayaran Dynamic QRIS, serta dashboard Admin manajemen pesanan & stok real-time.':
     {
-      en: 'D2C perfume online store with auto shipping rates, dynamic QRIS checkout, and real-time stock dashboard.',
-      id: 'Toko online parfum D2C dengan cek ongkir otomatis, pembayaran QRIS dinamis, dan dashboard stok real-time.',
+      en: 'Luxury perfume store with scent notes, live shipping calculation, and dynamic QRIS checkout.',
+      id: 'Toko parfum online dengan detail aroma, cek ongkir otomatis, dan pembayaran QRIS.',
     },
 };
 

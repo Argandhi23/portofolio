@@ -25,7 +25,7 @@ export default async function ProjectsArchivePage() {
   const countFormatted = String(projects.length).padStart(2, '0');
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#FF5510] selection:text-white">
+    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#9E1B32] selection:text-white">
       <div className="relative border-b border-white/[0.08]">
         <div className="relative z-10 pt-7 px-6 sm:px-12">
           <PublicNavbar
@@ -43,12 +43,12 @@ export default async function ProjectsArchivePage() {
                     <T
                       en={
                         <>
-                          Selected Works<span className="text-[#FF5510]">.</span>
+                          Selected Works<span className="text-[#9E1B32]">.</span>
                         </>
                       }
                       id={
                         <>
-                          Daftar Proyek<span className="text-[#FF5510]">.</span>
+                          Daftar Proyek<span className="text-[#9E1B32]">.</span>
                         </>
                       }
                     />

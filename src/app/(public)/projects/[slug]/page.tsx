@@ -111,7 +111,7 @@ export default async function ProjectDetailPage({
   };
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#FF5510] selection:text-white">
+    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#9E1B32] selection:text-white">
       <JsonLd data={caseStudySchema} />
       <ReadingProgressBar />
 
@@ -136,14 +136,14 @@ export default async function ProjectDetailPage({
                 href="/projects"
                 className="inline-flex items-center gap-2 rounded-full bg-[#121212] hover:bg-[#1A1A1A] border border-white/[0.1] px-4 py-1.5 text-[12px] font-semibold text-white/85 hover:text-white transition"
               >
-                <ArrowLeft className="w-3.5 h-3.5 text-[#FF5510]" />
+                <ArrowLeft className="w-3.5 h-3.5 text-[#9E1B32]" />
                 <span>
                   <T en="Projects" id="Proyek" />
                 </span>
               </Link>
 
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#121212] border border-white/[0.1] px-4 py-1.5 text-[12px] font-semibold text-white">
-                <span className="text-[#FF5510] font-bold">#</span>
+                <span className="text-[#9E1B32] font-bold">#</span>
                 <span>
                   <CmsText value={project.category} />
                 </span>
@@ -180,7 +180,7 @@ export default async function ProjectDetailPage({
                   rel="noopener noreferrer"
                   className="pill-btn inline-flex items-center gap-2.5 rounded-full bg-[#141414] hover:bg-[#1E1E1E] border border-white/15 px-4.5 py-2.5 text-[12.5px] font-semibold text-white transition"
                 >
-                  <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
+                  <Smartphone className="w-3.5 h-3.5 text-[#9E1B32]" />
                   <span>
                     <T en="Download APK" id="Unduh APK" />
                   </span>
@@ -218,8 +218,8 @@ export default async function ProjectDetailPage({
                   <div className="h-9 shrink-0 bg-[#111111] border-b border-white/[0.07] px-4 flex items-center justify-between">
                     {isMobile ? (
                       <div className="flex items-center gap-2">
-                        <span className="flex h-2 w-2 rounded-full bg-[#FF5510]" />
-                        <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#FF5510]">
+                        <span className="flex h-2 w-2 rounded-full bg-[#9E1B32]" />
+                        <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#9E1B32]">
                           Mobile APK • Flutter
                         </span>
                       </div>
@@ -234,7 +234,7 @@ export default async function ProjectDetailPage({
                     <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.06] px-3.5 py-0.5">
                       {isMobile ? (
                         <>
-                          <Smartphone className="w-3 h-3 text-[#FF5510]" />
+                          <Smartphone className="w-3 h-3 text-[#9E1B32]" />
                           <span className="text-[11px] font-mono text-white/70 truncate">
                             {project.slug}.apk
                           </span>
@@ -316,7 +316,7 @@ export default async function ProjectDetailPage({
                   href={project.project_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[#FF5510] hover:text-[#FF6B2B] font-semibold text-[14.5px] transition"
+                  className="inline-flex items-center gap-1.5 text-[#9E1B32] hover:text-[#B8233E] font-semibold text-[14.5px] transition"
                 >
                   <Globe className="w-3.5 h-3.5" />
                   <span>{displayDomain}</span>
@@ -381,7 +381,7 @@ export default async function ProjectDetailPage({
                     variant="curtain-up"
                     delay={(idx % 4) * 100}
                   >
-                    <SpotlightCard className="group rounded-[32px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/45 p-4 sm:p-5 transition-all duration-300 shadow-2xl flex flex-col gap-4 overflow-hidden">
+                    <SpotlightCard className="group rounded-[32px] bg-[#121212] border border-white/[0.08] hover:border-[#9E1B32]/45 p-4 sm:p-5 transition-all duration-300 shadow-2xl flex flex-col gap-4 overflow-hidden">
                       <div className="py-2 flex items-center justify-center">
                         <PhoneFrame
                           src={imgUrl}
@@ -393,7 +393,7 @@ export default async function ProjectDetailPage({
 
                       <div className="relative z-10 px-1 pt-2 pb-0.5 flex items-center gap-2.5 min-w-0 border-t border-white/[0.06]">
                         <span className="text-[12px] font-mono font-bold tracking-tight shrink-0">
-                          <span className="text-[#FF5510]">#</span>
+                          <span className="text-[#9E1B32]">#</span>
                           <span className="text-white">{numDigits}</span>
                         </span>
                         <p className="text-white/85 text-[12.5px] font-medium truncate">
@@ -421,7 +421,7 @@ export default async function ProjectDetailPage({
                     delay={(idx % 2) * 140}
                     className={isFullSpan ? 'md:col-span-2' : ''}
                   >
-                    <SpotlightCard className="group rounded-[28px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/40 p-3.5 sm:p-4 transition-colors shadow-xl flex flex-col gap-3.5 overflow-hidden">
+                    <SpotlightCard className="group rounded-[28px] bg-[#121212] border border-white/[0.08] hover:border-[#9E1B32]/40 p-3.5 sm:p-4 transition-colors shadow-xl flex flex-col gap-3.5 overflow-hidden">
                       <div className="relative z-10 rounded-[18px] overflow-hidden border border-white/[0.08] bg-[#0B0B0B] flex flex-col">
                         <div className="h-7 shrink-0 bg-[#111111] border-b border-white/[0.06] px-3 flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
@@ -465,7 +465,7 @@ export default async function ProjectDetailPage({
 
                       <div className="relative z-10 px-1.5 pb-0.5 flex items-center gap-2.5 min-w-0">
                         <span className="text-[12.5px] font-mono font-bold tracking-tight shrink-0">
-                          <span className="text-[#FF5510]">#</span>
+                          <span className="text-[#9E1B32]">#</span>
                           <span className="text-white">{numDigits}</span>
                         </span>
                         <p className="text-white/85 text-[13px] font-medium truncate">
@@ -485,16 +485,16 @@ export default async function ProjectDetailPage({
       <section className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-8 pb-16 space-y-8">
         {nextProject && (
           <Reveal variant="curtain-up" className="pt-8 border-t border-white/[0.08]">
-            <SpotlightCard className="rounded-[30px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/45 p-7 sm:p-9 transition-all overflow-hidden">
+            <SpotlightCard className="rounded-[30px] bg-[#121212] border border-white/[0.08] hover:border-[#9E1B32]/45 p-7 sm:p-9 transition-all overflow-hidden">
               <Link
                 href={`/projects/${nextProject.slug}`}
                 className="relative z-10 group flex flex-col sm:flex-row sm:items-center justify-between gap-6"
               >
                 <div className="space-y-2">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#FF5510]">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-[#9E1B32]">
                     <T en="Next Project" id="Proyek Berikutnya" />
                   </span>
-                  <h3 className="text-white font-bold text-2xl sm:text-3xl tracking-[-0.025em] group-hover:text-[#FF5510] transition-colors">
+                  <h3 className="text-white font-bold text-2xl sm:text-3xl tracking-[-0.025em] group-hover:text-[#9E1B32] transition-colors">
                     <CmsText value={nextProject.title} />
                   </h3>
                   {nextProject.summary && (
@@ -504,7 +504,7 @@ export default async function ProjectDetailPage({
                   )}
                 </div>
 
-                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#181818] border border-white/10 group-hover:bg-[#FF5510] group-hover:border-[#FF5510] text-white transition-all duration-300 group-hover:translate-x-1">
+                <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#181818] border border-white/10 group-hover:bg-[#9E1B32] group-hover:border-[#9E1B32] text-white transition-all duration-300 group-hover:translate-x-1">
                   <ArrowUpRight className="h-5 w-5" />
                 </span>
               </Link>

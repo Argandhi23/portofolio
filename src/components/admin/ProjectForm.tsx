@@ -217,7 +217,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-5 py-2 text-xs font-bold text-white shadow-lg shadow-[#9E1B32]/20 transition disabled:opacity-50 cursor-pointer"
           >
             {isPending ? (
               <>
@@ -261,7 +261,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
               >
                 Judul ({activeLang.toUpperCase()}){' '}
-                <span className="text-orange-500">*</span>
+                <span className="text-[#9E1B32]">*</span>
               </label>
               <input
                 id="title"
@@ -269,7 +269,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 value={titlePair[activeLang]}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="Al Parfume"
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32]"
               />
               {fieldErrors.title && (
                 <p className="mt-1 text-xs text-red-400">
@@ -285,7 +285,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                   htmlFor="slug"
                   className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
                 >
-                  Slug URL <span className="text-orange-500">*</span>
+                  Slug URL <span className="text-[#9E1B32]">*</span>
                 </label>
                 <button
                   type="button"
@@ -299,13 +299,13 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     </>
                   ) : (
                     <>
-                      <Unlock className="h-3 w-3 text-orange-400" />
-                      <span className="text-orange-400">Manual</span>
+                      <Unlock className="h-3 w-3 text-[#C7254E]" />
+                      <span className="text-[#C7254E]">Manual</span>
                     </>
                   )}
                 </button>
               </div>
-              <div className="mt-1.5 flex rounded-lg border border-zinc-800 bg-zinc-900/80 overflow-hidden focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+              <div className="mt-1.5 flex rounded-lg border border-zinc-800 bg-zinc-900/80 overflow-hidden focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
                 <span className="inline-flex items-center px-3 text-xs text-zinc-500 bg-zinc-900 border-r border-zinc-800">
                   /projects/
                 </span>
@@ -333,7 +333,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                   className="block text-xs font-medium uppercase tracking-wider text-zinc-400"
                 >
                   Kategori ({activeLang.toUpperCase()}){' '}
-                  <span className="text-orange-500">*</span>
+                  <span className="text-[#9E1B32]">*</span>
                 </label>
                 <input
                   id="category"
@@ -346,7 +346,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     }))
                   }
                   placeholder="E-Commerce"
-                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32]"
                 />
                 {fieldErrors.category && (
                   <p className="mt-1 text-xs text-red-400">
@@ -367,7 +367,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                       }
                       className={`text-[10px] px-2 py-0.5 rounded-md border transition ${
                         categoryPair[activeLang] === cat
-                          ? 'border-orange-500/50 bg-orange-500/10 text-orange-400'
+                          ? 'border-[#9E1B32]/50 bg-[#9E1B32]/10 text-[#C7254E]'
                           : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700'
                       }`}
                     >
@@ -390,7 +390,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="Al Parfume Official"
-                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32]"
                 />
               </div>
             </div>
@@ -418,7 +418,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     ? '1-sentence project summary...'
                     : 'Ringkasan 1 kalimat...'
                 }
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32]"
               />
             </div>
           </div>
@@ -427,7 +427,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
           <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-zinc-900 pb-3">
               <div className="flex items-center gap-2">
-                <Code2 className="h-4 w-4 text-orange-400" />
+                <Code2 className="h-4 w-4 text-[#C7254E]" />
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
                   Tech Stack
                 </h3>
@@ -450,7 +450,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     }
                     className={`text-xs px-2.5 py-1 rounded-lg border transition flex items-center gap-1.5 ${
                       isSelected
-                        ? 'border-orange-500/50 bg-orange-500/20 text-orange-300 font-semibold shadow-sm'
+                        ? 'border-[#9E1B32]/50 bg-[#9E1B32]/20 text-[#E04D70] font-semibold shadow-sm'
                         : 'border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                     }`}
                   >
@@ -478,7 +478,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                   }
                 }}
                 placeholder="Tambah teknologi..."
-                className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-orange-500 focus:outline-none"
+                className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-[#9E1B32] focus:outline-none"
               />
               <button
                 type="button"
@@ -496,13 +496,13 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 {techStack.map((tech) => (
                   <span
                     key={tech}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-xs font-semibold text-orange-300"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-[#9E1B32]/30 bg-[#9E1B32]/10 px-2.5 py-1 text-xs font-semibold text-[#E04D70]"
                   >
                     <span>{tech}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveTech(tech)}
-                      className="text-orange-400 hover:text-red-400 transition"
+                      className="text-[#C7254E] hover:text-red-400 transition"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -567,7 +567,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     ? '## Project Goal\n\n...\n\n## Key Features\n\n- ...\n\n## Result\n\n...'
                     : '## Tujuan Proyek\n\n...\n\n## Fitur Utama\n\n- ...\n\n## Hasil\n\n...'
                 }
-                className="w-full font-mono rounded-lg border border-zinc-800 bg-zinc-900/80 p-3.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 leading-relaxed"
+                className="w-full font-mono rounded-lg border border-zinc-800 bg-zinc-900/80 p-3.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32] leading-relaxed"
               />
             ) : (
               <div className="min-h-[280px] rounded-lg border border-zinc-800 bg-zinc-900/40 p-4 text-xs text-zinc-200 prose prose-invert max-w-none">
@@ -630,7 +630,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 type="button"
                 onClick={() => setIsFeatured((prev) => !prev)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  isFeatured ? 'bg-orange-500' : 'bg-zinc-800'
+                  isFeatured ? 'bg-[#9E1B32]' : 'bg-zinc-800'
                 }`}
               >
                 <span
@@ -656,7 +656,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 onChange={(e) =>
                   setDisplayOrder(parseInt(e.target.value, 10) || 0)
                 }
-                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-orange-500 focus:outline-none"
+                className="mt-1.5 w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-3.5 py-2 text-sm text-zinc-100 focus:border-[#9E1B32] focus:outline-none"
               />
             </div>
 
@@ -669,7 +669,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 >
                   Live URL
                 </label>
-                <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+                <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
                   <Globe className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
                   <input
                     id="projectUrl"
@@ -694,7 +694,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 >
                   APK URL
                 </label>
-                <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+                <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
                   <Smartphone className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
                   <input
                     id="apkUrl"
@@ -719,7 +719,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                 >
                   GitHub URL
                 </label>
-                <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500">
+                <div className="mt-1.5 flex items-center rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm focus-within:border-[#9E1B32] focus-within:ring-1 focus-within:ring-[#9E1B32]">
                   <Github className="h-3.5 w-3.5 text-zinc-500 mr-2 shrink-0" />
                   <input
                     id="githubUrl"
@@ -779,7 +779,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
                     value={url}
                     onChange={(e) => handleUpdateGalleryUrl(idx, e.target.value)}
                     placeholder="https://... atau /projects/..."
-                    className="flex-1 rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-orange-500 focus:outline-none"
+                    className="flex-1 rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 focus:border-[#9E1B32] focus:outline-none"
                   />
                   <button
                     type="button"

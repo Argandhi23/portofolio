@@ -46,7 +46,7 @@ export function PillButton({
       ? 'bg-white text-[#0A0A0A] shadow-lg hover:bg-neutral-200'
       : isWhite
         ? 'bg-white text-[#0A0A0A] shadow-lg hover:bg-zinc-100'
-        : 'bg-[#FF5510] hover:bg-[#FF6B2B] text-white shadow-lg shadow-[#FF5510]/20',
+        : 'bg-[#9E1B32] hover:bg-[#B8233E] text-white shadow-lg shadow-[#9E1B32]/20',
     className
   );
 
@@ -55,8 +55,8 @@ export function PillButton({
     isMonochrome
       ? 'bg-[#0A0A0A] text-white'
       : isWhite
-        ? 'bg-[#FF5510] text-white'
-        : 'bg-white text-[#FF5510]'
+        ? 'bg-[#9E1B32] text-white'
+        : 'bg-white text-[#9E1B32]'
   );
 
   const content = (

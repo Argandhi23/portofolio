@@ -140,19 +140,25 @@ export function PublicNavbar({
 
   useEffect(() => {
     let ticking = false;
+    const syncScrolled = () => {
+      const portalPhase = document.documentElement.dataset.heroPortal;
+      setIsScrolled(portalPhase === 'about' || window.scrollY > 40);
+      ticking = false;
+    };
     const onScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 40);
-          ticking = false;
-        });
+        window.requestAnimationFrame(syncScrolled);
         ticking = true;
       }
     };
 
-    onScroll();
+    syncScrolled();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('hero-portal-change', syncScrolled);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('hero-portal-change', syncScrolled);
+    };
   }, []);
 
   useEffect(() => {
@@ -220,7 +226,7 @@ export function PublicNavbar({
                   <span
                     className={cn(
                       'absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full',
-                      isObsidian ? 'bg-[#FF5510]' : 'bg-white'
+                      isObsidian ? 'bg-[#9E1B32]' : 'bg-white'
                     )}
                   />
                 )}
@@ -299,7 +305,7 @@ export function PublicNavbar({
               <div className="pointer-events-auto flex items-center justify-between gap-7 rounded-full bg-[#0D0D0D]/95 backdrop-blur-md border border-white/[0.11] pl-5 pr-3 py-2 shadow-[0_12px_32px_rgba(0,0,0,0.6)]">
                 <Link
                   href="/"
-                  className="text-white font-bold text-[15px] tracking-[-0.03em] hover:text-[#FF5510] transition shrink-0"
+                  className="text-white font-bold text-[15px] tracking-[-0.03em] hover:text-[#9E1B32] transition shrink-0"
                 >
                   {brandName}
                 </Link>
@@ -314,7 +320,7 @@ export function PublicNavbar({
                       href={item.href}
                       className={cn(
                         'hover:text-white transition-colors',
-                        item.active && 'text-[#FF5510] font-semibold'
+                        item.active && 'text-[#9E1B32] font-semibold'
                       )}
                     >
                       {item.label}
@@ -364,13 +370,13 @@ export function PublicNavbar({
                   >
                     <div className="flex items-center gap-3">
                       {item.active && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF5510] shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#9E1B32] shrink-0" />
                       )}
                       <span
                         className={cn(
                           'text-[30px] sm:text-[34px] tracking-[-0.03em] transition-all duration-200 group-hover:translate-x-1',
                           item.active
-                            ? 'font-bold text-[#FF5510]'
+                            ? 'font-bold text-[#9E1B32]'
                             : 'font-medium text-white/75 group-hover:text-white'
                         )}
                       >
@@ -383,7 +389,7 @@ export function PublicNavbar({
                       className={cn(
                         'w-4 h-4 transition-all duration-300 group-hover:translate-x-1 shrink-0',
                         item.active
-                          ? 'text-[#FF5510]'
+                          ? 'text-[#9E1B32]'
                           : 'text-white/30 group-hover:text-white'
                       )}
                       viewBox="0 0 16 16"
@@ -418,7 +424,7 @@ export function PublicNavbar({
                   <PillButton
                     href={resolvedCta}
                     variant="orange"
-                    className="w-full justify-center !py-2.5 !text-[13px] shadow-[0_4px_20px_rgba(255,85,16,0.25)]"
+                    className="w-full justify-center !py-2.5 !text-[13px] shadow-[0_4px_20px_rgba(158,27,50,0.3)]"
                   >
                     {resolvedCtaLabel}
                   </PillButton>

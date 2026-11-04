@@ -10,14 +10,14 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative min-h-screen bg-[#080808] text-white flex flex-col justify-between selection:bg-[#FF5510] selection:text-white overflow-hidden py-10 px-4 sm:px-6">
+    <div className="relative min-h-screen bg-[#080808] text-white flex flex-col justify-between selection:bg-[#9E1B32] selection:text-white overflow-hidden py-10 px-4 sm:px-6">
       {/* Warm Ambient Glow Lighting */}
       <div
-        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-gradient-to-b from-[#FF5510]/20 via-[#9E1B06]/10 to-transparent blur-3xl"
+        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-[500px] w-[600px] rounded-full bg-gradient-to-b from-[#9E1B32]/20 via-[#520A18]/10 to-transparent blur-3xl"
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute -bottom-32 right-10 h-[400px] w-[400px] rounded-full bg-[#FF5510]/10 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 right-10 h-[400px] w-[400px] rounded-full bg-[#9E1B32]/10 blur-3xl"
         aria-hidden="true"
       />
 
@@ -27,7 +27,7 @@ export default function LoginPage() {
           href="/"
           className="inline-flex items-center gap-2 text-xs font-semibold text-white/70 hover:text-white transition group"
         >
-          <span className="w-7 h-7 rounded-full bg-[#121212] border border-white/[0.08] flex items-center justify-center group-hover:border-[#FF5510]/40 group-hover:text-[#FF5510] transition">
+          <span className="w-7 h-7 rounded-full bg-[#121212] border border-white/[0.08] flex items-center justify-center group-hover:border-[#9E1B32]/40 group-hover:text-[#9E1B32] transition">
             <ArrowLeft className="h-3.5 w-3.5" />
           </span>
           <span>Beranda</span>
@@ -46,7 +46,7 @@ export default function LoginPage() {
         <div className="rounded-[32px] bg-[#121212] border border-white/[0.08] p-7 sm:p-9 shadow-2xl backdrop-blur-xl">
           {/* Card Header */}
           <div className="mb-7 text-center space-y-3">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FF5510] to-[#B82808] text-white shadow-lg shadow-[#FF5510]/25">
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#9E1B32] to-[#7D1426] text-white shadow-lg shadow-[#9E1B32]/25">
               <ShieldCheck className="h-6 w-6" />
             </div>
 

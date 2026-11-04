@@ -41,7 +41,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       smoothWheel: true,
       syncTouch: false,
       anchors: { offset: -24 },
-      autoToggle: true,
+      autoToggle: false,
       allowNestedScroll: true,
       stopInertiaOnNavigate: true,
     });
@@ -52,7 +52,28 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       notifyScrollPosition(instance.scroll);
     });
 
+    const syncPortalState = () => {
+      const portalPhase = document.documentElement.dataset.heroPortal;
+      if (
+        portalPhase === 'hero' ||
+        portalPhase === 'entering' ||
+        portalPhase === 'exiting'
+      ) {
+        lenis.scrollTo(0, { immediate: true, force: true });
+        lenis.stop();
+      } else {
+        document.documentElement.style.removeProperty('overflow');
+        document.body.style.removeProperty('overflow');
+        lenis.start();
+        lenis.resize();
+      }
+    };
+
+    syncPortalState();
+    window.addEventListener('hero-portal-change', syncPortalState);
+
     return () => {
+      window.removeEventListener('hero-portal-change', syncPortalState);
       unsubscribe();
       lenis.destroy();
       lenisRef.current = null;

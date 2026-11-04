@@ -69,14 +69,14 @@ export function AdminSidebarNav() {
             href={item.href}
             className={`group flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
               isActive
-                ? 'bg-[#181818] text-[#FF5510] shadow-sm border border-[#FF5510]/30'
+                ? 'bg-[#181818] text-[#9E1B32] shadow-sm border border-[#9E1B32]/30'
                 : 'text-white/70 hover:bg-[#181818] hover:text-white border border-transparent'
             }`}
           >
             <Icon
               className={`h-4 w-4 shrink-0 transition-colors ${
                 isActive
-                  ? 'text-[#FF5510]'
+                  ? 'text-[#9E1B32]'
                   : 'text-white/40 group-hover:text-white/80'
               }`}
             />
@@ -92,7 +92,7 @@ export function AdminSidebarNav() {
           className="flex items-center justify-between rounded-2xl px-3.5 py-2 text-xs font-medium text-white/55 hover:bg-[#181818] hover:text-white transition"
         >
           <span>Lihat Web</span>
-          <ExternalLink className="h-3.5 w-3.5 text-[#FF5510]" />
+          <ExternalLink className="h-3.5 w-3.5 text-[#9E1B32]" />
         </Link>
       </div>
     </nav>

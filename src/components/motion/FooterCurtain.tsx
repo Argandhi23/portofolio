@@ -42,11 +42,17 @@ export function FooterCurtain({ children, className }: FooterCurtainProps) {
         );
         const progress = nearBottom ? 1 : rawProgress;
 
-        if (Math.abs(progress - lastProgress) < 0.003) return;
+        if (Math.abs(progress - lastProgress) < 0.002) return;
         lastProgress = progress;
 
-        const translateY = (1 - progress) * 42;
-        stage.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0)`;
+        const translateY = (1 - progress) * 72;
+        const scale = 0.92 + progress * 0.08;
+        const rotateX = (1 - progress) * 8;
+
+        wrapper.style.setProperty('--footer-progress', progress.toFixed(4));
+        stage.style.transform = `perspective(1200px) translate3d(0, ${translateY.toFixed(
+          1
+        )}px, 0) scale(${scale.toFixed(4)}) rotateX(${rotateX.toFixed(2)}deg)`;
       }
     );
   }, []);

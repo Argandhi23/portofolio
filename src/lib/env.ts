@@ -48,3 +48,25 @@ export function getAdminEmail(): string | undefined {
   const raw = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   return raw && raw.length > 0 ? raw : undefined;
 }
+
+/**
+ * Returns the optional Google Gemini API key for the portfolio AI assistant (server-only).
+ * When unset, the chatbot automatically falls back to the built-in Smart Portfolio Engine.
+ */
+export function getGeminiApiKey(): string | undefined {
+  const raw = process.env.GEMINI_API_KEY?.trim();
+  return raw && raw.length > 0 ? raw : undefined;
+}
+
+/**
+ * Returns the optional Groq API key (free tier without credit card).
+ */
+export function getGroqApiKey(): string | undefined {
+  const raw = process.env.GROQ_API_KEY?.trim();
+  if (!raw) return undefined;
+  const lastGsk = raw.lastIndexOf('gsk_');
+  if (lastGsk > 0) {
+    return raw.slice(lastGsk);
+  }
+  return raw;
+}

@@ -49,7 +49,7 @@ export function PhoneFrame({
       {showGlow && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -inset-6 -z-10 rounded-[60px] bg-[#FF5510]/15 blur-3xl"
+          className="pointer-events-none absolute -inset-6 -z-10 rounded-[60px] bg-[#9E1B32]/15 blur-3xl"
         />
       )}
 

@@ -61,7 +61,7 @@ export default async function AdminDashboardPage() {
         </h1>
         <Link
           href="/admin/projects/new"
-          className="pill-btn inline-flex items-center gap-2 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#FF5510]/20 transition"
+          className="pill-btn inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#9E1B32]/20 transition"
         >
           <Plus className="h-4 w-4" />
           <span>Tambah Project</span>
@@ -75,7 +75,7 @@ export default async function AdminDashboardPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Projects
             </span>
-            <FolderGit2 className="h-4 w-4 text-[#FF5510]" />
+            <FolderGit2 className="h-4 w-4 text-[#9E1B32]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold tracking-tight text-white">
@@ -103,13 +103,13 @@ export default async function AdminDashboardPage() {
 
         <Link
           href="/admin/inquiries"
-          className="rounded-[24px] border border-white/[0.07] hover:border-[#FF5510]/45 bg-[#121212] p-5 shadow-lg transition-colors"
+          className="rounded-[24px] border border-white/[0.07] hover:border-[#9E1B32]/45 bg-[#121212] p-5 shadow-lg transition-colors"
         >
           <div className="flex items-center justify-between text-white/50">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Pesan Baru
             </span>
-            <Inbox className="h-4 w-4 text-[#FF5510]" />
+            <Inbox className="h-4 w-4 text-[#9E1B32]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold tracking-tight text-white">
@@ -123,7 +123,7 @@ export default async function AdminDashboardPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Layanan
             </span>
-            <Sparkles className="h-4 w-4 text-[#FF5510]" />
+            <Sparkles className="h-4 w-4 text-[#9E1B32]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold tracking-tight text-white">
@@ -137,7 +137,7 @@ export default async function AdminDashboardPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Tech Stack
             </span>
-            <Code2 className="h-4 w-4 text-[#FF5510]" />
+            <Code2 className="h-4 w-4 text-[#9E1B32]" />
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold tracking-tight text-white">
@@ -155,17 +155,17 @@ export default async function AdminDashboardPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="group rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 hover:border-[#FF5510]/45 hover:bg-[#151515] transition-all duration-300 shadow-xl flex items-center justify-between"
+              className="group rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 hover:border-[#9E1B32]/45 hover:bg-[#151515] transition-all duration-300 shadow-xl flex items-center justify-between"
             >
               <div className="flex items-center gap-3.5">
-                <div className="h-10 w-10 rounded-2xl bg-[#181818] border border-white/[0.08] text-[#FF5510] flex items-center justify-center group-hover:scale-105 transition">
+                <div className="h-10 w-10 rounded-2xl bg-[#181818] border border-white/[0.08] text-[#9E1B32] flex items-center justify-center group-hover:scale-105 transition">
                   <Icon className="h-4 w-4" />
                 </div>
-                <h2 className="text-sm font-bold text-white group-hover:text-[#FF5510] transition-colors">
+                <h2 className="text-sm font-bold text-white group-hover:text-[#9E1B32] transition-colors">
                   {item.title}
                 </h2>
               </div>
-              <span className="h-8 w-8 rounded-full bg-[#181818] border border-white/[0.08] flex items-center justify-center text-white/60 group-hover:bg-[#FF5510] group-hover:text-white transition">
+              <span className="h-8 w-8 rounded-full bg-[#181818] border border-white/[0.08] flex items-center justify-center text-white/60 group-hover:bg-[#9E1B32] group-hover:text-white transition">
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </Link>

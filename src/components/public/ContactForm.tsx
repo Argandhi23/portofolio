@@ -129,7 +129,7 @@ export function ContactForm({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, name: e.target.value }))
                 }
-                className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#FF5510] transition disabled:opacity-60"
+                className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#9E1B32] transition disabled:opacity-60"
               />
               {fieldErrors.name?.[0] && (
                 <p className="text-[11.5px] text-red-400">{fieldErrors.name[0]}</p>
@@ -153,7 +153,7 @@ export function ContactForm({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, email: e.target.value }))
                 }
-                className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#FF5510] transition disabled:opacity-60"
+                className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#9E1B32] transition disabled:opacity-60"
               />
               {fieldErrors.email?.[0] && (
                 <p className="text-[11.5px] text-red-400">{fieldErrors.email[0]}</p>
@@ -177,7 +177,7 @@ export function ContactForm({
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, subject: e.target.value }))
               }
-              className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#FF5510] transition disabled:opacity-60"
+              className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#9E1B32] transition disabled:opacity-60"
             />
           </div>
 
@@ -198,7 +198,7 @@ export function ContactForm({
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, message: e.target.value }))
               }
-              className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#FF5510] transition resize-none disabled:opacity-60"
+              className="w-full rounded-2xl bg-[#181818] border border-white/[0.08] px-4 py-3 text-[13.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#9E1B32] transition resize-none disabled:opacity-60"
             />
             {fieldErrors.message?.[0] && (
               <p className="text-[11.5px] text-red-400">{fieldErrors.message[0]}</p>
@@ -229,7 +229,7 @@ export function ContactForm({
                     href={statusMessage.lastSubmittedBrief}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF5510] hover:text-[#FF6B2B] transition"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9E1B32] hover:text-[#B8233E] transition"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
                     <span>
@@ -245,14 +245,14 @@ export function ContactForm({
             <button
               type="submit"
               disabled={isPending}
-              className="pill-btn inline-flex items-center gap-3 bg-[#FF5510] hover:bg-[#FF6B2B] text-white pl-5 pr-1.5 py-1.5 rounded-full text-[13px] font-semibold shadow-lg shadow-[#FF5510]/20 cursor-pointer disabled:opacity-60"
+              className="pill-btn inline-flex items-center gap-3 bg-[#9E1B32] hover:bg-[#B8233E] text-white pl-5 pr-1.5 py-1.5 rounded-full text-[13px] font-semibold shadow-lg shadow-[#9E1B32]/20 cursor-pointer disabled:opacity-60"
             >
               <span>
                 {isPending
                   ? tPick(PUBLIC_COPY.contactForm.sending, lang)
                   : tPick(PUBLIC_COPY.contactForm.submit, lang)}
               </span>
-              <span className="arrow-circle w-7 h-7 rounded-full bg-white text-[#FF5510] flex items-center justify-center">
+              <span className="arrow-circle w-7 h-7 rounded-full bg-white text-[#9E1B32] flex items-center justify-center">
                 {isPending ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 ) : (

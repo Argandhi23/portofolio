@@ -80,7 +80,7 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
                 onClick={() => setFilter(tab.key)}
                 className={`rounded-full px-4 py-2 text-xs font-semibold transition cursor-pointer ${
                   active
-                    ? 'bg-[#FF5510] text-white shadow-lg shadow-[#FF5510]/20'
+                    ? 'bg-[#9E1B32] text-white shadow-lg shadow-[#9E1B32]/20'
                     : 'bg-[#121212] text-white/65 border border-white/[0.08] hover:text-white hover:border-white/20'
                 }`}
               >
@@ -100,7 +100,7 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
       {/* List */}
       {filtered.length === 0 ? (
         <div className="rounded-[28px] border border-white/[0.07] bg-[#121212] p-12 text-center space-y-3">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#181818] border border-white/[0.08] text-[#FF5510]">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#181818] border border-white/[0.08] text-[#9E1B32]">
             <Inbox className="h-5 w-5" />
           </div>
           <p className="text-sm font-semibold text-white">
@@ -131,7 +131,7 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
                 key={item.id}
                 className={`rounded-[26px] border p-6 transition-colors space-y-4 ${
                   isUnread
-                    ? 'bg-[#151312] border-[#FF5510]/40 shadow-lg shadow-[#FF5510]/5'
+                    ? 'bg-[#151312] border-[#9E1B32]/40 shadow-lg shadow-[#9E1B32]/5'
                     : 'bg-[#121212] border-white/[0.07]'
                 }`}
               >
@@ -139,8 +139,8 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2.5">
                       {isUnread && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF5510]/15 border border-[#FF5510]/35 px-2.5 py-0.5 text-[10.5px] font-bold text-[#FF5510]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#FF5510] animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#9E1B32]/15 border border-[#9E1B32]/35 px-2.5 py-0.5 text-[10.5px] font-bold text-[#9E1B32]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#9E1B32] animate-pulse" />
                           Baru
                         </span>
                       )}
@@ -162,7 +162,7 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
                       <span className="text-xs text-white/45">&bull;</span>
                       <a
                         href={`mailto:${item.email}`}
-                        className="text-xs font-medium text-[#FF5510] hover:underline"
+                        className="text-xs font-medium text-[#9E1B32] hover:underline"
                       >
                         {item.email}
                       </a>
@@ -194,7 +194,7 @@ export function InquiriesManager({ initialInquiries }: InquiriesManagerProps) {
                           handleStatusChange(item.id, 'replied');
                         }
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-[#FF5510] hover:bg-[#FF6B2B] px-4 py-1.5 text-xs font-semibold text-white transition"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-4 py-1.5 text-xs font-semibold text-white transition"
                     >
                       <Reply className="h-3.5 w-3.5" />
                       <span>Balas via Email</span>

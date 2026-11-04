@@ -5,8 +5,10 @@ export interface ScrollTargetMetrics {
   rectTop: number;
   /** Cached element height (measured only on mount/resize, NEVER during scroll) */
   height: number;
-  /** Current scrollY */
+  /** Current smoothed scrollY (GSAP scrub style) */
   scrollY: number;
+  /** Current scroll velocity (positive when scrolling down, negative when scrolling up) */
+  velocity: number;
   /** Cached window.innerHeight */
   viewportHeight: number;
   /** Cached max scrollable distance */
@@ -27,7 +29,10 @@ const targets = new Set<RegisteredTarget>();
 let cachedViewportHeight = 0;
 let cachedViewportWidth = 0;
 let cachedMaxScroll = 0;
-let currentScrollY = 0;
+let targetScrollY = 0;
+let smoothedScrollY = 0;
+let currentVelocity = 0;
+let hasInitializedScroll = false;
 
 let rafScrollId: number | null = null;
 let rafMeasureId: number | null = null;
@@ -44,7 +49,13 @@ function measureAllNow(): void {
   rafMeasureId = null;
   if (typeof window === 'undefined' || targets.size === 0) return;
 
-  currentScrollY = window.scrollY;
+  const actualScrollY = window.scrollY;
+  targetScrollY = actualScrollY;
+  if (!hasInitializedScroll) {
+    smoothedScrollY = actualScrollY;
+    hasInitializedScroll = true;
+  }
+
   cachedViewportHeight = window.innerHeight;
   cachedViewportWidth = window.innerWidth;
   const docHeight = document.documentElement.scrollHeight;
@@ -53,7 +64,7 @@ function measureAllNow(): void {
   // Pure DOM READ batch (zero writes here -> zero layout thrashing)
   targets.forEach((item) => {
     const rect = item.el.getBoundingClientRect();
-    item.docTop = rect.top + currentScrollY;
+    item.docTop = rect.top + actualScrollY;
     item.height = rect.height;
   });
 
@@ -70,10 +81,10 @@ export function scheduleRemeasure(): void {
  * Pure arithmetic + DOM WRITE pass executed during scroll (0 DOM reads, 0 reflows).
  */
 function dispatchUpdates(): void {
-  rafScrollId = null;
   if (targets.size === 0) return;
 
-  const sy = currentScrollY;
+  const sy = smoothedScrollY;
+  const vel = currentVelocity;
   const vh = cachedViewportHeight || window.innerHeight;
   const maxS = cachedMaxScroll;
 
@@ -83,6 +94,7 @@ function dispatchUpdates(): void {
       rectTop,
       height: item.height,
       scrollY: sy,
+      velocity: vel,
       viewportHeight: vh,
       maxScroll: maxS,
     });
@@ -90,18 +102,52 @@ function dispatchUpdates(): void {
 }
 
 /**
- * Allows Lenis smooth scroll to push exact scrollY directly within its own RAF tick (zero extra frame delay).
+ * Self-stopping GSAP-style scrub loop (`scrub: 0.55` feel).
+ * Glides `smoothedScrollY` toward `targetScrollY` and halts automatically when settled (0% idle CPU).
+ */
+function runScrubTick(): void {
+  rafScrollId = null;
+  if (typeof window === 'undefined' || targets.size === 0) return;
+
+  const diff = targetScrollY - smoothedScrollY;
+  if (Math.abs(diff) <= 0.12 && Math.abs(currentVelocity) <= 0.12) {
+    smoothedScrollY = targetScrollY;
+    currentVelocity = 0;
+    dispatchUpdates();
+    return;
+  }
+
+  const step = diff * 0.18;
+  smoothedScrollY += step;
+  currentVelocity = currentVelocity * 0.76 + step * 0.24;
+  dispatchUpdates();
+
+  rafScrollId = window.requestAnimationFrame(runScrubTick);
+}
+
+function scheduleScrubLoop(): void {
+  if (typeof window === 'undefined') return;
+  if (rafScrollId === null) {
+    rafScrollId = window.requestAnimationFrame(runScrubTick);
+  }
+}
+
+/**
+ * Allows Lenis smooth scroll to push exact scrollY directly within its own RAF tick.
  */
 export function notifyScrollPosition(scrollY: number): void {
-  currentScrollY = scrollY;
-  dispatchUpdates();
+  const delta = scrollY - targetScrollY;
+  targetScrollY = scrollY;
+  currentVelocity = currentVelocity * 0.7 + delta * 0.3;
+  scheduleScrubLoop();
 }
 
 function onNativeScroll(): void {
-  currentScrollY = window.scrollY;
-  if (rafScrollId === null) {
-    rafScrollId = window.requestAnimationFrame(dispatchUpdates);
-  }
+  const nextY = window.scrollY;
+  const delta = nextY - targetScrollY;
+  targetScrollY = nextY;
+  currentVelocity = currentVelocity * 0.7 + delta * 0.3;
+  scheduleScrubLoop();
 }
 
 function onWindowResize(): void {

@@ -154,7 +154,7 @@ export const getPublishedProjects = unstable_cache(
 
     return data ?? [];
   },
-  ['portfolio-published-projects'],
+  ['portfolio-published-projects-v2'],
   {
     tags: [CACHE_TAGS.PROJECTS, 'projects'],
     revalidate: 60,
@@ -182,7 +182,7 @@ export const getFeaturedProjects = unstable_cache(
 
     return data ?? [];
   },
-  ['portfolio-featured-projects'],
+  ['portfolio-featured-projects-v2'],
   {
     tags: [CACHE_TAGS.PROJECTS, 'projects'],
     revalidate: 60,
@@ -209,7 +209,7 @@ export const getProjectBySlug = unstable_cache(
 
     return data ?? null;
   },
-  ['portfolio-project-by-slug'],
+  ['portfolio-project-by-slug-v2'],
   {
     tags: [CACHE_TAGS.PROJECTS, 'projects'],
     revalidate: 60,

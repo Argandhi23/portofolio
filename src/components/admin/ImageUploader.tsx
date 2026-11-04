@@ -142,18 +142,18 @@ export function ImageUploader({
       ) : (
         <div
           onClick={() => fileInputRef.current?.click()}
-          className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-800 bg-zinc-900/40 p-6 text-center hover:border-orange-500/50 hover:bg-zinc-900/80 transition cursor-pointer group ${ratioClass}`}
+          className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-800 bg-zinc-900/40 p-6 text-center hover:border-[#9E1B32]/50 hover:bg-zinc-900/80 transition cursor-pointer group ${ratioClass}`}
         >
           {isUploading ? (
             <div className="flex flex-col items-center gap-2">
-              <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#9E1B32]" />
               <p className="text-xs text-zinc-300 font-medium">
                 {compressStatus || 'Mengunggah ke Supabase Storage...'}
               </p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 text-zinc-400 group-hover:text-zinc-200 transition">
-              <div className="h-10 w-10 rounded-full bg-zinc-800/80 flex items-center justify-center group-hover:bg-orange-500/10 group-hover:text-orange-500 transition">
+              <div className="h-10 w-10 rounded-full bg-zinc-800/80 flex items-center justify-center group-hover:bg-[#B8233E]/10 group-hover:text-[#9E1B32] transition">
                 <UploadCloud className="h-5 w-5" />
               </div>
               <p className="text-xs font-medium text-zinc-300">
@@ -189,7 +189,7 @@ export function ImageUploader({
           placeholder="https://... atau /projects/..."
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-600 focus:border-orange-500 focus:outline-none"
+          className="flex-1 rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-600 focus:border-[#9E1B32] focus:outline-none"
         />
       </div>
 

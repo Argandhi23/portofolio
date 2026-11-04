@@ -38,16 +38,23 @@ export function ScrollHeroDepth({ children, className }: ScrollHeroDepthProps) {
       lastProgress = progress;
 
       if (progress <= 0.001) {
-        inner.style.transform = 'translate3d(0, 0px, 0)';
+        outer.style.setProperty('--hero-progress', '0');
+        inner.style.transform = 'perspective(1400px) translate3d(0, 0px, 0) scale(1) rotateX(0deg)';
         if (veil) veil.style.opacity = '0';
         return;
       }
 
-      const translateY = progress * 64;
-      inner.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0)`;
+      const translateY = progress * 92;
+      const scale = 1 - progress * 0.065;
+      const rotateX = -progress * 4.2;
+
+      outer.style.setProperty('--hero-progress', progress.toFixed(4));
+      inner.style.transform = `perspective(1400px) translate3d(0, ${translateY.toFixed(
+        1
+      )}px, 0) scale(${scale.toFixed(4)}) rotateX(${rotateX.toFixed(2)}deg)`;
 
       if (veil) {
-        veil.style.opacity = (progress * 0.46).toFixed(3);
+        veil.style.opacity = (progress * 0.54).toFixed(3);
       }
     });
   }, []);

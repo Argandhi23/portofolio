@@ -35,9 +35,9 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
       currentX += (targetX - currentX) * 0.075;
       currentY += (targetY - currentY) * 0.075;
 
-      el.style.transform = `translate3d(${currentX.toFixed(2)}px, ${currentY.toFixed(
+      el.style.transform = `translate(${currentX.toFixed(2)}px, ${currentY.toFixed(
         2
-      )}px, 0)`;
+      )}px)`;
 
       if (
         Math.abs(targetX - currentX) > 0.15 ||
@@ -45,7 +45,6 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
       ) {
         rafId = window.requestAnimationFrame(tick);
       } else {
-        el.style.willChange = 'auto';
         rafId = null;
       }
     };
@@ -66,7 +65,6 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
       targetY = normY * 28;
 
       if (rafId === null) {
-        el.style.willChange = 'transform';
         rafId = window.requestAnimationFrame(tick);
       }
     };
@@ -75,7 +73,6 @@ export function HeroAmbientGlow({ className }: HeroAmbientGlowProps) {
       targetX = 0;
       targetY = 0;
       if (rafId === null) {
-        el.style.willChange = 'transform';
         rafId = window.requestAnimationFrame(tick);
       }
     };

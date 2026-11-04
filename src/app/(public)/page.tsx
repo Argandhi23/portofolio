@@ -19,7 +19,8 @@ import {
   LocalizedScrollTextReveal,
   T,
 } from '@/components/public/LanguageProvider';
-import { ScrollHeroDepth } from '@/components/motion/ScrollHeroDepth';
+import { HeroEyePortal } from '@/components/motion/HeroEyePortal';
+import { ScrollSectionOverlap } from '@/components/motion/ScrollSectionOverlap';
 
 export default async function HomePage() {
   const [settings, services, brands, publishedProjects] = await Promise.all([
@@ -71,76 +72,103 @@ export default async function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#FF5510] selection:text-white">
+    <main className="min-h-screen bg-[#080808] text-white selection:bg-[#9E1B32] selection:text-white">
       <JsonLd data={personSchema} />
 
-      {/* 1. HERO + GSAP RECEDING PARALLAX DEPTH */}
-      <ScrollHeroDepth>
-        <HeroSection
-          settings={settings}
-          services={services}
-          brands={brands}
-        />
-      </ScrollHeroDepth>
-
-      {/* 2. ABOUT + SCROLL-SCRUBBED QUOTE + IDENTITY CARDS */}
-      <section
-        id="about"
-        className="relative z-20 bg-[#080808] w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-24 sm:pt-28 pb-12 space-y-14"
-      >
-        <SectionHeader
-          eyebrow={
-            <CmsText
-              value={settings.about_label}
-              fallbackEn="About"
-              fallbackId="Tentang"
-            />
-          }
-          heading={
-            <CmsText
-              value={settings.about_heading}
-              fallbackEn="Building Practical Digital Products"
-              fallbackId="Membangun Produk Digital Fungsional"
-            />
-          }
-          lead={
-            <CmsText
-              value={settings.about_description}
-              fallbackEn="Full-Stack Developer in Surabaya turning ideas into fast, reliable web and mobile apps."
-              fallbackId="Full-Stack Developer di Surabaya yang mengubah ide menjadi aplikasi web & mobile cepat."
-            />
-          }
-          ctaHref="/about"
-          ctaLabel={<T en="Full profile" id="Profil lengkap" />}
-        />
-
-        <div className="py-6 sm:py-9 border-y border-white/[0.07]">
-          <LocalizedScrollTextReveal
-            enText={PUBLIC_COPY.home.manifesto.en}
-            idText={PUBLIC_COPY.home.manifesto.id}
-            enHighlights={PUBLIC_COPY.home.manifesto.enHighlights}
-            idHighlights={PUBLIC_COPY.home.manifesto.idHighlights}
-            className="text-[26px] sm:text-[38px] lg:text-[44px]"
+      {/* 1 & 2. HERO STAGE -> EYE PORTAL CAMERA ZOOM -> ABOUT & EDUCATION (#F5F0EB) */}
+      <HeroEyePortal
+        contentId="about"
+        hero={
+          <HeroSection
+            settings={settings}
+            services={services}
+            brands={brands}
           />
+        }
+      >
+        <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-24 sm:pt-32 pb-28 sm:pb-36 space-y-14">
+          <SectionHeader
+            eyebrow={
+              <CmsText
+                value={settings.about_label}
+                fallbackEn="About"
+                fallbackId="Tentang"
+              />
+            }
+            heading={
+              <CmsText
+                value={settings.about_heading}
+                fallbackEn="Building Practical Digital Products"
+                fallbackId="Membangun Produk Digital Fungsional"
+              />
+            }
+            lead={
+              <CmsText
+                value={settings.about_description}
+                fallbackEn="Full-Stack Developer in Surabaya turning ideas into fast, reliable web and mobile apps."
+                fallbackId="Full-Stack Developer di Surabaya yang mengubah ide menjadi aplikasi web & mobile cepat."
+              />
+            }
+            ctaHref="/about"
+            ctaLabel={<T en="Full profile" id="Profil lengkap" />}
+          />
+
+          <div
+            style={{
+              borderColor: 'var(--sec-divider, rgba(13, 13, 13, 0.12))',
+            }}
+            className="py-6 sm:py-9 border-y"
+          >
+            <LocalizedScrollTextReveal
+              enText={PUBLIC_COPY.home.manifesto.en}
+              idText={PUBLIC_COPY.home.manifesto.id}
+              enHighlights={PUBLIC_COPY.home.manifesto.enHighlights}
+              idHighlights={PUBLIC_COPY.home.manifesto.idHighlights}
+              className="text-[26px] sm:text-[38px] lg:text-[44px]"
+            />
+          </div>
+
+          <EditorialIdentityCards />
         </div>
+      </HeroEyePortal>
 
-        <EditorialIdentityCards />
-      </section>
+      {/* 3. FEATURED PROJECTS (Matte Black Slab Covering Warm Cream + Sticky Card Stack) */}
+      <ScrollSectionOverlap
+        id="projects"
+        zIndex={30}
+        overlapPrevious
+        recedeOnExit={false}
+        className="bg-[#080808] pb-14"
+      >
+        <SelectedWorksSection
+          projects={publishedProjects}
+          ctaUrl={ctaUrl}
+        />
+      </ScrollSectionOverlap>
 
-      {/* 3. FEATURED PROJECTS */}
-      <SelectedWorksSection
-        projects={publishedProjects}
-        ctaUrl={ctaUrl}
-      />
+      {/* 4. SERVICES (Covers Projects + Cards Morph to Burgundy on Scroll) */}
+      <ScrollSectionOverlap
+        id="services"
+        zIndex={40}
+        overlapPrevious
+        recedeOnExit
+        className="bg-[#0E0E0E] pb-14"
+      >
+        <ServicesProcessSection
+          services={services}
+          ctaUrl={ctaUrl}
+        />
+      </ScrollSectionOverlap>
 
-      {/* 4. SERVICES */}
-      <ServicesProcessSection
-        services={services}
-        ctaUrl={ctaUrl}
-      />
-
-      {/* 5. CONTACT & BOOKEND FOOTER */}
-      <FooterBookend settings={settings} showContactGrid />
+      {/* 5. CONTACT & BOOKEND FOOTER (Covers Services) */}
+      <ScrollSectionOverlap
+        zIndex={50}
+        overlapPrevious
+        recedeOnExit={false}
+        className="bg-[#080808]"
+      >
+        <FooterBookend settings={settings} showContactGrid />
+      </ScrollSectionOverlap>
     </main>
   );
 }

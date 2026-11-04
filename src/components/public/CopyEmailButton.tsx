@@ -27,13 +27,13 @@ export function CopyEmailButton({ email }: CopyEmailButtonProps) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-1.5 rounded-full bg-[#181818] border border-white/[0.08] hover:border-[#FF5510]/45 px-3 py-1 text-[11px] font-semibold text-white/80 hover:text-white transition cursor-pointer"
+      className="inline-flex items-center gap-1.5 rounded-full bg-[#181818] border border-white/[0.08] hover:border-[#9E1B32]/45 px-3 py-1 text-[11px] font-semibold text-white/80 hover:text-white transition cursor-pointer"
       title={lang === 'id' ? 'Salin email' : 'Copy email'}
     >
       {copied ? (
         <>
-          <Check className="h-3 w-3 text-[#FF5510]" />
-          <span className="text-[#FF5510]">
+          <Check className="h-3 w-3 text-[#9E1B32]" />
+          <span className="text-[#9E1B32]">
             {lang === 'id' ? 'Tersalin' : 'Copied'}
           </span>
         </>

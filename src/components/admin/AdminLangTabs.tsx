@@ -25,7 +25,7 @@ export function AdminLangTabs({ value, onChange }: AdminLangTabsProps) {
             onClick={() => onChange(lang)}
             className={`rounded-full px-2.5 py-0.5 uppercase tracking-wider transition cursor-pointer ${
               active
-                ? 'bg-[#FF5510] text-white shadow-sm'
+                ? 'bg-[#9E1B32] text-white shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >

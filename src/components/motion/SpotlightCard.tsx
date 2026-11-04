@@ -17,7 +17,7 @@ export interface SpotlightCardProps
 export function SpotlightCard({
   children,
   className,
-  spotlightColor = 'rgba(255, 85, 16, 0.13)',
+  spotlightColor = 'rgba(158, 27, 50, 0.15)',
   style,
   onPointerEnter,
   onPointerMove,

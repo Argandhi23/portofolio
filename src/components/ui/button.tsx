@@ -18,19 +18,19 @@ export function buttonVariants({
 } = {}) {
   const variants = {
     default:
-      'bg-[#ff5500] text-white font-semibold hover:bg-[#e04b00] shadow-lg shadow-orange-500/20 active:scale-[0.98]',
+      'bg-[#9E1B32] text-white font-semibold hover:bg-[#7D1426] shadow-lg shadow-[#9E1B32]/20 active:scale-[0.98]',
     orange:
-      'bg-[#ff5500] text-white font-semibold hover:bg-[#e04b00] shadow-lg shadow-orange-500/20 active:scale-[0.98]',
+      'bg-[#9E1B32] text-white font-semibold hover:bg-[#7D1426] shadow-lg shadow-[#9E1B32]/20 active:scale-[0.98]',
     white:
       'bg-white text-zinc-950 font-semibold hover:bg-zinc-200 shadow-sm active:scale-[0.98]',
     secondary:
-      'bg-zinc-900 text-zinc-100 hover:bg-zinc-850 border border-zinc-800 hover:border-orange-500/30',
+      'bg-zinc-900 text-zinc-100 hover:bg-zinc-850 border border-zinc-800 hover:border-[#9E1B32]/30',
     outline:
-      'border border-zinc-800 bg-transparent hover:bg-zinc-900 hover:text-white hover:border-orange-500/40 text-zinc-300',
+      'border border-zinc-800 bg-transparent hover:bg-zinc-900 hover:text-white hover:border-[#9E1B32]/40 text-zinc-300',
     ghost:
       'hover:bg-zinc-900 hover:text-white text-zinc-400',
     link:
-      'text-[#ff5500] underline-offset-4 hover:underline p-0 h-auto',
+      'text-[#9E1B32] underline-offset-4 hover:underline p-0 h-auto',
   };
 
   const sizes = {

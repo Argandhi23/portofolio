@@ -183,14 +183,14 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
     const preloader = page.getByTestId('intro-preloader');
     await expect(preloader).toBeAttached();
 
-    // Verify pure black background and full brand-orange (#FF5510) SVG stroke paths
+    // Verify pure black background and full brand-orange (#9E1B32) SVG stroke paths
     const bgColor = await preloader.evaluate(
       (el) => getComputedStyle(el).backgroundColor
     );
     expect(bgColor).toBe('rgb(0, 0, 0)');
 
     const firstStroke = preloader.locator('svg path').first();
-    await expect(firstStroke).toHaveAttribute('stroke', '#FF5510');
+    await expect(firstStroke).toHaveAttribute('stroke', '#9E1B32');
 
     // Wait for curtain slide-up exit & clean DOM unmount
     await expect(preloader).toHaveCount(0, { timeout: 8000 });

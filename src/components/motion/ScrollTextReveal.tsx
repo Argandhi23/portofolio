@@ -107,11 +107,11 @@ export function ScrollTextReveal({
             ref={(el) => {
               wordRefs.current[idx] = el;
             }}
-            style={{ opacity: 0.17 }}
-            className={cn(
-              'inline-block',
-              isAccent ? 'text-[#FF5510]' : 'text-white'
-            )}
+            style={{
+              opacity: 0.17,
+              color: isAccent ? '#9E1B32' : 'var(--sec-fg, #ffffff)',
+            }}
+            className="inline-block"
           >
             {word}
           </span>

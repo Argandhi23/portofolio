@@ -19,6 +19,7 @@ import { SpotlightCard } from '@/components/motion/SpotlightCard';
 import { Reveal } from '@/components/motion/Reveal';
 import { ParallaxMedia } from '@/components/motion/ParallaxMedia';
 import { ParallaxColumn } from '@/components/motion/ParallaxColumn';
+import { ScrollPerspectiveCard } from '@/components/motion/ScrollPerspectiveCard';
 import { Github } from '@/components/ui/Icons';
 
 interface ProjectsArchiveGridProps {
@@ -51,8 +52,8 @@ function ArchiveBrowserFrame({
       <div className="h-8 shrink-0 bg-[#111111] border-b border-white/[0.07] px-3.5 flex items-center justify-between">
         {isMobile ? (
           <div className="flex items-center gap-1.5">
-            <span className="flex h-1.5 w-1.5 rounded-full bg-[#FF5510]" />
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF5510]">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-[#9E1B32]" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#9E1B32]">
               Mobile APK
             </span>
           </div>
@@ -67,7 +68,7 @@ function ArchiveBrowserFrame({
         <div className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] px-3 py-0.5 max-w-[210px]">
           {isMobile ? (
             <>
-              <Smartphone className="w-2.5 h-2.5 text-[#FF5510] shrink-0" />
+              <Smartphone className="w-2.5 h-2.5 text-[#9E1B32] shrink-0" />
               <span className="text-[10px] font-mono text-white/65 truncate">
                 {project.slug}.apk
               </span>
@@ -88,7 +89,7 @@ function ArchiveBrowserFrame({
       </div>
 
       <ParallaxMedia
-        intensity={20}
+        intensity={32}
         className={`${aspectClass} w-full bg-[#141414]`}
         innerClassName="relative h-full w-full"
       >
@@ -240,12 +241,11 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
     const summaryLoc = pickLocalized(project.summary, lang);
 
     return (
-      <Reveal
+      <ScrollPerspectiveCard
         key={project.id}
-        variant="curtain-up"
-        delay={(realIndex % 2) * 140}
+        intensity={0.95}
       >
-        <SpotlightCard className="rounded-[30px] bg-[#121212] border border-white/[0.07] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 shadow-2xl">
+        <SpotlightCard className="rounded-[30px] bg-[#121212] border border-white/[0.07] hover:border-[#9E1B32]/45 overflow-hidden transition-all duration-500 hover:-translate-y-1.5 shadow-2xl">
           <Link
             href={`/projects/${project.slug}`}
             className="relative z-10 group flex flex-col h-full"
@@ -267,21 +267,21 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 <div className="flex items-center justify-between gap-3">
                   <div className="inline-flex items-center gap-2.5">
                     <span className="text-[13px] font-mono font-bold tracking-tight">
-                      <span className="text-[#FF5510]">#</span>
+                      <span className="text-[#9E1B32]">#</span>
                       <span className="text-white">{numDigits}</span>
                     </span>
                     <span className="h-1 w-1 rounded-full bg-white/25" />
-                    <span className="text-[12px] font-semibold text-[#FF5510]">
+                    <span className="text-[12px] font-semibold text-[#9E1B32]">
                       {catLoc}
                     </span>
                   </div>
 
-                  <span className="w-9 h-9 rounded-full bg-[#181818] border border-white/[0.08] group-hover:bg-[#FF5510] group-hover:border-[#FF5510] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12">
+                  <span className="w-9 h-9 rounded-full bg-[#181818] border border-white/[0.08] group-hover:bg-[#9E1B32] group-hover:border-[#9E1B32] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12">
                     <ArrowUpRight className="w-4 h-4" />
                   </span>
                 </div>
 
-                <h2 className="text-white font-bold text-[22px] sm:text-[25px] leading-[1.18] tracking-[-0.025em] group-hover:text-[#FF5510] transition-colors">
+                <h2 className="text-white font-bold text-[22px] sm:text-[25px] leading-[1.18] tracking-[-0.025em] group-hover:text-[#9E1B32] transition-colors">
                   {titleLoc}
                 </h2>
 
@@ -309,13 +309,13 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 <div className="flex items-center gap-3.5 pt-4 border-t border-white/[0.07] text-[11.5px] text-white/70">
                   {project.project_url && (
                     <span className="inline-flex items-center gap-1">
-                      <Globe className="w-3.5 h-3.5 text-[#FF5510]" />
+                      <Globe className="w-3.5 h-3.5 text-[#9E1B32]" />
                       <span>{domain}</span>
                     </span>
                   )}
                   {project.apk_url && (
                     <span className="inline-flex items-center gap-1">
-                      <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
+                      <Smartphone className="w-3.5 h-3.5 text-[#9E1B32]" />
                       <span>APK</span>
                     </span>
                   )}
@@ -325,7 +325,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                       <span>Code</span>
                     </span>
                   )}
-                  <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
+                  <span className="ml-auto font-semibold text-white group-hover:text-[#9E1B32] transition-colors">
                     {lang === 'id' ? 'Lihat' : 'View'} &rarr;
                   </span>
                 </div>
@@ -333,12 +333,12 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
             </div>
           </Link>
         </SpotlightCard>
-      </Reveal>
+      </ScrollPerspectiveCard>
     );
   };
 
   return (
-    <div className="space-y-12">
+    <div className="relative space-y-12">
       <Reveal variant="fade-up" delay={140}>
         <div className="rounded-[26px] bg-[#111111] border border-white/[0.08] p-3.5 sm:p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-xl">
           <div
@@ -357,7 +357,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                   onClick={() => setSelectedCategory(cat)}
                   className={`rounded-full px-4 py-2 text-[12.5px] font-semibold transition-all duration-300 cursor-pointer ${
                     isActive
-                      ? 'bg-[#FF5510] text-white shadow-lg shadow-[#FF5510]/25'
+                      ? 'bg-[#9E1B32] text-white shadow-lg shadow-[#9E1B32]/25'
                       : 'bg-[#181818] text-white/70 border border-white/[0.07] hover:text-white hover:border-white/20'
                   }`}
                 >
@@ -376,7 +376,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 placeholder={lang === 'id' ? 'Cari proyek...' : 'Search projects...'}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full rounded-full bg-[#181818] border border-white/[0.08] pl-10 pr-4 py-2 text-[12.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#FF5510] transition"
+                className="w-full rounded-full bg-[#181818] border border-white/[0.08] pl-10 pr-4 py-2 text-[12.5px] text-white placeholder:text-[#7A7A7A] focus:outline-none focus:border-[#9E1B32] transition"
               />
             </div>
 
@@ -430,16 +430,16 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
               setSelectedCategory('All');
               setQuery('');
             }}
-            className="mt-2 inline-flex items-center rounded-full bg-[#FF5510] px-4 py-2 text-xs font-semibold text-white cursor-pointer"
+            className="mt-2 inline-flex items-center rounded-full bg-[#9E1B32] px-4 py-2 text-xs font-semibold text-white cursor-pointer"
           >
             Reset
           </button>
         </div>
       ) : viewMode === 'gallery' ? (
-        <div className="space-y-12">
+        <div className="relative z-10 space-y-12">
           {leadProject && (
-            <Reveal variant="curtain-up">
-              <SpotlightCard className="rounded-[34px] bg-[#121212] border border-white/[0.08] hover:border-[#FF5510]/45 overflow-hidden transition-all duration-500 shadow-2xl">
+            <ScrollPerspectiveCard intensity={1.05}>
+              <SpotlightCard className="rounded-[34px] bg-[#121212] border border-white/[0.08] hover:border-[#9E1B32]/45 overflow-hidden transition-all duration-500 shadow-2xl">
                 <Link
                   href={`/projects/${leadProject.slug}`}
                   className="relative z-10 group grid grid-cols-1 lg:grid-cols-12"
@@ -462,21 +462,21 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                       <div className="flex items-center justify-between gap-3">
                         <div className="inline-flex items-center gap-2.5">
                           <span className="text-[14px] font-mono font-bold tracking-tight">
-                            <span className="text-[#FF5510]">#</span>
+                            <span className="text-[#9E1B32]">#</span>
                             <span className="text-white">01</span>
                           </span>
                           <span className="h-1 w-1 rounded-full bg-white/25" />
-                          <span className="text-[12px] font-semibold text-[#FF5510]">
+                          <span className="text-[12px] font-semibold text-[#9E1B32]">
                             {pickLocalized(leadProject.category, lang)}
                           </span>
                         </div>
 
-                        <span className="w-10 h-10 rounded-full bg-[#181818] border border-white/[0.1] group-hover:bg-[#FF5510] group-hover:border-[#FF5510] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12 shrink-0">
+                        <span className="w-10 h-10 rounded-full bg-[#181818] border border-white/[0.1] group-hover:bg-[#9E1B32] group-hover:border-[#9E1B32] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12 shrink-0">
                           <ArrowUpRight className="w-4 h-4" />
                         </span>
                       </div>
 
-                      <h2 className="text-white font-bold text-[26px] sm:text-[32px] leading-[1.12] tracking-[-0.03em] group-hover:text-[#FF5510] transition-colors">
+                      <h2 className="text-white font-bold text-[26px] sm:text-[32px] leading-[1.12] tracking-[-0.03em] group-hover:text-[#9E1B32] transition-colors">
                         {pickLocalized(leadProject.title, lang)}
                       </h2>
 
@@ -505,7 +505,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                       <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-white/[0.07] text-[12px] text-white/75">
                         {leadProject.project_url && (
                           <span className="inline-flex items-center gap-1.5">
-                            <Globe className="w-3.5 h-3.5 text-[#FF5510]" />
+                            <Globe className="w-3.5 h-3.5 text-[#9E1B32]" />
                             <span>
                               {formatDisplayDomain(
                                 leadProject.project_url,
@@ -516,7 +516,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                         )}
                         {leadProject.apk_url && (
                           <span className="inline-flex items-center gap-1.5">
-                            <Smartphone className="w-3.5 h-3.5 text-[#FF5510]" />
+                            <Smartphone className="w-3.5 h-3.5 text-[#9E1B32]" />
                             <span>APK</span>
                           </span>
                         )}
@@ -526,7 +526,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                             <span>Code</span>
                           </span>
                         )}
-                        <span className="ml-auto font-semibold text-white group-hover:text-[#FF5510] transition-colors">
+                        <span className="ml-auto font-semibold text-white group-hover:text-[#9E1B32] transition-colors">
                           {lang === 'id' ? 'Lihat' : 'View'} &rarr;
                         </span>
                       </div>
@@ -534,13 +534,13 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                   </div>
                 </Link>
               </SpotlightCard>
-            </Reveal>
+            </ScrollPerspectiveCard>
           )}
 
           {remainingProjects.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-7 lg:gap-9 items-start pt-2">
               <ParallaxColumn
-                offsetPx={18}
+                offsetPx={34}
                 className="md:col-span-6 space-y-8"
               >
                 {leftColumnProjects.map((project, colIdx) => {
@@ -556,7 +556,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
               </ParallaxColumn>
 
               <ParallaxColumn
-                offsetPx={-26}
+                offsetPx={-44}
                 className="md:col-span-6 md:pt-14 space-y-8"
               >
                 {rightColumnProjects.map((project, colIdx) => {
@@ -606,19 +606,19 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                     }}
                     className="group py-7 sm:py-8 px-3 sm:px-5 border-b border-white/[0.1] hover:bg-white/[0.025] transition-colors duration-300 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 items-center"
                   >
-                    <div className="md:col-span-1 text-[14px] font-mono font-bold text-white/35 group-hover:text-[#FF5510] transition-colors">
+                    <div className="md:col-span-1 text-[14px] font-mono font-bold text-white/35 group-hover:text-[#9E1B32] transition-colors">
                       {numDigits}
                     </div>
 
                     <div className="md:col-span-5 space-y-1">
-                      <h2 className="text-white font-bold text-[22px] sm:text-[26px] leading-[1.15] tracking-[-0.025em] group-hover:text-[#FF5510] group-hover:translate-x-1.5 transition-all duration-300">
+                      <h2 className="text-white font-bold text-[22px] sm:text-[26px] leading-[1.15] tracking-[-0.025em] group-hover:text-[#9E1B32] group-hover:translate-x-1.5 transition-all duration-300">
                         {pickLocalized(project.title, lang)}
                       </h2>
                       <p className="text-[12px] text-[#7A7A7A]">{domain}</p>
                     </div>
 
                     <div className="md:col-span-2">
-                      <span className="inline-flex items-center rounded-full bg-[#141414] border border-white/[0.08] px-3 py-1 text-[11.5px] font-semibold text-[#FF5510]">
+                      <span className="inline-flex items-center rounded-full bg-[#141414] border border-white/[0.08] px-3 py-1 text-[11.5px] font-semibold text-[#9E1B32]">
                         {pickLocalized(project.category, lang)}
                       </span>
                     </div>
@@ -636,7 +636,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                     </div>
 
                     <div className="md:col-span-1 flex md:justify-end">
-                      <span className="w-10 h-10 rounded-full bg-[#141414] border border-white/[0.09] group-hover:bg-[#FF5510] group-hover:border-[#FF5510] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12">
+                      <span className="w-10 h-10 rounded-full bg-[#141414] border border-white/[0.09] group-hover:bg-[#9E1B32] group-hover:border-[#9E1B32] text-white flex items-center justify-center transition-all duration-300 group-hover:rotate-12">
                         <ArrowUpRight className="w-4 h-4" />
                       </span>
                     </div>
@@ -674,7 +674,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                   <span className="font-semibold text-white truncate">
                     {pickLocalized(hoveredProject.title, lang)}
                   </span>
-                  <span className="font-mono text-[#FF5510] shrink-0 ml-2">
+                  <span className="font-mono text-[#9E1B32] shrink-0 ml-2">
                     {lang === 'id' ? 'Lihat' : 'View'} &rarr;
                   </span>
                 </div>

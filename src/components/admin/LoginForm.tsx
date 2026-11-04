@@ -84,7 +84,7 @@ export function LoginForm() {
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
               placeholder="nama@email.com"
-              className="w-full rounded-2xl border border-white/[0.08] bg-[#181818] py-3 pl-10 pr-3.5 text-xs sm:text-sm text-white placeholder:text-white/30 transition duration-200 focus:border-[#FF5510] focus:outline-none focus:ring-1 focus:ring-[#FF5510] disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-2xl border border-white/[0.08] bg-[#181818] py-3 pl-10 pr-3.5 text-xs sm:text-sm text-white placeholder:text-white/30 transition duration-200 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32] disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           {state?.fieldErrors?.email && (
@@ -107,7 +107,7 @@ export function LoginForm() {
               type="button"
               onClick={handleResetPassword}
               disabled={isPending || isResetPending}
-              className="text-[11px] font-medium text-[#FF5510] hover:text-[#FF6B2B] hover:underline focus:outline-none disabled:opacity-50 transition"
+              className="text-[11px] font-medium text-[#9E1B32] hover:text-[#B8233E] hover:underline focus:outline-none disabled:opacity-50 transition"
             >
               {isResetPending ? 'Mengirim...' : 'Lupa password?'}
             </button>
@@ -125,7 +125,7 @@ export function LoginForm() {
               required
               disabled={isPending}
               placeholder="••••••••••••"
-              className="w-full rounded-2xl border border-white/[0.08] bg-[#181818] py-3 pl-10 pr-10 text-xs sm:text-sm text-white placeholder:text-white/30 transition duration-200 focus:border-[#FF5510] focus:outline-none focus:ring-1 focus:ring-[#FF5510] disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-2xl border border-white/[0.08] bg-[#181818] py-3 pl-10 pr-10 text-xs sm:text-sm text-white placeholder:text-white/30 transition duration-200 focus:border-[#9E1B32] focus:outline-none focus:ring-1 focus:ring-[#9E1B32] disabled:cursor-not-allowed disabled:opacity-50"
             />
             <button
               type="button"
@@ -153,7 +153,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="pill-btn w-full flex items-center justify-center gap-3 bg-[#FF5510] hover:bg-[#FF6B2B] text-white py-3 px-6 rounded-full text-xs sm:text-sm font-semibold shadow-lg shadow-[#FF5510]/20 transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#FF5510]/50 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+          className="pill-btn w-full flex items-center justify-center gap-3 bg-[#9E1B32] hover:bg-[#B8233E] text-white py-3 px-6 rounded-full text-xs sm:text-sm font-semibold shadow-lg shadow-[#9E1B32]/20 transition duration-200 focus:outline-none focus:ring-2 focus:ring-[#9E1B32]/50 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
         >
           {isPending ? (
             <>
@@ -163,7 +163,7 @@ export function LoginForm() {
           ) : (
             <>
               <span>Masuk</span>
-              <span className="arrow-circle w-6 h-6 rounded-full bg-white text-[#FF5510] flex items-center justify-center">
+              <span className="arrow-circle w-6 h-6 rounded-full bg-white text-[#9E1B32] flex items-center justify-center">
                 <svg
                   className="w-3.5 h-3.5"
                   viewBox="0 0 16 16"
