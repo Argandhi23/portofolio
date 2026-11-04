@@ -11,7 +11,7 @@ import {
   Search,
   Smartphone,
 } from 'lucide-react';
-import type { Project } from '@/types/database.types';
+import type { ProjectSummary } from '@/types/database.types';
 import { pickLocalized } from '@/lib/i18n/localized';
 import { formatDisplayDomain, isMobileProject } from '@/lib/utils';
 import { useLanguage } from '@/components/public/LanguageProvider';
@@ -23,13 +23,13 @@ import { ScrollPerspectiveCard } from '@/components/motion/ScrollPerspectiveCard
 import { Github } from '@/components/ui/Icons';
 
 interface ProjectsArchiveGridProps {
-  projects: Project[];
+  projects: ProjectSummary[];
 }
 
 type ViewMode = 'gallery' | 'list';
 
 interface ArchiveBrowserFrameProps {
-  project: Project;
+  project: ProjectSummary;
   alt: string;
   domain: string;
   aspectClass?: string;
@@ -121,7 +121,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [query, setQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
-  const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
+  const [hoveredProject, setHoveredProject] = useState<ProjectSummary | null>(null);
 
   const floatingRef = useRef<HTMLDivElement | null>(null);
   const targetPos = useRef({ x: 0, y: 0 });
@@ -230,7 +230,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
   const rightColumnProjects = remainingProjects.filter((_, i) => i % 2 === 1);
 
   const renderGalleryCard = (
-    project: Project,
+    project: ProjectSummary,
     realIndex: number,
     tallVariant: boolean
   ) => {

@@ -5,7 +5,7 @@ import type {
 } from '@/lib/validations/chat.schema';
 import type {
   Brand,
-  Project,
+  ProjectSummary,
   Service,
   SiteSettings,
 } from '@/types/database.types';
@@ -14,7 +14,7 @@ export interface PortfolioChatContext {
   settings: SiteSettings;
   services: Service[];
   brands: Brand[];
-  projects: Project[];
+  projects: ProjectSummary[];
 }
 
 type ChatTone = 'casual' | 'normal';
@@ -383,8 +383,8 @@ export function buildUnlistedInfoRedirectReply(
 
 function findMatchingProject(
   cleanedQuery: string,
-  projects: Project[]
-): Project | null {
+  projects: ProjectSummary[]
+): ProjectSummary | null {
   const domainAliases: Record<string, string[]> = {
     alparfume: ['alparfume', 'al parfume', 'parfum', 'qris', 'toko online parfum'],
     vetsy: ['vetsy', 'klinik hewan', 'dokter hewan', 'vet', 'pet', 'hewan'],

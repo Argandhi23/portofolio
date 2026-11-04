@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
+    // Uploaded media gets a unique timestamp+UUID filename (never overwritten), so optimized
+    // variants can be cached for 30 days: fewer re-optimizations on Vercel's free image quota.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: 'https',

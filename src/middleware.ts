@@ -6,14 +6,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - static asset files (svg, png, jpg, jpeg, gif, webp)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  /*
+   * Only the admin area and the login page need session checks. Public pages are
+   * prerendered/cached and never touch auth, so excluding them means ZERO middleware
+   * invocations (and zero Supabase Auth calls) for regular visitors, which keeps the
+   * Vercel Hobby quota and Supabase free-tier usage minimal.
+   */
+  matcher: ['/admin/:path*', '/login'],
 };

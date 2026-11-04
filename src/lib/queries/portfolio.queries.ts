@@ -10,6 +10,7 @@ import type {
   Brand,
   Database,
   Project,
+  ProjectSummary,
   Service,
   SiteSettings,
 } from '@/types/database.types';
@@ -22,6 +23,18 @@ export const CACHE_TAGS = {
 } as const;
 
 export { DEFAULT_BRANDS, DEFAULT_SERVICES, DEFAULT_SETTINGS };
+
+/**
+ * Safety-net TTL for every cached public query (1 day).
+ * Content freshness does NOT depend on it: every admin mutation calls
+ * `revalidateTag`/`revalidatePath`, so the TTL only bounds how often an idle site
+ * touches Supabase (keeps Vercel function usage and Supabase egress minimal).
+ */
+const PUBLIC_CACHE_TTL_SECONDS = 86_400;
+
+/** Every `projects` column except the heavy Markdown `content` (see `ProjectSummary`). */
+const PROJECT_SUMMARY_COLUMNS =
+  'id,title,slug,category,client_name,summary,thumbnail_url,gallery_urls,tech_stack,project_url,github_url,apk_url,is_featured,status,display_order,created_at,updated_at' as const;
 
 /**
  * Creates a stateless public Supabase client without cookies.
@@ -74,7 +87,7 @@ export const getSiteSettings = unstable_cache(
   ['portfolio-site-settings'],
   {
     tags: [CACHE_TAGS.SETTINGS, 'settings'],
-    revalidate: 3600,
+    revalidate: PUBLIC_CACHE_TTL_SECONDS,
   }
 );
 
@@ -102,7 +115,7 @@ export const getServices = unstable_cache(
   ['portfolio-services-list'],
   {
     tags: [CACHE_TAGS.SERVICES, 'services'],
-    revalidate: 3600,
+    revalidate: PUBLIC_CACHE_TTL_SECONDS,
   }
 );
 
@@ -130,19 +143,21 @@ export const getBrands = unstable_cache(
   ['portfolio-brands-list'],
   {
     tags: [CACHE_TAGS.BRANDS, 'brands'],
-    revalidate: 3600,
+    revalidate: PUBLIC_CACHE_TTL_SECONDS,
   }
 );
 
 /**
  * Cached query for published projects ordered by display_order ASC, created_at DESC.
+ * Returns summaries only (no Markdown `content`) so list pages, the chatbot context
+ * and the RSC payload stay small; the full row is fetched by `getProjectBySlug`.
  */
 export const getPublishedProjects = unstable_cache(
-  async (): Promise<Project[]> => {
+  async (): Promise<ProjectSummary[]> => {
     const supabase = getPublicClient();
     const { data, error } = await supabase
       .from('projects')
-      .select('*')
+      .select(PROJECT_SUMMARY_COLUMNS)
       .eq('status', 'published')
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: false });
@@ -154,38 +169,10 @@ export const getPublishedProjects = unstable_cache(
 
     return data ?? [];
   },
-  ['portfolio-published-projects-v2'],
+  ['portfolio-published-projects-v3'],
   {
     tags: [CACHE_TAGS.PROJECTS, 'projects'],
-    revalidate: 60,
-  }
-);
-
-/**
- * Cached query for featured projects for the home page showcase.
- */
-export const getFeaturedProjects = unstable_cache(
-  async (): Promise<Project[]> => {
-    const supabase = getPublicClient();
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('status', 'published')
-      .eq('is_featured', true)
-      .order('display_order', { ascending: true })
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching featured projects:', error.message);
-      return [];
-    }
-
-    return data ?? [];
-  },
-  ['portfolio-featured-projects-v2'],
-  {
-    tags: [CACHE_TAGS.PROJECTS, 'projects'],
-    revalidate: 60,
+    revalidate: PUBLIC_CACHE_TTL_SECONDS,
   }
 );
 
@@ -212,7 +199,7 @@ export const getProjectBySlug = unstable_cache(
   ['portfolio-project-by-slug-v2'],
   {
     tags: [CACHE_TAGS.PROJECTS, 'projects'],
-    revalidate: 60,
+    revalidate: PUBLIC_CACHE_TTL_SECONDS,
   }
 );
 
@@ -221,7 +208,7 @@ export const getProjectBySlug = unstable_cache(
  */
 export async function getNextPublishedProject(
   currentSlug: string
-): Promise<Project | null> {
+): Promise<ProjectSummary | null> {
   const projects = await getPublishedProjects();
   if (projects.length <= 1) return null;
   const idx = projects.findIndex((p) => p.slug === currentSlug);

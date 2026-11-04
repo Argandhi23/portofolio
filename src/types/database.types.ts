@@ -259,6 +259,8 @@ export type BrandInsert = TablesInsert<'brands'>;
 export type BrandUpdate = TablesUpdate<'brands'>;
 
 export type Project = Tables<'projects'>;
+/** Lightweight project row for list views (excludes the heavy Markdown `content`). */
+export type ProjectSummary = Omit<Project, 'content'>;
 export type ProjectInsert = TablesInsert<'projects'>;
 export type ProjectUpdate = TablesUpdate<'projects'>;
 

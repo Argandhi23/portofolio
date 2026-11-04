@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight, Globe, Smartphone } from 'lucide-react';
-import type { Project } from '@/types/database.types';
+import type { ProjectSummary } from '@/types/database.types';
 import { pickLocalized } from '@/lib/i18n/localized';
 import { formatDisplayDomain, isMobileProject } from '@/lib/utils';
 import { SectionHeader } from '@/components/public/SectionHeader';
@@ -13,7 +13,7 @@ import { SpotlightCard } from '@/components/motion/SpotlightCard';
 import { Github } from '@/components/ui/Icons';
 
 interface SelectedWorksSectionProps {
-  projects: Project[];
+  projects: ProjectSummary[];
   ctaUrl?: string;
 }
 
