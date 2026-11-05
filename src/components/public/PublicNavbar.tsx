@@ -261,7 +261,7 @@ export function PublicNavbar({
         createPortal(
           <>
             {/* Mobile Brand Name (Pinned permanently to top-7 left-6) */}
-            <div className="md:hidden fixed top-7 left-6 z-50 pointer-events-auto">
+            <div className="md:hidden fixed top-7 left-6 z-[60] pointer-events-auto">
               <Link
                 href="/"
                 onClick={() => setMobileOpen(false)}
@@ -272,7 +272,7 @@ export function PublicNavbar({
             </div>
 
             {/* Mobile Menu Button (Pinned permanently to top-7 right-6 - ZERO flex shifts) */}
-            <div className="md:hidden fixed top-7 right-6 z-50 pointer-events-auto">
+            <div className="md:hidden fixed top-7 right-6 z-[60] pointer-events-auto">
               <MobileMenuButton
                 open={mobileOpen}
                 onClick={() => setMobileOpen((prev) => !prev)}
@@ -285,7 +285,7 @@ export function PublicNavbar({
             {/* Mobile Header Glass Background on Scroll */}
             <div
               className={cn(
-                'md:hidden fixed top-0 inset-x-0 h-[76px] z-40 transition-opacity duration-300 pointer-events-none',
+                'md:hidden fixed top-0 inset-x-0 h-[76px] z-[50] transition-opacity duration-300 pointer-events-none',
                 isScrolled && !mobileOpen
                   ? 'opacity-100 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.08] shadow-[0_8px_24px_rgba(0,0,0,0.6)]'
                   : 'opacity-0'
@@ -296,7 +296,7 @@ export function PublicNavbar({
             <div
               aria-hidden={!isScrolled}
               className={cn(
-                'hidden md:flex fixed top-4 inset-x-0 z-40 px-4 justify-center pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
+                'hidden md:flex fixed top-4 inset-x-0 z-[50] px-4 justify-center pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
                 isScrolled
                   ? 'translate-y-0 opacity-100'
                   : '-translate-y-16 opacity-0'
@@ -344,7 +344,7 @@ export function PublicNavbar({
             <div
               aria-hidden={!mobileOpen}
               className={cn(
-                'fixed inset-0 z-40 md:hidden flex flex-col justify-between px-6 pt-28 pb-8 bg-[#000000] text-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] min-h-screen min-h-dvh overscroll-contain touch-pan-y',
+                'fixed inset-0 z-[55] md:hidden flex flex-col justify-between px-6 pt-28 pb-8 bg-[#000000] text-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] min-h-screen min-h-dvh overscroll-contain touch-pan-y',
                 mobileOpen
                   ? 'opacity-100 pointer-events-auto visible'
                   : 'opacity-0 pointer-events-none invisible'

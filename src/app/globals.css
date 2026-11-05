@@ -64,10 +64,6 @@ html.lenis body {
   overscroll-behavior: contain;
 }
 
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
 /* Custom scrollbar for modern obsidian dark theme */
 ::-webkit-scrollbar {
   width: 8px;

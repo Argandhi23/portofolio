@@ -51,8 +51,9 @@ function measureAllNow(): void {
 
   const actualScrollY = window.scrollY;
   targetScrollY = actualScrollY;
-  if (!hasInitializedScroll) {
+  if (!hasInitializedScroll || rafScrollId === null) {
     smoothedScrollY = actualScrollY;
+    currentVelocity = 0;
     hasInitializedScroll = true;
   }
 

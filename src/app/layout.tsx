@@ -45,9 +45,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakartaSans.variable} h-full antialiased dark scroll-smooth`}
+      className={`${plusJakartaSans.variable} antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-[#080808] text-white font-sans selection:bg-[#9E1B32] selection:text-white">
+      <body className="min-h-screen flex flex-col bg-[#080808] text-white font-sans selection:bg-[#9E1B32] selection:text-white">
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>

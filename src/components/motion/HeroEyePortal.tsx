@@ -104,10 +104,15 @@ export function HeroEyePortal({
     let scrubDistancePx = 420;
     let contentHeight = 1;
     let lastCover = -1;
+    const initialHash = window.location.hash;
+    const hasSectionHash = Boolean(
+      initialHash && initialHash !== '#' && initialHash !== '#home'
+    );
     let lastScrollY = window.scrollY;
-    let hasLeftTopInAbout = window.scrollY > 24;
+    let hasLeftTopInAbout = hasSectionHash || window.scrollY > 24;
 
-    let phase: PortalPhase = window.scrollY > 24 ? 'about' : 'scrub';
+    let phase: PortalPhase =
+      hasSectionHash || window.scrollY > 24 ? 'about' : 'scrub';
     let progress = phase === 'about' ? 1 : 0;
 
     // Normalized [0..1] scrub state for Phase 1 (maps to progress [0..EYE_DIVE_THRESHOLD])
@@ -610,6 +615,22 @@ export function HeroEyePortal({
 
     const onScroll = () => {
       const y = window.scrollY;
+      if (phase === 'scrub' && y > 80 && !motion.matches) {
+        // Programmatic scroll / anchor jump / Find-in-page while in scrub phase -> open portal cleanly
+        window.cancelAnimationFrame(scrubRaf);
+        scrubRaf = 0;
+        phase = 'about';
+        targetScrub = 1;
+        currentScrub = 1;
+        hasLeftTopInAbout = true;
+        lastScrollY = y;
+        paintPortal(1);
+        syncPortalDataset('about');
+        paintSectionOverlap();
+        scheduleRemeasure();
+        return;
+      }
+
       if (
         (phase === 'scrub' || phase === 'entering' || phase === 'exiting') &&
         y > 0 &&
@@ -667,6 +688,15 @@ export function HeroEyePortal({
     syncPortalDataset(phase);
     layout();
 
+    if (hasSectionHash && window.scrollY <= 24) {
+      const hashTarget = document.querySelector<HTMLElement>(initialHash);
+      if (hashTarget) {
+        window.requestAnimationFrame(() => {
+          hashTarget.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    }
+
     window.addEventListener('wheel', onWheel, {
       capture: true,
       passive: false,
@@ -692,6 +722,10 @@ export function HeroEyePortal({
       window.cancelAnimationFrame(scrollRaf);
       observer.disconnect();
       delete document.documentElement.dataset.heroPortal;
+      document.documentElement.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow');
+      document.documentElement.classList.remove('lenis-stopped');
+      window.dispatchEvent(new Event('hero-portal-change'));
       window.removeEventListener('wheel', onWheel, { capture: true });
       window.removeEventListener('touchstart', onTouchStart, { capture: true });
       window.removeEventListener('touchmove', onTouchMove, { capture: true });

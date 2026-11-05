@@ -195,10 +195,28 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
     // Wait for curtain slide-up exit & clean DOM unmount
     await expect(preloader).toHaveCount(0, { timeout: 8000 });
 
-    // Navigate via SPA link to /about and verify preloader does NOT replay
+    // Navigate via SPA link to /about and verify preloader does NOT replay and scrolling is unlocked
     await page.locator('header nav a[href="/about"]').first().click();
     await expect(page).toHaveURL(/\/about$/);
     await expect(page.getByTestId('intro-preloader')).toHaveCount(0);
+
+    const hasLenisStoppedOnAbout = await page.evaluate(() =>
+      document.documentElement.classList.contains('lenis-stopped')
+    );
+    expect(hasLenisStoppedOnAbout).toBe(false);
+
+    await page.mouse.wheel(0, 600);
+    await expect
+      .poll(async () => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(50);
+
+    // Navigate via SPA link to /projects and verify scrolling also works cleanly
+    await page.locator('header nav a[href="/projects"]').first().click();
+    await expect(page).toHaveURL(/\/projects$/);
+    await page.mouse.wheel(0, 600);
+    await expect
+      .poll(async () => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(50);
   });
 
   test('switches UI and CMS copy cleanly between EN and ID via Navbar LanguageToggle', async ({

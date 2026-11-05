@@ -64,6 +64,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       } else {
         document.documentElement.style.removeProperty('overflow');
         document.body.style.removeProperty('overflow');
+        document.documentElement.classList.remove('lenis-stopped');
         lenis.start();
         lenis.resize();
       }
@@ -80,13 +81,65 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     };
   }, []);
 
-  // Re-measure cached geometry cleanly after Next.js client-side route transitions
+  // Unlock scroll, restart Lenis if leaving Home portal, and re-measure geometry after Next.js route transitions
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if (pathname !== '/') {
+      delete document.documentElement.dataset.heroPortal;
+    }
+
+    const portalPhase = document.documentElement.dataset.heroPortal;
+    const isPortalLocked =
+      pathname === '/' &&
+      (portalPhase === 'hero' ||
+        portalPhase === 'entering' ||
+        portalPhase === 'exiting');
+
+    if (!isPortalLocked) {
+      document.documentElement.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow');
+      document.documentElement.classList.remove('lenis-stopped');
+    }
+
     const instance = lenisRef.current;
     if (instance) {
-      instance.resize();
+      if (isPortalLocked) {
+        instance.scrollTo(0, { immediate: true, force: true });
+        instance.stop();
+      } else {
+        instance.start();
+        if (!window.location.hash) {
+          instance.scrollTo(0, { immediate: true, force: true });
+        }
+        instance.resize();
+      }
+    } else if (!isPortalLocked && !window.location.hash) {
+      window.scrollTo(0, 0);
     }
+
+    notifyScrollPosition(window.scrollY);
     scheduleRemeasure();
+
+    const rafId = window.requestAnimationFrame(() => {
+      if (lenisRef.current && !isPortalLocked) {
+        lenisRef.current.start();
+        lenisRef.current.resize();
+      }
+      scheduleRemeasure();
+    });
+
+    const settleTimer = window.setTimeout(() => {
+      if (lenisRef.current && !isPortalLocked) {
+        lenisRef.current.resize();
+      }
+      scheduleRemeasure();
+    }, 150);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(settleTimer);
+    };
   }, [pathname]);
 
   return <>{children}</>;
