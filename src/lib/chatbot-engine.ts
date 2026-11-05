@@ -207,7 +207,7 @@ export function buildPortfolioSystemPrompt(
             return `${idx + 1}. "${pTitle}" (slug: /projects/${p.slug}, kategori: ${pCat}, tech: ${stack})${live}${apk} — ${pSummary}`;
           })
           .join('\n')
-      : 'Al Parfume (E-Commerce), Vetsy (Mobile APK Flutter), GriyaNesa (Web Kost UNESA), Desa Bogem (Web Desa), FajarTrans (Web Rental Mobil), Sumberwangi (Katalog Parfum).';
+      : 'Al Parfume (E-Commerce), Vetsy (Mobile APK Flutter), GriyaNesa (Web Kost UNESA), Desa Bogem (Web Desa), Prabaswara (Web Studio Fotografi), Sumberwangi (Katalog Parfum), FajarTrans (Web Rental Mobil).';
 
   return [
     `Kamu adalah asisten chat di website portofolio Faqih Rafasha Argandhi (brand: "${brandName}"), seorang ${title} di Surabaya.`,
@@ -392,6 +392,7 @@ function findMatchingProject(
     'desa-bogem': ['desa bogem', 'bogem', 'website desa', 'sistem informasi desa', 'surat desa'],
     fajartrans: ['fajartrans', 'fajar trans', 'rental mobil', 'sewa mobil', 'travel', 'armada'],
     sumberwangi: ['sumberwangi', 'sumber wangi', 'katalog parfum'],
+    prabaswara: ['prabaswara', 'swara gallery', 'swara studio', 'swara moment', 'swara wedding', 'studio foto', 'fotografi'],
   };
 
   for (const project of projects) {
@@ -900,7 +901,7 @@ const INTENT_KNOWLEDGE_BASE: IntentRule[] = [
               .slice(0, 6)
               .map((p) => `**${pickLocalized(p.title, locale)}** (${pickLocalized(p.category, locale)})`)
               .join(', ')
-          : '**Al Parfume** (E-Commerce), **Vetsy** (Aplikasi APK Klinik Hewan), **GriyaNesa** (Web Pencarian Kost UNESA), **Desa Bogem** (Web Desa), **FajarTrans** (Web Rental Mobil), dan **Sumberwangi**';
+          : '**Al Parfume** (E-Commerce), **Vetsy** (Aplikasi APK Klinik Hewan), **GriyaNesa** (Web Pencarian Kost UNESA), **Desa Bogem** (Web Desa), **Prabaswara** (Web Studio Fotografi), **Sumberwangi**, dan **FajarTrans** (Web Rental Mobil)';
 
       return {
         reply:

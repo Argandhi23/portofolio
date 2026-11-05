@@ -154,6 +154,14 @@ const GALLERY_CAPTION_PRESETS: Record<
     { en: 'Product & WhatsApp Order', id: 'Detail Aroma & Pesan WA' },
     { en: 'Brand Story', id: 'Profil & Prinsip Mutu' },
   ],
+  prabaswara: [
+    { en: 'Home & Hero', id: 'Beranda Utama' },
+    { en: 'Visual Philosophy & Story', id: 'Filosofi Visual & Profil' },
+    { en: '4 Sub-Brand Showcase', id: 'Ekosistem 4 Sub-Brand' },
+    { en: 'Service Packages & Pricing', id: 'Katalog Paket Harga' },
+    { en: 'Curated Portfolio Gallery', id: 'Galeri Karya Pilihan' },
+    { en: 'Sub-Brand Showcase Page', id: 'Halaman Khusus Sub-Brand' },
+  ],
 };
 
 /**
