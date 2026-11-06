@@ -28,27 +28,24 @@ export async function updateSettings(
       };
     }
 
-    // 1. Fetch current settings to detect replaced hero image
+    // 1. Fetch current settings to clean up any legacy hero image in storage
     const { data: existingSettings } = await supabase
       .from('site_settings')
       .select('hero_image_url')
       .eq('id', 1)
       .single();
 
-    if (
-      existingSettings?.hero_image_url &&
-      existingSettings.hero_image_url !== validation.data.hero_image_url
-    ) {
+    if (existingSettings?.hero_image_url) {
       await deleteMedia(existingSettings.hero_image_url);
     }
 
-    // 2. Upsert settings row id = 1
+    // 2. Upsert settings row id = 1 (hero_image_url is always null because Hero uses 3D character)
     const { data, error } = await supabase
       .from('site_settings')
       .upsert({
         id: 1,
         ...validation.data,
-        hero_image_url: validation.data.hero_image_url || null,
+        hero_image_url: null,
         contact_email: validation.data.contact_email || null,
         whatsapp_number: validation.data.whatsapp_number || '6285806912873',
         github_url: validation.data.github_url || null,

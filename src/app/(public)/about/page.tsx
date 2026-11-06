@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import {
@@ -15,7 +14,6 @@ import {
   T,
 } from '@/components/public/LanguageProvider';
 import { Reveal } from '@/components/motion/Reveal';
-import { ParallaxMedia } from '@/components/motion/ParallaxMedia';
 import { TechLogo } from '@/components/ui/TechLogos';
 
 export const metadata: Metadata = {
@@ -96,51 +94,7 @@ const EDITORIAL_JOURNEY: BilingualJourneyEntry[] = [
   },
 ];
 
-function EditorialMonographPortrait({
-  heroImageUrl,
-  brandName,
-}: {
-  heroImageUrl: string | null;
-  brandName: string;
-}) {
-  if (heroImageUrl) {
-    return (
-      <div className="relative rounded-[28px] overflow-hidden border border-white/[0.1] bg-[#111111] shadow-[0_24px_60px_rgba(0,0,0,0.65)]">
-        <ParallaxMedia
-          intensity={18}
-          className="aspect-[3/4.05] w-full bg-[#151515]"
-          innerClassName="relative h-full w-full"
-        >
-          <Image
-            src={heroImageUrl}
-            alt={`${brandName} — Faqih Rafasha Argandhi`}
-            fill
-            priority
-            className="object-cover object-top grayscale contrast-125"
-            sizes="(max-width: 1024px) 100vw, 440px"
-            unoptimized={
-              heroImageUrl.startsWith('data:') ||
-              heroImageUrl.endsWith('.svg')
-            }
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-black/20"
-          />
-        </ParallaxMedia>
-
-        <div className="absolute inset-x-0 bottom-0 z-10 p-6 flex items-end justify-between gap-4 border-t border-white/10 bg-[#0B0B0B]/88">
-          <p className="text-white font-bold text-[15px] tracking-[-0.02em]">
-            Faqih Rafasha Argandhi
-          </p>
-          <span className="text-[11px] font-mono text-white/60">
-            SURABAYA, ID
-          </span>
-        </div>
-      </div>
-    );
-  }
-
+function EditorialMonographPortrait() {
   return (
     <div className="relative rounded-[28px] overflow-hidden border border-white/[0.12] bg-[#121212] shadow-[0_30px_70px_rgba(0,0,0,0.8)] flex flex-col justify-between">
       <div className="h-10 shrink-0 bg-[#171717] border-b border-white/[0.08] px-4 flex items-center justify-between">
@@ -313,10 +267,7 @@ export default async function AboutPage() {
             delay={260}
             className="lg:col-span-5"
           >
-            <EditorialMonographPortrait
-              heroImageUrl={settings.hero_image_url}
-              brandName={brandName}
-            />
+            <EditorialMonographPortrait />
           </Reveal>
         </div>
       </section>

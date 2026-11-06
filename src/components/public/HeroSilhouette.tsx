@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Image from 'next/image';
 import {
   CHEEK_LEFT_RELIEF_PATH,
   CHEEK_RIGHT_RELIEF_PATH,
@@ -35,11 +34,6 @@ import {
   RIGHT_SIDE_EAR_PATH,
 } from '@/lib/hero-3d-bust';
 
-interface HeroSilhouetteProps {
-  heroImageUrl?: string | null;
-  altText?: string;
-}
-
 const INITIAL_HEAD_CORE = evaluatePath(HEAD_CORE_PATH, 0);
 const INITIAL_FACE_LEFT_RIM = evaluatePath(FACE_LEFT_RIM_PATH, 0);
 const INITIAL_FACE_RIGHT_RIM = evaluatePath(FACE_RIGHT_RIM_PATH, 0);
@@ -69,15 +63,11 @@ const INITIAL_NEAR_HUNTER = evaluatePath(NEAR_HUNTER_EYE_PATH, 0);
 const INITIAL_FAR_BROW = evaluatePath(FAR_BROW_PATH, 0);
 const INITIAL_FAR_HUNTER = evaluatePath(FAR_HUNTER_EYE_PATH, 0);
 
-export function HeroSilhouette({
-  heroImageUrl,
-  altText = 'Faqih Rafasha Argandhi — Software Developer',
-}: HeroSilhouetteProps) {
+export function HeroSilhouette() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const rigVersionRef = useRef('v5-sculpted-3pose');
 
   useEffect(() => {
-    if (heroImageUrl) return;
     const svg = svgRef.current;
     if (!svg) return;
 
@@ -323,39 +313,7 @@ export function HeroSilhouette({
       portalSection.removeEventListener('hero-head-turn', syncFromSection);
       observer.disconnect();
     };
-  }, [heroImageUrl]);
-
-  if (heroImageUrl) {
-    return (
-      <div className="absolute inset-0 flex justify-center items-end pointer-events-none z-[2] overflow-hidden">
-        <div className="relative w-full max-w-[680px] h-[88%] opacity-90 mix-blend-luminosity">
-          <Image
-            src={heroImageUrl}
-            alt={altText}
-            fill
-            priority
-            className="object-contain object-bottom"
-            sizes="(max-width: 768px) 100vw, 680px"
-            unoptimized={
-              heroImageUrl.startsWith('data:') || heroImageUrl.endsWith('.svg')
-            }
-          />
-          <span
-            data-eye-portal-anchor
-            aria-hidden="true"
-            className="
-              pointer-events-none absolute top-[35%] left-[46.5%] h-1.5 w-1.5
-              -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0
-            "
-          />
-        </div>
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-[#120206] via-[#520A18]/35 to-transparent mix-blend-multiply"
-          aria-hidden="true"
-        />
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div

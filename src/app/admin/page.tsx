@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/auth-guard';
+import { computeVisitorAnalytics } from '@/lib/visitor-utils';
+import { VisitorAnalyticsPanel } from '@/components/admin/VisitorAnalyticsPanel';
+import type { PageView } from '@/types/database.types';
 import {
   FolderGit2,
   Inbox,
@@ -8,7 +11,6 @@ import {
   Settings,
   Plus,
   ArrowRight,
-  Star,
 } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
@@ -17,161 +19,140 @@ export default async function AdminDashboardPage() {
   const [
     { count: totalProjects },
     { count: publishedProjects },
-    { count: featuredProjects },
     { count: totalServices },
     { count: totalBrands },
     { count: unreadInquiries },
+    { data: pageViewsData },
   ] = await Promise.all([
-    supabase.from('projects').select('*', { count: 'exact', head: true }),
+    supabase.from('projects').select('id', { count: 'exact', head: true }),
     supabase
       .from('projects')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'published'),
     supabase
-      .from('projects')
-      .select('*', { count: 'exact', head: true })
-      .eq('is_featured', true),
-    supabase
       .from('services')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_active', true),
     supabase
       .from('brands')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_active', true),
     supabase
       .from('inquiries')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'unread'),
+    supabase
+      .from('page_views')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1000),
   ]);
 
-  const shortcuts = [
-    { href: '/admin/projects', title: 'Projects', icon: FolderGit2 },
-    { href: '/admin/inquiries', title: 'Pesan Klien', icon: Inbox },
-    { href: '/admin/services', title: 'Layanan', icon: Sparkles },
-    { href: '/admin/settings', title: 'Pengaturan', icon: Settings },
+  const recentViews: PageView[] = (pageViewsData as PageView[] | null) ?? [];
+  const analyticsSummary = computeVisitorAnalytics(recentViews);
+
+  const contentShortcuts = [
+    {
+      href: '/admin/projects',
+      title: 'Projects',
+      stat: `${totalProjects ?? 0} total (${publishedProjects ?? 0} tayang)`,
+      icon: FolderGit2,
+    },
+    {
+      href: '/admin/inquiries',
+      title: 'Pesan Klien',
+      stat: `${unreadInquiries ?? 0} belum dibaca`,
+      icon: Inbox,
+      highlight: (unreadInquiries ?? 0) > 0,
+    },
+    {
+      href: '/admin/services',
+      title: 'Layanan',
+      stat: `${totalServices ?? 0} aktif`,
+      icon: Sparkles,
+    },
+    {
+      href: '/admin/brands',
+      title: 'Tech Stack',
+      stat: `${totalBrands ?? 0} aktif`,
+      icon: Code2,
+    },
   ];
 
   return (
     <div className="space-y-8">
       {/* Page Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.07] pb-5">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          Dashboard
-        </h1>
-        <Link
-          href="/admin/projects/new"
-          className="pill-btn inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-5 py-2.5 text-xs font-bold text-white shadow-lg shadow-[#9E1B32]/20 transition"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Tambah Project</span>
-        </Link>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 shadow-lg">
-          <div className="flex items-center justify-between text-white/50">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Projects
-            </span>
-            <FolderGit2 className="h-4 w-4 text-[#9E1B32]" />
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold tracking-tight text-white">
-              {totalProjects ?? 0}
-            </span>
-            <span className="text-xs text-white/50">
-              ({publishedProjects ?? 0} tayang)
-            </span>
-          </div>
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-white">
+            Dashboard
+          </h1>
+          <p className="text-xs text-white/50 mt-0.5">
+            Pantau kunjungan website dan kelola konten portofolio.
+          </p>
         </div>
 
-        <div className="rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 shadow-lg">
-          <div className="flex items-center justify-between text-white/50">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Featured
-            </span>
-            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold tracking-tight text-white">
-              {featuredProjects ?? 0}
-            </span>
-          </div>
-        </div>
-
-        <Link
-          href="/admin/inquiries"
-          className="rounded-[24px] border border-white/[0.07] hover:border-[#9E1B32]/45 bg-[#121212] p-5 shadow-lg transition-colors"
-        >
-          <div className="flex items-center justify-between text-white/50">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Pesan Baru
-            </span>
-            <Inbox className="h-4 w-4 text-[#9E1B32]" />
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold tracking-tight text-white">
-              {unreadInquiries ?? 0}
-            </span>
-          </div>
-        </Link>
-
-        <div className="rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 shadow-lg">
-          <div className="flex items-center justify-between text-white/50">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Layanan
-            </span>
-            <Sparkles className="h-4 w-4 text-[#9E1B32]" />
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold tracking-tight text-white">
-              {totalServices ?? 0}
-            </span>
-          </div>
-        </div>
-
-        <div className="rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 shadow-lg">
-          <div className="flex items-center justify-between text-white/50">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Tech Stack
-            </span>
-            <Code2 className="h-4 w-4 text-[#9E1B32]" />
-          </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold tracking-tight text-white">
-              {totalBrands ?? 0}
-            </span>
-          </div>
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/admin/settings"
+            className="inline-flex items-center gap-2 rounded-full bg-[#181818] hover:bg-[#202020] border border-white/[0.08] px-4 py-2 text-xs font-semibold text-white/80 hover:text-white transition"
+          >
+            <Settings className="h-3.5 w-3.5 text-[#9E1B32]" />
+            <span>Pengaturan</span>
+          </Link>
+          <Link
+            href="/admin/projects/new"
+            className="inline-flex items-center gap-2 rounded-full bg-[#9E1B32] hover:bg-[#B8233E] px-4 py-2 text-xs font-bold text-white transition"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Tambah Project</span>
+          </Link>
         </div>
       </div>
 
-      {/* Quick Action Navigation Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {shortcuts.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="group rounded-[24px] border border-white/[0.07] bg-[#121212] p-5 hover:border-[#9E1B32]/45 hover:bg-[#151515] transition-all duration-300 shadow-xl flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3.5">
-                <div className="h-10 w-10 rounded-2xl bg-[#181818] border border-white/[0.08] text-[#9E1B32] flex items-center justify-center group-hover:scale-105 transition">
-                  <Icon className="h-4 w-4" />
+      {/* 1. Visitor Analytics Panel (Today, Week, Month, Year, All-Time + Who Visited) */}
+      <VisitorAnalyticsPanel
+        summary={analyticsSummary}
+        recentViews={recentViews}
+      />
+
+      {/* 2. Compact Content Management Shortcuts */}
+      <section className="space-y-3">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-white/55">
+          Kelola Konten Portofolio
+        </h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {contentShortcuts.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`group rounded-2xl border p-4 transition-colors flex items-center justify-between ${
+                  item.highlight
+                    ? 'border-[#9E1B32]/45 bg-[#151213] hover:border-[#9E1B32]'
+                    : 'border-white/[0.07] bg-[#121212] hover:border-white/[0.16]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-[#181818] border border-white/[0.07] text-[#9E1B32] flex items-center justify-center">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-white group-hover:text-[#9E1B32] transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-[11px] text-white/50 mt-0.5">
+                      {item.stat}
+                    </p>
+                  </div>
                 </div>
-                <h2 className="text-sm font-bold text-white group-hover:text-[#9E1B32] transition-colors">
-                  {item.title}
-                </h2>
-              </div>
-              <span className="h-8 w-8 rounded-full bg-[#181818] border border-white/[0.08] flex items-center justify-center text-white/60 group-hover:bg-[#9E1B32] group-hover:text-white transition">
-                <ArrowRight className="h-3.5 w-3.5" />
-              </span>
-            </Link>
-          );
-        })}
-      </div>
+                <ArrowRight className="h-3.5 w-3.5 text-white/40 group-hover:text-white transition-colors" />
+              </Link>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }

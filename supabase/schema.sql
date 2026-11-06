@@ -282,6 +282,53 @@ create policy "Only admin can delete inquiries"
   using (public.is_admin());
 
 -- ============================================================================
+-- 9C. TABEL PAGE_VIEWS (DETEKSI & ANALITIK PENGUNJUNG WEBSITE -> /admin)
+-- ============================================================================
+create table if not exists public.page_views (
+  id uuid primary key default gen_random_uuid(),
+  visitor_id text not null check (char_length(trim(visitor_id)) between 8 and 120),
+  path text not null check (char_length(trim(path)) between 1 and 300),
+  referrer_source text not null default 'Direct' check (char_length(trim(referrer_source)) between 1 and 120),
+  referrer text check (referrer is null or char_length(referrer) <= 500),
+  country text check (country is null or char_length(country) <= 80),
+  city text check (city is null or char_length(city) <= 120),
+  device_type text not null default 'Desktop' check (device_type in ('Desktop', 'Mobile', 'Tablet')),
+  browser text not null default 'Browser' check (char_length(trim(browser)) <= 80),
+  os text not null default 'OS' check (char_length(trim(os)) <= 80),
+  is_returning boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_page_views_created_at
+  on public.page_views (created_at desc);
+
+create index if not exists idx_page_views_visitor_id
+  on public.page_views (visitor_id);
+
+alter table public.page_views enable row level security;
+
+drop policy if exists "Public can insert page_views" on public.page_views;
+create policy "Public can insert page_views"
+  on public.page_views for insert
+  to anon, authenticated
+  with check (
+    char_length(trim(visitor_id)) between 8 and 120
+    and char_length(trim(path)) between 1 and 300
+  );
+
+drop policy if exists "Only admin can view page_views" on public.page_views;
+create policy "Only admin can view page_views"
+  on public.page_views for select
+  to authenticated
+  using (public.is_admin());
+
+drop policy if exists "Only admin can delete page_views" on public.page_views;
+create policy "Only admin can delete page_views"
+  on public.page_views for delete
+  to authenticated
+  using (public.is_admin());
+
+-- ============================================================================
 -- 10. DATA AWAL (SEED DATA SESUAI DESAIN REFERENSI "FOLIOBLOX")
 -- ============================================================================
 -- Insert pengaturan utama default

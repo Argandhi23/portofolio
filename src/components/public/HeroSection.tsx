@@ -68,11 +68,8 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
         <HeroAmbientGlow />
         <div className="hero-glow-bottom" aria-hidden="true" />
 
-        {/* Center Studio Silhouette / CMS Hero Portrait */}
-        <HeroSilhouette
-          heroImageUrl={settings.hero_image_url}
-          altText={`${brandName} — Faqih Rafasha Argandhi`}
-        />
+        {/* Center Studio 3D Silhouette */}
+        <HeroSilhouette />
 
         {/* 1. TOP NAVBAR */}
         <div

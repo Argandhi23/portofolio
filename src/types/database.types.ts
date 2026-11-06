@@ -8,6 +8,7 @@ export type Json =
 
 export type ProjectStatus = 'draft' | 'published';
 export type InquiryStatus = 'unread' | 'read' | 'replied';
+export type DeviceType = 'Desktop' | 'Mobile' | 'Tablet';
 
 export interface Database {
   public: {
@@ -219,6 +220,51 @@ export interface Database {
         };
         Relationships: [];
       };
+      page_views: {
+        Row: {
+          id: string;
+          visitor_id: string;
+          path: string;
+          referrer_source: string;
+          referrer: string | null;
+          country: string | null;
+          city: string | null;
+          device_type: DeviceType;
+          browser: string;
+          os: string;
+          is_returning: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          visitor_id: string;
+          path: string;
+          referrer_source?: string;
+          referrer?: string | null;
+          country?: string | null;
+          city?: string | null;
+          device_type?: DeviceType;
+          browser?: string;
+          os?: string;
+          is_returning?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          visitor_id?: string;
+          path?: string;
+          referrer_source?: string;
+          referrer?: string | null;
+          country?: string | null;
+          city?: string | null;
+          device_type?: DeviceType;
+          browser?: string;
+          os?: string;
+          is_returning?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -267,3 +313,7 @@ export type ProjectUpdate = TablesUpdate<'projects'>;
 export type Inquiry = Tables<'inquiries'>;
 export type InquiryInsert = TablesInsert<'inquiries'>;
 export type InquiryUpdate = TablesUpdate<'inquiries'>;
+
+export type PageView = Tables<'page_views'>;
+export type PageViewInsert = TablesInsert<'page_views'>;
+export type PageViewUpdate = TablesUpdate<'page_views'>;

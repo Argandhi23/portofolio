@@ -72,11 +72,13 @@ export function ProjectTableActions({
           type="button"
           onClick={handleToggleFeatured}
           disabled={isPending}
-          title={isFeatured ? 'Hapus dari Featured' : 'Jadikan Featured (Showcase)'}
-          className={`p-1.5 rounded-lg border transition ${
+          title={
+            isFeatured ? 'Hapus dari Featured' : 'Jadikan Featured (Showcase)'
+          }
+          className={`p-1.5 rounded-lg border transition cursor-pointer ${
             isFeatured
               ? 'border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
-              : 'border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-amber-400 hover:bg-zinc-800'
+              : 'border-white/[0.08] bg-[#181818] text-white/45 hover:text-amber-400'
           }`}
         >
           {isPending ? (
@@ -94,10 +96,10 @@ export function ProjectTableActions({
           onClick={handleToggleStatus}
           disabled={isPending}
           title={status === 'published' ? 'Ubah ke Draft' : 'Publikasikan'}
-          className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium border transition ${
+          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition cursor-pointer ${
             status === 'published'
-              ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/40'
-              : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+              : 'border-white/[0.08] bg-[#181818] text-white/55 hover:text-white'
           }`}
         >
           {status === 'published' ? (
@@ -117,7 +119,7 @@ export function ProjectTableActions({
         <Link
           href={`/admin/projects/${id}/edit`}
           title="Sunting Project"
-          className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white hover:border-zinc-700 transition"
+          className="p-1.5 rounded-lg border border-white/[0.08] bg-[#181818] text-white/60 hover:text-white hover:border-white/20 transition"
         >
           <Pencil className="h-3.5 w-3.5" />
         </Link>
@@ -128,7 +130,7 @@ export function ProjectTableActions({
           onClick={() => setShowDeleteModal(true)}
           disabled={isPending}
           title="Hapus Project"
-          className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-red-400 hover:border-red-900/40 hover:bg-red-950/20 transition"
+          className="p-1.5 rounded-lg border border-white/[0.08] bg-[#181818] text-white/45 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition cursor-pointer"
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
@@ -136,33 +138,33 @@ export function ProjectTableActions({
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#121212] p-6">
             <div className="flex items-center gap-3 text-red-400 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-red-950/50 border border-red-500/20 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-400" />
+              <div className="h-9 w-9 rounded-xl bg-red-500/10 border border-red-500/25 flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-red-400" />
               </div>
-              <h3 className="text-base font-semibold text-white">
-                Hapus Project
-              </h3>
+              <h3 className="text-sm font-bold text-white">Hapus Project</h3>
             </div>
 
-            <p className="text-xs text-zinc-300 leading-relaxed">
-              Hapus project <strong className="text-white">&quot;{title}&quot;</strong> secara permanen?
+            <p className="text-xs text-white/70 leading-relaxed text-left">
+              Hapus project{' '}
+              <strong className="text-white">&quot;{title}&quot;</strong> secara
+              permanen?
             </p>
 
             {error && (
-              <p className="mt-3 text-xs text-red-400 bg-red-950/40 p-2 rounded-md">
+              <p className="mt-3 text-xs text-red-300 bg-red-500/10 p-2.5 rounded-xl text-left">
                 {error}
               </p>
             )}
 
-            <div className="mt-6 flex items-center justify-end gap-2.5">
+            <div className="mt-5 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
                 disabled={isPending}
-                className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-800 transition"
+                className="rounded-full border border-white/10 bg-[#181818] px-4 py-1.5 text-xs font-medium text-white/75 hover:text-white transition cursor-pointer"
               >
                 Batal
               </button>
@@ -170,7 +172,7 @@ export function ProjectTableActions({
                 type="button"
                 onClick={handleDelete}
                 disabled={isPending}
-                className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700 transition disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-red-500 transition disabled:opacity-50 cursor-pointer"
               >
                 {isPending ? (
                   <>
@@ -178,7 +180,7 @@ export function ProjectTableActions({
                     <span>Menghapus...</span>
                   </>
                 ) : (
-                  <span>Hapus Project</span>
+                  <span>Ya, Hapus</span>
                 )}
               </button>
             </div>
