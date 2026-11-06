@@ -89,7 +89,7 @@ function ArchiveBrowserFrame({
       </div>
 
       <ParallaxMedia
-        intensity={32}
+        intensity={0}
         className={`${aspectClass} w-full bg-[#141414]`}
         innerClassName="relative h-full w-full"
       >
@@ -231,8 +231,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
 
   const renderGalleryCard = (
     project: ProjectSummary,
-    realIndex: number,
-    tallVariant: boolean
+    realIndex: number
   ) => {
     const numDigits = String(realIndex + 1).padStart(2, '0');
     const domain = formatDisplayDomain(project.project_url, project.slug);
@@ -255,9 +254,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 project={project}
                 alt={titleLoc}
                 domain={domain}
-                aspectClass={
-                  tallVariant ? 'aspect-[16/11.4]' : 'aspect-[16/9.8]'
-                }
+                aspectClass="aspect-[16/10]"
                 sizes="(max-width: 768px) 100vw, 520px"
               />
             </div>
@@ -543,15 +540,11 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 offsetPx={34}
                 className="md:col-span-6 space-y-8"
               >
-                {leftColumnProjects.map((project, colIdx) => {
+                {leftColumnProjects.map((project) => {
                   const realIndex = filteredProjects.findIndex(
                     (p) => p.id === project.id
                   );
-                  return renderGalleryCard(
-                    project,
-                    realIndex,
-                    colIdx % 2 === 1
-                  );
+                  return renderGalleryCard(project, realIndex);
                 })}
               </ParallaxColumn>
 
@@ -559,15 +552,11 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
                 offsetPx={-44}
                 className="md:col-span-6 md:pt-14 space-y-8"
               >
-                {rightColumnProjects.map((project, colIdx) => {
+                {rightColumnProjects.map((project) => {
                   const realIndex = filteredProjects.findIndex(
                     (p) => p.id === project.id
                   );
-                  return renderGalleryCard(
-                    project,
-                    realIndex,
-                    colIdx % 2 === 0
-                  );
+                  return renderGalleryCard(project, realIndex);
                 })}
               </ParallaxColumn>
             </div>

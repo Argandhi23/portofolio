@@ -170,6 +170,14 @@ const GALLERY_CAPTION_PRESETS: Record<
     { en: 'User & Resident Unit Mapping', id: 'Manajemen Pengguna & Unit' },
     { en: 'Resident Package Inventory', id: 'Inventaris Paket Warga' },
   ],
+  craftbyhanifa: [
+    { en: 'Login & 1-Click Quick Access', id: 'Login & Akses Cepat 1-Klik' },
+    { en: 'Business & Profit Dashboard', id: 'Dashboard Ringkasan Usaha & Laba' },
+    { en: 'Product Catalog & BOM Recipes', id: 'Katalog Produk & Formula Resep BOM' },
+    { en: 'Raw Material & Moving Average Stock', id: 'Inventori Bahan Baku & Moving Average' },
+    { en: 'Shopee & Offline Sales Orders', id: 'Transaksi Penjualan Shopee & Kasir' },
+    { en: 'Income Statement & Net Margin', id: 'Laporan Laba Rugi & Margin Bersih' },
+  ],
 };
 
 /**

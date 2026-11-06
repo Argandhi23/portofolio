@@ -80,7 +80,7 @@ function BrowserPreviewFrame({
       </div>
 
       <ParallaxMedia
-        intensity={28}
+        intensity={0}
         className="aspect-[16/10] w-full bg-[#141414]"
         innerClassName="relative h-full w-full"
       >

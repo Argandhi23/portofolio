@@ -258,7 +258,7 @@ export default async function ProjectDetailPage({
                     caption={cleanTitleEn}
                   >
                     <ParallaxMedia
-                      intensity={18}
+                      intensity={0}
                       className="aspect-[16/10] w-full bg-[#141414]"
                       innerClassName="relative h-full w-full"
                     >
@@ -441,7 +441,7 @@ export default async function ProjectDetailPage({
                           caption={captionEn}
                         >
                           <ParallaxMedia
-                            intensity={16}
+                            intensity={0}
                             className="aspect-[16/10] w-full bg-[#141414]"
                             innerClassName="relative h-full w-full"
                           >

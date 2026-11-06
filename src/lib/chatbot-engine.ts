@@ -207,7 +207,7 @@ export function buildPortfolioSystemPrompt(
             return `${idx + 1}. "${pTitle}" (slug: /projects/${p.slug}, kategori: ${pCat}, tech: ${stack})${live}${apk} — ${pSummary}`;
           })
           .join('\n')
-      : 'Al Parfume (E-Commerce), Vetsy (Mobile APK Flutter), GriyaNesa (Web Kost UNESA), Desa Bogem (Web Desa), Sistem Paket Warga (Web Logistik Paket Perumahan), Prabaswara (Web Studio Fotografi), Sumberwangi (Katalog Parfum), FajarTrans (Web Rental Mobil).';
+      : 'Al Parfume (E-Commerce), Vetsy (Mobile APK Flutter), GriyaNesa (Web Kost UNESA), Desa Bogem (Web Desa), CraftByHanifa (Web Pembukuan & HPP UMKM), Sistem Paket Warga (Web Logistik Paket Perumahan), Prabaswara (Web Studio Fotografi), Sumberwangi (Katalog Parfum), FajarTrans (Web Rental Mobil).';
 
   return [
     `Kamu adalah asisten chat di website portofolio Faqih Rafasha Argandhi (brand: "${brandName}"), seorang ${title} di Surabaya.`,
@@ -401,6 +401,17 @@ function findMatchingProject(
       'logistik perumahan',
       'pos satpam',
       'project rpl',
+    ],
+    craftbyhanifa: [
+      'craftbyhanifa',
+      'craft by hanifa',
+      'hanifa',
+      'pembukuan',
+      'sistem pembukuan',
+      'hpp',
+      'resep bom',
+      'bill of materials',
+      'impor shopee',
     ],
   };
 
