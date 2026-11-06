@@ -207,7 +207,7 @@ export function buildPortfolioSystemPrompt(
             return `${idx + 1}. "${pTitle}" (slug: /projects/${p.slug}, kategori: ${pCat}, tech: ${stack})${live}${apk} — ${pSummary}`;
           })
           .join('\n')
-      : 'Al Parfume (E-Commerce), Vetsy (Mobile APK Flutter), GriyaNesa (Web Kost UNESA), Desa Bogem (Web Desa), Prabaswara (Web Studio Fotografi), Sumberwangi (Katalog Parfum), FajarTrans (Web Rental Mobil).';
+      : 'Al Parfume (E-Commerce), Vetsy (Mobile APK Flutter), GriyaNesa (Web Kost UNESA), Desa Bogem (Web Desa), Sistem Paket Warga (Web Logistik Paket Perumahan), Prabaswara (Web Studio Fotografi), Sumberwangi (Katalog Parfum), FajarTrans (Web Rental Mobil).';
 
   return [
     `Kamu adalah asisten chat di website portofolio Faqih Rafasha Argandhi (brand: "${brandName}"), seorang ${title} di Surabaya.`,
@@ -393,6 +393,15 @@ function findMatchingProject(
     fajartrans: ['fajartrans', 'fajar trans', 'rental mobil', 'sewa mobil', 'travel', 'armada'],
     sumberwangi: ['sumberwangi', 'sumber wangi', 'katalog parfum'],
     prabaswara: ['prabaswara', 'swara gallery', 'swara studio', 'swara moment', 'swara wedding', 'studio foto', 'fotografi'],
+    'sistem-paket-warga': [
+      'sistem paket warga',
+      'paket warga',
+      'sdpr',
+      'distribusi paket',
+      'logistik perumahan',
+      'pos satpam',
+      'project rpl',
+    ],
   };
 
   for (const project of projects) {

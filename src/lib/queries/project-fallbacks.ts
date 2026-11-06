@@ -162,6 +162,14 @@ const GALLERY_CAPTION_PRESETS: Record<
     { en: 'Curated Portfolio Gallery', id: 'Galeri Karya Pilihan' },
     { en: 'Sub-Brand Showcase Page', id: 'Halaman Khusus Sub-Brand' },
   ],
+  'sistem-paket-warga': [
+    { en: 'Login & Quick Demo Access', id: 'Login & Akses Cepat Demo' },
+    { en: 'Admin Portal & System Summary', id: 'Portal Admin & Ringkasan Sistem' },
+    { en: 'Security Manifest & Real-Time Log', id: 'Manifest Satpam & Log Real-Time' },
+    { en: 'Package Analytics & Reports', id: 'Analitik & Laporan Paket' },
+    { en: 'User & Resident Unit Mapping', id: 'Manajemen Pengguna & Unit' },
+    { en: 'Resident Package Inventory', id: 'Inventaris Paket Warga' },
+  ],
 };
 
 /**
