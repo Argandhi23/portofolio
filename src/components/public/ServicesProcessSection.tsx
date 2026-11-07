@@ -1,17 +1,17 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { Service } from '@/types/database.types';
 import { pickLocalized } from '@/lib/i18n/localized';
-import {
-  clamp,
-  computeWindowedScrollProgress,
-  easeOutCubic,
-  interpolateHexColor,
-} from '@/lib/scroll-math';
-import { registerScrollTarget } from '@/components/motion/scroll-coordinator';
 import { SectionHeader } from '@/components/public/SectionHeader';
+import { GsapSplitText } from '@/components/motion/GsapSplitText';
 import { CmsText, T } from '@/components/public/LanguageProvider';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface ServicesProcessSectionProps {
   services: Service[];
@@ -25,7 +25,10 @@ interface BilingualServiceDetail {
   tagsId: string[];
 }
 
-function getServiceDetails(rawTitle: string, index: number): BilingualServiceDetail {
+function getServiceDetails(
+  rawTitle: string,
+  index: number
+): BilingualServiceDetail {
   const lower = pickLocalized(rawTitle, 'en').toLowerCase();
 
   if (lower.includes('web')) {
@@ -37,7 +40,11 @@ function getServiceDetails(rawTitle: string, index: number): BilingualServiceDet
     };
   }
 
-  if (lower.includes('mobile') || lower.includes('apk') || lower.includes('flutter')) {
+  if (
+    lower.includes('mobile') ||
+    lower.includes('apk') ||
+    lower.includes('flutter')
+  ) {
     return {
       descEn: 'Smooth cross-platform mobile apps and Android APKs.',
       descId: 'Aplikasi mobile responsif dan rilis APK Android.',
@@ -46,7 +53,12 @@ function getServiceDetails(rawTitle: string, index: number): BilingualServiceDet
     };
   }
 
-  if (lower.includes('ui') || lower.includes('ux') || lower.includes('design') || lower.includes('maint')) {
+  if (
+    lower.includes('ui') ||
+    lower.includes('ux') ||
+    lower.includes('design') ||
+    lower.includes('maint')
+  ) {
     return {
       descEn: 'Clean interfaces, speed tuning, and ongoing support.',
       descId: 'Antarmuka bersih, optimasi kecepatan, dan pemeliharaan.',
@@ -55,7 +67,11 @@ function getServiceDetails(rawTitle: string, index: number): BilingualServiceDet
     };
   }
 
-  if (/\bai\b/.test(lower) || lower.includes('data') || lower.includes('intelligence')) {
+  if (
+    /\bai\b/.test(lower) ||
+    lower.includes('data') ||
+    lower.includes('intelligence')
+  ) {
     return {
       descEn: 'Practical AI workflows and smart business automation.',
       descId: 'Integrasi fitur AI praktis dan otomasi kerja.',
@@ -94,94 +110,74 @@ function getServiceDetails(rawTitle: string, index: number): BilingualServiceDet
   return fallbacks[index % fallbacks.length];
 }
 
-function splitNumber(label: string): { hash: string; digits: string } {
-  const trimmed = label.trim();
-  if (trimmed.startsWith('#')) {
-    return { hash: '#', digits: trimmed.slice(1) };
-  }
-  return { hash: '#', digits: trimmed };
+function cleanDigits(label: string): string {
+  return label.trim().replace(/^#/, '');
 }
 
+/**
+ * Minimalist Editorial Services Index (#services).
+ * Full-width typographic rows with GSAP hairline dividers (`scaleX: 0 -> 1`)
+ * and masked word-by-word text animations (`GsapSplitText`).
+ */
 export function ServicesProcessSection({
   services,
   ctaUrl = '#contact',
 }: ServicesProcessSectionProps) {
-  const gridRef = useRef<HTMLDivElement | null>(null);
-  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const badgeRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const dotRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid || services.length === 0) return;
+    const list = listRef.current;
+    if (!list || services.length === 0) return;
 
     const prefersReduced = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches;
     if (prefersReduced) return;
 
-    let lastProgress = -1;
+    const ctx = gsap.context(() => {
+      const lines = list.querySelectorAll<HTMLElement>('[data-service-line]');
+      const rows = list.querySelectorAll<HTMLElement>('[data-service-row]');
 
-    return registerScrollTarget(grid, ({ rectTop, viewportHeight }) => {
-      const progress = computeWindowedScrollProgress(
-        rectTop,
-        viewportHeight,
-        0.88,
-        0.18
+      gsap.fromTo(
+        lines,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          duration: 1,
+          stagger: 0.12,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: list,
+            start: 'top 85%',
+          },
+        }
       );
 
-      if (Math.abs(progress - lastProgress) < 0.002) return;
-      lastProgress = progress;
-
-      const count = services.length;
-      for (let i = 0; i < count; i += 1) {
-        const card = cardRefs.current[i];
-        const badge = badgeRefs.current[i];
-        if (!card) continue;
-
-        const start = (i / count) * 0.62;
-        const localRaw = clamp((progress - start) / 0.34, 0, 1);
-        const active = easeOutCubic(localRaw);
-
-        const bg = interpolateHexColor('#151515', '#88132A', active);
-        const borderAlpha = (0.07 + active * 0.48).toFixed(3);
-        const liftY = (1 - active) * 28 - active * 8;
-        const scale = 0.96 + active * 0.04;
-
-        card.style.backgroundColor = bg;
-        card.style.borderColor = `rgba(224, 77, 112, ${borderAlpha})`;
-        card.style.transform = `translate3d(0, ${liftY.toFixed(
-          1
-        )}px, 0) scale(${scale.toFixed(4)})`;
-
-        if (badge) {
-          badge.style.backgroundColor = interpolateHexColor(
-            '#101010',
-            '#0B0204',
-            active
-          );
-          badge.style.borderColor = `rgba(255, 255, 255, ${(
-            0.08 +
-            active * 0.22
-          ).toFixed(3)})`;
-        }
-
-        for (let tIdx = 0; tIdx < 3; tIdx += 1) {
-          const dot = dotRefs.current[i * 3 + tIdx];
-          if (dot) {
-            dot.style.backgroundColor = interpolateHexColor(
-              '#9E1B32',
-              '#FFFFFF',
-              active
-            );
+      rows.forEach((row) => {
+        gsap.fromTo(
+          row,
+          { y: 24, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: row,
+              start: 'top 90%',
+            },
           }
-        }
-      }
-    });
+        );
+      });
+    }, list);
+
+    return () => {
+      ctx.revert();
+    };
   }, [services.length]);
 
   return (
-    <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 py-22 sm:py-28 space-y-14">
+    <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 py-22 sm:py-28 space-y-16">
       <SectionHeader
         eyebrow={<T en="Services" id="Layanan" />}
         heading={<T en="What I Build" id="Layanan Utama" />}
@@ -195,60 +191,60 @@ export function ServicesProcessSection({
         ctaLabel={<T en="Start a project" id="Mulai proyek" />}
       />
 
-      <div
-        ref={gridRef}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-2"
-      >
+      <div ref={listRef} className="w-full">
+        <div
+          data-service-line
+          className="h-[1px] w-full bg-white/12 origin-left will-change-transform"
+        />
+
         {services.map((svc, idx) => {
-          const { hash, digits } = splitNumber(svc.number_label);
+          const digits = cleanDigits(svc.number_label);
           const details = getServiceDetails(svc.title, idx);
 
           return (
-            <div
-              key={svc.id}
-              ref={(el) => {
-                cardRefs.current[idx] = el;
-              }}
-              className="h-full rounded-[26px] bg-[#151515] border border-white/[0.07] p-6 sm:p-7 flex flex-col justify-between space-y-7 shadow-[0_20px_50px_rgba(0,0,0,0.45)] will-change-transform"
-            >
-              <div className="space-y-4">
-                <div
-                  ref={(el) => {
-                    badgeRefs.current[idx] = el;
-                  }}
-                  className="inline-flex items-center justify-center rounded-full bg-[#101010] border border-white/[0.08] px-3.5 py-1 text-[13px] font-mono font-bold tracking-tight"
-                >
-                  <span className="text-[#E04D70]">{hash}</span>
-                  <span className="text-white">{digits}</span>
+            <div key={svc.id} className="group">
+              <div
+                data-service-row
+                className="py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-baseline transition-colors"
+              >
+                <div className="lg:col-span-1">
+                  <span className="font-mono text-xs sm:text-sm text-[#9E1B32]">
+                    {digits}
+                  </span>
                 </div>
 
-                <h3 className="text-white font-bold text-[20px] leading-[1.22] tracking-[-0.02em]">
-                  <CmsText value={svc.title} />
-                </h3>
+                <div className="lg:col-span-4">
+                  <h3 className="text-white font-bold text-[24px] sm:text-[30px] leading-[1.15] tracking-[-0.025em] group-hover:translate-x-2 transition-transform duration-300">
+                    <GsapSplitText stagger={0.035}>
+                      <CmsText value={svc.title} />
+                    </GsapSplitText>
+                  </h3>
+                </div>
 
-                <p className="text-white/85 text-[13.5px] leading-[1.58]">
-                  <T en={details.descEn} id={details.descId} />
-                </p>
+                <div className="lg:col-span-4">
+                  <p className="text-white/70 text-[15px] leading-[1.6]">
+                    <GsapSplitText stagger={0.02} delay={0.06}>
+                      <T en={details.descEn} id={details.descId} />
+                    </GsapSplitText>
+                  </p>
+                </div>
+
+                <div className="lg:col-span-3 lg:text-right pt-1 lg:pt-0">
+                  <p className="font-mono text-[12px] text-white/45">
+                    {details.tagsEn.map((tagEn, tIdx) => (
+                      <React.Fragment key={tagEn}>
+                        <T en={tagEn} id={details.tagsId[tIdx] || tagEn} />
+                        {tIdx < details.tagsEn.length - 1 ? ' / ' : ''}
+                      </React.Fragment>
+                    ))}
+                  </p>
+                </div>
               </div>
 
-              <ul className="space-y-2.5 pt-4 border-t border-white/15">
-                {details.tagsEn.map((tagEn, tIdx) => (
-                  <li
-                    key={tagEn}
-                    className="flex items-center gap-2.5 text-[12.5px] font-semibold text-white/95"
-                  >
-                    <span
-                      ref={(el) => {
-                        dotRefs.current[idx * 3 + tIdx] = el;
-                      }}
-                      className="h-1.5 w-1.5 rounded-full bg-[#9E1B32] shrink-0"
-                    />
-                    <span>
-                      <T en={tagEn} id={details.tagsId[tIdx] || tagEn} />
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <div
+                data-service-line
+                className="h-[1px] w-full bg-white/12 origin-left will-change-transform"
+              />
             </div>
           );
         })}

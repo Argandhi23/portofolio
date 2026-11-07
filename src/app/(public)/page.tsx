@@ -20,7 +20,7 @@ import {
   T,
 } from '@/components/public/LanguageProvider';
 import { HeroEyePortal } from '@/components/motion/HeroEyePortal';
-import { ScrollSectionOverlap } from '@/components/motion/ScrollSectionOverlap';
+import { WhiteToDarkPortalBridge } from '@/components/motion/WhiteToDarkPortalBridge';
 
 export default async function HomePage() {
   const [settings, services, brands, publishedProjects] = await Promise.all([
@@ -130,45 +130,34 @@ export default async function HomePage() {
 
           <EditorialIdentityCards />
         </div>
+
+        {/* BABAK 1: CLEAN EDITORIAL CURTAIN TRANSITION (#F5F0EB -> #080808) */}
+        <WhiteToDarkPortalBridge />
       </HeroEyePortal>
 
-      {/* 3. FEATURED PROJECTS (Matte Black Slab Covering Warm Cream + Sticky Card Stack) */}
-      <ScrollSectionOverlap
-        id="projects"
-        zIndex={30}
-        overlapPrevious
-        recedeOnExit={false}
-        className="bg-[#080808] pb-14"
-      >
+      {/* 3. FEATURED PROJECTS (True GSAP Pinned Horizontal Scroll Gallery) */}
+      <section id="projects" className="relative z-30 bg-[#080808]">
         <SelectedWorksSection
           projects={publishedProjects}
           ctaUrl={ctaUrl}
         />
-      </ScrollSectionOverlap>
+      </section>
 
-      {/* 4. SERVICES (Covers Projects + Cards Morph to Burgundy on Scroll) */}
-      <ScrollSectionOverlap
+      {/* 4. SERVICES (Minimalist Editorial Rows + GSAP SplitText & Hairlines) */}
+      <section
         id="services"
-        zIndex={40}
-        overlapPrevious
-        recedeOnExit
-        className="bg-[#0E0E0E] pb-14"
+        className="relative z-40 bg-[#0B0B0B] border-t border-white/[0.08]"
       >
         <ServicesProcessSection
           services={services}
           ctaUrl={ctaUrl}
         />
-      </ScrollSectionOverlap>
+      </section>
 
-      {/* 5. CONTACT & BOOKEND FOOTER (Covers Services) */}
-      <ScrollSectionOverlap
-        zIndex={50}
-        overlapPrevious
-        recedeOnExit={false}
-        className="bg-[#080808]"
-      >
+      {/* 5. CONTACT & BOOKEND FOOTER (Minimalist Contact Directory + Split-Char Finale) */}
+      <section className="relative z-50 bg-[#080808] border-t border-white/[0.08]">
         <FooterBookend settings={settings} showContactGrid />
-      </ScrollSectionOverlap>
+      </section>
     </main>
   );
 }

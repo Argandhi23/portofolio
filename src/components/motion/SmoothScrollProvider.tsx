@@ -3,19 +3,25 @@
 import React, { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   notifyScrollPosition,
   scheduleRemeasure,
 } from '@/components/motion/scroll-coordinator';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface SmoothScrollProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * Featherlight, ultra-responsive smooth scrolling powered by official Lenis.
+ * Featherlight, ultra-responsive smooth scrolling powered by official Lenis + GSAP ScrollTrigger sync.
  * - Tuned with `lerp: 0.12` & `wheelMultiplier: 1.05` so scrolling feels effortless, crisp, and buttery (zero drag/heaviness).
- * - Syncs directly into the Zero-Reflow ScrollCoordinator inside the same requestAnimationFrame tick.
+ * - Syncs directly into both GSAP ScrollTrigger and the Zero-Reflow ScrollCoordinator inside the same requestAnimationFrame tick.
  * - Preserves 100% native touch scrolling on mobile devices.
  */
 export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
@@ -24,6 +30,9 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
     const prefersReduced = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -50,6 +59,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
 
     const unsubscribe = lenis.on('scroll', (instance) => {
       notifyScrollPosition(instance.scroll);
+      ScrollTrigger.update();
     });
 
     const syncPortalState = () => {
@@ -67,6 +77,9 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
         document.documentElement.classList.remove('lenis-stopped');
         lenis.start();
         lenis.resize();
+        window.requestAnimationFrame(() => {
+          ScrollTrigger.refresh();
+        });
       }
     };
 
@@ -127,6 +140,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
         lenisRef.current.resize();
       }
       scheduleRemeasure();
+      ScrollTrigger.refresh();
     });
 
     const settleTimer = window.setTimeout(() => {
@@ -134,6 +148,7 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
         lenisRef.current.resize();
       }
       scheduleRemeasure();
+      ScrollTrigger.refresh();
     }, 150);
 
     return () => {

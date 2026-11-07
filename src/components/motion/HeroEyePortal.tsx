@@ -40,6 +40,8 @@ export interface HeroEyePortalProps {
   /** Anchor ID for the revealed content section (default "about") */
   contentId?: string;
   className?: string;
+  /** Whether to shrink/recede Section 2 when exiting (default false when using Portal Bridge) */
+  recedeOnExit?: boolean;
   /** Called once per rendered animation frame, never through React state */
   onProgress?: (progress: number) => void;
 }
@@ -57,6 +59,7 @@ export function HeroEyePortal({
   children,
   contentId = 'about',
   className,
+  recedeOnExit = false,
   onProgress,
 }: HeroEyePortalProps) {
   const uid = `gp-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
@@ -277,7 +280,7 @@ export function HeroEyePortal({
     };
 
     const paintSectionOverlap = () => {
-      if (motion.matches) return;
+      if (!recedeOnExit || motion.matches) return;
       if (phase !== 'about') {
         if (lastCover !== 0) {
           resetSectionOverlap();
@@ -735,7 +738,7 @@ export function HeroEyePortal({
       window.removeEventListener('resize', onResize);
       motion.removeEventListener('change', onResize);
     };
-  }, [contentId]);
+  }, [contentId, recedeOnExit]);
 
   return (
     <section

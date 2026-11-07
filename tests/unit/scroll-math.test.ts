@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   clamp,
+  computeBlueprintPillarState,
   computeCardPerspectiveState,
+  computeCockpitConvergenceState,
   computeEyePortalState,
   computeHeroExitProgress,
+  computeHorizontalCinemaState,
+  computePortalBridgeState,
   computeSectionOverlapState,
   computeViewportTraverseProgress,
   computeWindowedScrollProgress,
@@ -202,5 +206,56 @@ describe('scroll-math motion engine primitives', () => {
     expect(pathSide).toContain('M 382 162');
     expect(pathMid).toContain('M 392.0 162.0');
     expect(pathFront).toContain('M 400 162');
+  });
+
+  it('computes Awwwards 4-Act GSAP post-white choreography metrics (Portal Bridge, Cinema Stage, Blueprint Pillars, Cockpit Convergence)', () => {
+    // Act 1: White-to-Dark Portal Bridge
+    const bridgeStart = computePortalBridgeState(0, 20);
+    const bridgeEnd = computePortalBridgeState(1, 0);
+    expect(bridgeStart.insetYPercent).toBe(18);
+    expect(bridgeStart.insetXPercent).toBe(14);
+    expect(bridgeStart.borderRadiusPx).toBe(48);
+    expect(bridgeStart.innerScale).toBeCloseTo(1.22, 3);
+    expect(bridgeStart.skewDeg).toBeLessThan(0);
+
+    expect(bridgeEnd.insetYPercent).toBe(0);
+    expect(bridgeEnd.insetXPercent).toBe(0);
+    expect(bridgeEnd.borderRadiusPx).toBe(0);
+    expect(bridgeEnd.clipPath).toBe('inset(0% 0% 0% 0% round 0px)');
+    expect(bridgeEnd.innerScale).toBe(1);
+
+    // Act 2: Horizontal Cinema Stage
+    const cinemaStart = computeHorizontalCinemaState(0, 3, 0);
+    const cinemaMid = computeHorizontalCinemaState(0.5, 3, 15);
+    const cinemaEnd = computeHorizontalCinemaState(1, 3, 0);
+    expect(cinemaStart.activeIndex).toBe(0);
+    expect(cinemaMid.activeIndex).toBe(1);
+    expect(cinemaEnd.activeIndex).toBe(2);
+    expect(cinemaEnd.trackXPercent).toBeLessThan(0);
+    expect(cinemaMid.velocityRotateY).toBeLessThan(0);
+
+    // Act 3: Architectural Blueprint Pillars
+    const pillarStart = computeBlueprintPillarState(0, 0, 4);
+    const pillarEnd = computeBlueprintPillarState(1, 3, 4);
+    expect(pillarStart.activeProgress).toBe(0);
+    expect(pillarStart.rotateY).toBeGreaterThan(10);
+    expect(pillarStart.watermarkY).toBeGreaterThan(20);
+    expect(pillarEnd.activeProgress).toBe(1);
+    expect(pillarEnd.strokeProgress).toBe(1);
+    expect(pillarEnd.rotateY).toBe(0);
+    expect(pillarEnd.watermarkY).toBeLessThan(0);
+
+    // Act 4: 3D Cockpit Split-Convergence
+    const leftStart = computeCockpitConvergenceState(0, 'left', 0);
+    const rightStart = computeCockpitConvergenceState(0, 'right', 1);
+    const leftEnd = computeCockpitConvergenceState(1, 'left', 0);
+    expect(leftStart.translateX).toBeLessThan(0);
+    expect(rightStart.translateX).toBeGreaterThan(0);
+    expect(leftStart.rotateY).toBeGreaterThan(0);
+    expect(rightStart.rotateY).toBeLessThan(0);
+    expect(leftEnd.translateX).toBe(0);
+    expect(leftEnd.rotateY).toBe(0);
+    expect(leftEnd.scale).toBe(1);
+    expect(leftEnd.opacity).toBe(1);
   });
 });

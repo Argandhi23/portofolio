@@ -1,15 +1,16 @@
 # Argandhi. (Folioblox) — Design System & Style Guide
 
-Dokumen ini adalah **patokan desain utama (*Single Source of Truth*)** untuk seluruh tampilan publik portofolio **Faqih Rafasha Argandhi (`Argandhi.`)**. Setiap pengembangan section baru (seperti *Selected Works*, *Services & Process*, *Testimonials*, *FAQ*, *Footer*) maupun halaman lanjutan (`/about`, `/projects`, `/projects/[slug]`, `/contact`) **WAJIB** mengacu pada dokumen ini agar identitas visual tetap konsisten 100%.
+Dokumen ini adalah **patokan desain utama (*Single Source of Truth*)** untuk seluruh tampilan publik portofolio **Faqih Rafasha Argandhi (`Argandhi.`)**. Setiap pengembangan section maupun halaman (`/`, `/about`, `/projects`, `/projects/[slug]`) **WAJIB** mengacu pada dokumen ini agar identitas visual tetap konsisten, bersih, dan bebas dari klise desain generator AI.
 
 ---
 
 ## 1. Filosofi Desain & Identitas Personal
 
-- **Identitas Pemilik:** **Faqih Rafasha Argandhi (`Argandhi.`)** — Mahasiswa S1 Teknik Informatika UNESA ('24) & *Freelance Full-Stack / Software Developer* (Surabaya, Indonesia) yang berfokus pada pengembangan Web Modern (Next.js & Supabase), Mobile App (Flutter APK), serta Integrasi Sistem AI.
-- **Tema Utama:** *Warm Futuristic Dark Mode* — Perpaduan antara latar belakang hitam pekat (*obsidian/charcoal* `#080808`) dengan pencahayaan dramatis berwarna oranye-merah menyala (*fiery sunset glow*).
-- **Karakter Visual:** Berani (*bold*), bersih, berfokus pada tipografi kontras tinggi, serta memadukan siluet atmosferik hangat di bagian atas (*Hero*) dengan visual editorial hitam-putih (*monochrome*) bertekstur tajam di bagian konten.
-- **Ciri Khas Bentuk (*Shape Language*):** Penggunaan sudut membulat besar (*large rounded corners* `36px` – `42px`) untuk memisahkan antar-section secara berlapis (*layered card stacking*), serta tombol berbentuk kapsul penuh (*pill buttons*).
+- **Identitas Pemilik:** **Faqih Rafasha Argandhi (`Argandhi.`)** — Mahasiswa S1 Teknik Informatika UNESA ('24), Cohort AI Engineer Asah (Dicoding & GoTo), & *Full-Stack / Software Developer* (Surabaya, Indonesia) yang berfokus pada Web Modern (Next.js & Supabase), Mobile App (Flutter APK), serta Sistem AI.
+- **Tema Utama:** *Minimalist Editorial Dark & Warm Cream Contrast* — Perpaduan kontras antara ruang hitam obsidian (`#080808`), aksen merah marun menyala (*Crimson-Burgundy* `#9E1B32` / `#E04D70`), dan kanvas editorial krem hangat (`#F5F0EB`) pada section *About*.
+- **Prinsip Anti-AI-Cliché (Wajib Dipatuhi):**
+  - **DILARANG** menggunakan ornamen *sci-fi HUD* palsu, *pill badge* berlebihan, *browser window traffic lights* palsu, *glowing blur blobs* di setiap sudut, atau kartu kotak berulang yang monoton.
+  - Gunakan **tipografi kontras tinggi**, **ruang kosong (*whitespace*) lega**, **garis pembatas tipis (`1px` hairline)**, dan pemisah teks sederhana (`/` atau `—`).
 
 ---
 
@@ -18,123 +19,68 @@ Dokumen ini adalah **patokan desain utama (*Single Source of Truth*)** untuk sel
 ### A. Warna Latar (Backgrounds & Surfaces)
 | Nama Token | Hex Code | Penggunaan |
 | :--- | :--- | :--- |
-| `--bg-canvas-outer` | `#3A1708` s/d `#0D0806` | Gradien latar belakang presentasi luar (opsional untuk tampilan mockup). |
-| `--bg-primary-black` | `#080808` | Latar belakang utama halaman (section *Behind the Code*, *Selected Works*, & ke bawah). |
-| `--bg-surface-elevated` | `#121212` | Latar belakang layer tumpukan sekunder (bar *Tech Stack / Brands*, kontainer *Services*, kartu utama). |
-| `--bg-surface-card` | `#181818` | Latar belakang kartu proyek/fitur/form di dalam surface gelap. |
+| `--bg-primary-obsidian` | `#080808` | Latar belakang utama halaman gelap (*Projects*, *Contact*, & halaman lanjutan). |
+| `--bg-secondary-obsidian` | `#0B0B0B` / `#121212` | Latar belakang variasi section gelap (*Services*) dan kontainer gambar. |
+| `--bg-editorial-cream` | `#F5F0EB` | Latar belakang khusus section *About & Education* yang terbuka dari *Hero Eye Portal*. |
+| `--bg-surface-card` | `#131313` | Permukaan panel minimalis (seperti form kontak atau *backplate* parallax). |
 
 ### B. Warna Aksen & Gradien (Accents & Gradients)
 | Nama Token | Nilai Warna / Hex | Penggunaan |
 | :--- | :--- | :--- |
-| `--accent-orange` | `#FF5510` | Warna utama brand (tanda `#`, *eyebrow text*, tombol Pill CTA kedua, lingkaran panah). |
-| `--accent-orange-hover` | `#FF6B2B` | Warna *hover* pada elemen interaktif oranye. |
-| `--hero-glow-gradient` | `radial-gradient(circle at 26% 24%, #FF6B24 0%, #F43E0B 30%, #9E1B06 62%, #2B0804 92%, #170503 100%)` | Gradien dramatis pada latar belakang *Hero Section*, *Compact Hero*, dan *Bookend Footer*. |
+| `--accent-crimson` | `#9E1B32` | Warna utama brand (*eyebrow*, indeks nomor `01–04`, tombol Pill CTA, kartu aksen parallax `#px-layer-fast`). |
+| `--accent-rose` | `#E04D70` | Warna sorotan *hover* teks dan aksen aktif. |
+| `--hero-glow-gradient` | `radial-gradient(...)` Crimson-Burgundy ke Obsidian | Gradien atmosferik pada *Hero Section*, *Compact Hero*, dan *Bookend Footer*. |
 
 ### C. Warna Tipografi & Garis (Text & Borders)
 | Nama Token | Nilai Warna / Hex | Penggunaan |
 | :--- | :--- | :--- |
-| `--text-primary` | `#FFFFFF` | Judul utama (H1, H2, H3), teks navigasi aktif, dan *lead paragraph*. |
-| `--text-secondary` | `rgba(255, 255, 255, 0.72)` | Paragraf deskripsi di dalam *Hero* dan sub-item. |
-| `--text-muted` | `#7A7A7A` | Teks pendukung kecil (contoh: *"Let's Build Something Meaningful Together"*). |
-| `--border-subtle` | `rgba(255, 255, 255, 0.07)` | Garis tepi halus pada bagian bawah section melengkung atau kartu gelap. |
+| `--text-on-dark` | `#FFFFFF` | Judul utama (H1, H2, H3) dan teks primer di atas latar `#080808`. |
+| `--text-muted-on-dark` | `rgba(255, 255, 255, 0.65)` | Paragraf deskripsi dan ringkasan proyek di atas latar gelap. |
+| `--text-on-cream` | `#0D0D0D` | Teks utama di atas latar krem `#F5F0EB`. |
+| `--text-muted-on-cream` | `#57504A` | Teks sekunder di atas latar krem `#F5F0EB`. |
+| `--border-hairline-dark` | `rgba(255, 255, 255, 0.12)` | Garis pembatas tipis (*hairline*) antar baris di atas latar gelap. |
+| `--border-hairline-cream` | `rgba(13, 13, 13, 0.14)` | Garis pembatas tipis (*hairline*) antar baris di atas latar krem. |
 
 ---
 
-## 3. Sistem Tipografi (Typography)
+## 3. Sistem Tipografi & Animasi Teks (`GsapSplitText`)
 
-- **Font Utama (Primary Font):** `Plus Jakarta Sans` (Sans-serif geometris modern dengan *x-height* tinggi dan kerapatan huruf yang rapi).
-- **Karakteristik:** Judul berukuran besar menggunakan *letter-spacing* rapat (`-0.03em` hingga `-0.04em`) dan *line-height* padat (`0.93` hingga `1.12`).
-
-### Skala Tipografi (Desktop)
-| Elemen | Ukuran (`rem` / `px`) | Ketebalan (`font-weight`) | Line Height | Tracking (`letter-spacing`) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Hero Display (`H1`)** | `5.25rem` (`84px`) | `700` (Bold) / `800` | `0.94` | `-0.04em` |
-| **Section Heading (`H2`)** | `2.875rem` (`46px`) | `700` (Bold) | `1.10` | `-0.03em` |
-| **Hero Subtitle / Intro** | `1.5rem` (`24px`) | `600` – `700` | `1.25` | `-0.02em` |
-| **Lead Paragraph** | `1.35rem` (`21.6px`) | `600` (SemiBold) | `1.38` | `-0.015em` |
-| **Eyebrow Label** | `1.125rem` (`18px`) | `600` (SemiBold) | `1.30` | `-0.01em` |
-| **Body / Service Title** | `0.875rem` (`14px`) | `400` – `500` | `1.50` | `0em` |
-| **Micro Label** | `0.75rem` (`12px`) | `500` – `600` | `1.35` | `0.01em` |
+- **Font Utama:** `Plus Jakarta Sans` untuk judul/body & `Geist Mono` (`font-mono`) untuk indeks angka (`01`, `02`) serta daftar teknologi (`Next.js / Supabase / Flutter`).
+- **Standar Animasi Teks (`src/components/motion/GsapSplitText.tsx`):**
+  - Seluruh judul section (`SectionHeader`), subjudul, dan deskripsi utama dipecah per kata di dalam pembungkus `overflow-hidden` dan dianimasikan naik (`yPercent: 110 -> 0`, `rotateZ: 2deg -> 0deg`, `stagger: 0.03s`) menggunakan **GSAP `ScrollTrigger`**.
+  - Mendukung penuh sistem dwibahasa (`EN` / `ID`) melalui komponen `<T>` dan `<CmsText>` tanpa konflik manipulasi DOM React.
 
 ---
 
-## 4. Layout, Grid & Spacing
+## 4. Koreografi Animasi Landing Page (`/` — Zero Monotony)
 
-1. **Container Utama:**
-   - Lebar maksimum (*Max-width*): `1140px` (`max-w-[1140px]`) dengan *padding* horizontal `48px` (`sm:px-12`) pada Desktop dan `24px` (`px-6`) pada Mobile.
-2. **Efek Tumpukan Kartu Melengkung (*Stacked Rounded Sections*):**
-   - Section **Hero** (`.hero-card`) memiliki `border-radius: 0 0 42px 42px` dan berada di atas layer **Tech Stack / Trusted Brands**.
-   - Layer pembungkus **Top Layer** (`#121212`) juga memiliki `border-radius: 0 0 42px 42px` dan *border* bawah tipis `1px solid rgba(255,255,255,0.06)`, berada di atas latar hitam utama `#080808`.
-3. **Sistem Grid:**
-   - **4-Column Grid:** Digunakan pada daftar nomor layanan di bagian bawah Hero (`#01` s/d `#04`) dan detail layanan.
-   - **12-Column / Split 50:50 Grid:** Digunakan pada header setiap section konten (`SectionHeader` — Kiri: Eyebrow `#FF5510` + H2, Kanan: Lead Paragraph + Micro-text & Orange Pill CTA).
-   - **3-Column Grid:** Digunakan pada galeri kartu editorial (`aspect-[3/3.9]`, `gap: 20px`) serta daftar proyek pendukung.
+Setiap section pada halaman utama memiliki koreografi **GSAP + ScrollTrigger** yang berbeda agar alur cerita terasa hidup seperti situs *Awwwards Site of the Day*:
 
----
+1. **Section 1 & 2 — Hero 3D Bust & Eye Portal (`HeroEyePortal.tsx`):**
+   - **Phase 1 (Scroll-Scrubbed):** Karakter 3D di tengah Hero menoleh dari profil samping ke arah depan seiring scroll, sementara elemen UI Hero memudar dan kedua mata menyala putih tajam.
+   - **Phase 2 (One-Shot Eye Dive):** Kamera meluncur masuk ke mata kanan karakter dan membuka ruang **Warm Editorial Cream (`#F5F0EB`)** untuk section *About & Education*.
+   - Di dalam section krem terdapat teks manifesto (`LocalizedScrollTextReveal`) dan daftar riwayat pendidikan minimalis (`EditorialIdentityCards.tsx`) dengan garis pembatas yang memanjang otomatis (`scaleX: 0 -> 1`).
 
-## 5. Spesifikasi Komponen Reusable (`src/components/public/`)
+2. **Transisi Keluar Halaman Putih (`WhiteToDarkPortalBridge.tsx`):**
+   - Di penghujung section `#F5F0EB`, panel hitam `#080808` membesar secara mulus dari bingkai `clip-path: inset(18% 14% 18% 14% round 48px)` menjadi layar penuh `inset(0% 0% 0% 0% round 0px)` menggunakan GSAP `ScrollTrigger` (`scrub: 0.4`).
 
-Agar pembuatan halaman baru konsisten dan modular, gunakan komponen berikut:
+3. **Section 3 — Featured Projects: GSAP Horizontal Scroll (`GsapProjectsStage.tsx` & `SelectedWorksSection.tsx`):**
+   - `SectionHeader` ditempatkan statis di atas panggung agar tidak pernah bertabrakan dengan *floating navbar*.
+   - Panggung galeri proyek dikunci (`pin: true` pada desktop) dan menggeser deretan proyek **ke samping kiri (`x: -maxScroll`, `scrub: 0.6`)** saat pengunjung melakukan scroll ke bawah.
+   - Setiap proyek tampil bersih tanpa *badge* atau *browser bar* palsu: gambar ber-rasio `16:10` dengan *inner horizontal parallax* (`scale(1.08) translate3d(...)`) dan blok teks editorial di bawahnya yang proporsional (tidak pernah terpotong di bagian bawah layar).
 
-### A. Tombol Pill CTA (`PillButton.tsx`)
-1. **Variasi 1 — `variant="white"` (Di atas background Hero/Footer Oranye):**
-   - Background: `#FFFFFF`, Text: `#0A0A0A` (`12.5px`–`13px`, SemiBold).
-   - Padding: `6px 6px 6px 18px`, `border-radius: 9999px`.
-   - Ikon Kanan: Lingkaran `28px x 28px` berwarna `#FF5510` dengan panah `→` warna putih.
-2. **Variasi 2 — `variant="orange"` (Di atas background Hitam `#080808` / `#121212`):**
-   - Background: `#FF5510` (hover `#FF6B2B`), Text: `#FFFFFF` (`12.5px`–`13px`, SemiBold).
-   - Padding: `6px 6px 6px 18px`, `border-radius: 9999px`.
-   - Ikon Kanan: Lingkaran `28px x 28px` berwarna `#FFFFFF` dengan panah `→` warna `#FF5510`.
+4. **Section 4 — Services: Minimalist Editorial Index (`ServicesProcessSection.tsx`):**
+   - Baris layanan editorial penuh 12 kolom (`01` s/d `04`) dengan animasi teks `GsapSplitText`, garis pembatas `scaleX: 0 -> 1` saat di-scroll, dan daftar teknologi sederhana (`Next.js / Supabase / Admin CMS`).
 
-### B. Kartu Visual Editorial (`EditorialIdentityCards.tsx` / `.bw-card`)
-- **Rasio & Sudut:** Rasio vertikal `3 : 3.9`, `border-radius: 24px`, `overflow: hidden`.
-- **Gaya Visual:** Render/fotografi studio monokrom kontras tinggi dengan latar objek abu-abu terang (`#E6E6E6` – `#CFCFCF`) sehingga memberi kontras mencolok terhadap background section `#080808`.
-- **Interaksi (Hover):** Elemen visual melakukan *scale up* halus (`scale(1.04)`) dengan transisi `650ms cubic-bezier(0.22, 1, 0.36, 1)`.
-
-### C. Bar Logo Tech Stack / Klien (`.logo-strip-mask` di `HeroSection.tsx`)
-- Menampilkan micro-label di sisi kiri dan deretan logo monokrom putih (`#FFFFFF`, `15px` Bold, `tracking-[-0.02em]`) di sisi kanan.
-- Sisi kanan memiliki *masking fade-out* (`linear-gradient(to right, black 82%, transparent 100%)`) untuk memberi kesan daftar ekosistem/klien yang berlanjut.
-
-### D. Header Section 2-Kolom (`SectionHeader.tsx`)
-- Komponen standar untuk membuka setiap section di atas latar `#080808` atau `#121212` (digunakan pada *Behind the Code*, *Selected Works*, *Capabilities*, dan halaman lanjutan).
-
-### E. Compact Hero untuk Sub-Halaman (`CompactHero.tsx`)
-- Digunakan pada halaman selain Landing Page (seperti `/projects/[slug]`, dan ke depannya `/about`, `/projects`, `/contact`).
-- Memiliki navigasi `PublicNavbar`, gradien oranye-merah `.compact-hero-card` dengan `rounded-b-[42px]`, dan opsional bar metadata `#121212` `rounded-b-[42px]` di bawahnya sebelum masuk ke konten `#080808`.
-
-### F. Bookend Footer (`FooterBookend.tsx`)
-- Mengembalikan gradien oranye-merah menyala di bagian paling bawah halaman (`rounded-t-[42px]`), menciptakan efek pembuka-penutup (*bookend*) yang ikonik dengan teks raksasa `Let's Talk.` dan tombol *White Pill CTA*.
+5. **Section 5 — Contact & Bookend Footer (`GsapContactCockpit.tsx` & `FooterBookend.tsx`):**
+   - Kolom kiri menampilkan formulir pesan (`ContactForm`), sedangkan kolom kanan menampilkan direktori kontak minimalis (`01 / WHATSAPP`, `02 / EMAIL`, `03 / GITHUB`) berbatas garis tipis tanpa kotak kartu berlebih.
+   - Ditutup dengan `<FooterCurtain />`, animasi per karakter pada judul raksasa `Let's Talk.`, serta efek *Magnetic Cursor Pull* pada tombol `Get in touch`.
 
 ---
 
-## 6. Arsitektur Visual Multi-Halaman (Anti-Monoton)
+## 5. Standar Performa & Aksesibilitas Motion (`src/components/motion/`)
 
-Agar setiap halaman memiliki karakter arsitektural yang unik namun tetap berada dalam satu DNA *Obsidian `#080808` + Fiery Orange `#FF5510`*:
-
-1. **`/` (Landing Page Utama):**
-   - **Satu-satunya** halaman yang menggunakan **Full Fiery Sunset Hero Card** (`.hero-card` + `HeroSilhouette` + `#01–#04` + Tech Marquee), dibungkus `<ScrollHeroDepth />` agar mengecil dan bergerak parallax ke dalam saat konten `#080808` naik menutupinya.
-   - Dilengkapi `<ScrollTextReveal />` manifesto arsitektur, `<EditorialIdentityCards />` ber-parallax kolom, `<SelectedWorksSection />`, `<ServicesProcessSection />`, dan `<FooterBookend />`.
-2. **`/about` (Minimalist Print-Magazine Editorial):**
-   - Dibuka di atas latar `#080808` bersih menggunakan `PublicNavbar` (`surfaceVariant="obsidian"`), garis *issue dateline* horizontal (`variant="hairline"`), tipografi masthead besar `Engineering With Clarity.`, dan bingkai potret monokrom vertikal (`aspect-[3/4.05]`) ber-parallax.
-   - Menggunakan `<ScrollTextReveal />` untuk filosofi kerja, baris riwayat berbatas *hairline* tipis (tanpa tumpukan kartu kotak berulang), esai *sticky* 4 standar arsitektur, serta tabel indeks kolofon teknologi.
-3. **`/projects` (Digital Exhibition Room & Dual-View Archive):**
-   - Dibuka dengan latar *blueprint grid* `.exhibition-grid-surface`, judul pameran `Selected Works & System Archive.`, dan blok **Monumental Archive Counter** besar.
-   - Menyediakan bar kontrol kaca dengan filter kategori, pencarian instan, serta *view switcher*:
-     - **Mode Gallery (Default):** Proyek utama tampil lebar 12-kolom diikuti kolom asimetris ber-kecepatan scroll berbeda (`<ParallaxColumn />`).
-     - **Mode Index List:** Daftar baris bernomor ala katalog majalah dengan *cursor-following floating image preview* (0 React re-render).
-4. **`/projects/[slug]` (Apple-Style Product Cinema Case Study):**
-   - Dibuka dengan panggung gelap sinematik (`PublicNavbar` obsidian + judul keynote terpusat + tombol Live/APK/Code), diikuti langsung oleh **Widescreen Cinema Mockup** yang membesar halus (`cinemaExpand` `0.92 -> 1.0`) saat di-scroll.
-   - Dilengkapi *Architectural Specification Strip*, narasi studi kasus *sticky split-rail*, galeri screenshot ber-efek *Curtain Reveal + Inner Parallax*, dan `<FooterBookend />`.
-
----
-
-## 7. Standar Smooth Scroll & Zero-Reflow ScrollTrigger (`src/components/motion/`)
-
-Seluruh animasi dioptimasi ketat untuk **Locked 60/120fps (Zero Layout Thrashing & Zero Permanent GPU Layer Bloat)**:
-1. **Kurva Transisi Sinematik:** `--ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1)` & `--ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1)`.
-2. **Featherlight Smooth Scroll (`<SmoothScrollProvider />` via `lenis`):**
-   - Menggunakan library resmi `lenis` (`lerp: 0.12`, `wheelMultiplier: 1.05`, `syncTouch: false`) yang ringan dan responsif di mouse wheel maupun trackpad, serta menyalurkan posisi `scroll` langsung ke `scroll-coordinator.ts` di dalam *frame* RAF yang sama.
-3. **Zero-Reflow Cached Geometry Engine (`scroll-coordinator.ts` & `src/lib/scroll-math.ts`):**
-   - Seluruh pengukuran geometri DOM (`getBoundingClientRect` & `scrollHeight`) hanya dijalankan **sekali** saat *mount* / `ResizeObserver` (*batch read*), dan **DILARANG** dipanggil saat event `scroll` berlangsung (0 forced synchronous reflow!).
-   - `<Reveal />`: Berjalan 100% di thread native `IntersectionObserver` (`1.22s – 1.28s`) tanpa *scroll listener* JS, serta melepas memori layer GPU (`will-change: auto`) begitu elemen selesai muncul.
-   - `<ScrollHeroDepth />`, `<ScrollTextReveal />`, `<ParallaxMedia />`, `<ParallaxColumn />`, `<FooterCurtain />`, & `<SpotlightCard />`: Menggunakan kalkulasi koordinat ter-cache + *dirty-checking* sehingga elemen di luar layar memakan `0%` CPU/GPU.
+1. **Sinkronisasi Lenis + GSAP (`SmoothScrollProvider.tsx`):**
+   - Instance `Lenis` memanggil `ScrollTrigger.update()` pada setiap frame scroll dan memicu `ScrollTrigger.refresh()` setiap kali fase `HeroEyePortal` berubah (`hero-portal-change`) atau rute berpindah.
+2. **Dukungan `prefers-reduced-motion`:**
+   - Seluruh komponen animasi wajib memeriksa `(prefers-reduced-motion: reduce)` atau menggunakan `gsap.matchMedia()` sehingga pengguna dengan preferensi gerak minimal tetap dapat mengakses seluruh konten dengan `opacity: 1` dan `transform: none`.

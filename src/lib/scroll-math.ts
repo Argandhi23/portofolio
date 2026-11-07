@@ -361,3 +361,177 @@ export function computeSectionOverlapState(
     veilOpacity: Number((coverProgress * 0.58).toFixed(3)),
   };
 }
+
+export interface PortalBridgeMetrics {
+  /** Clamped progress [0..1] */
+  progress: number;
+  /** Vertical inset percentage [18 -> 0] */
+  insetYPercent: number;
+  /** Horizontal inset percentage [14 -> 0] */
+  insetXPercent: number;
+  /** Border radius in pixels [48 -> 0] */
+  borderRadiusPx: number;
+  /** CSS clip-path string for the expanding obsidian monolith */
+  clipPath: string;
+  /** Inner stage counter-scale [1.22 -> 1.0] */
+  innerScale: number;
+  /** Velocity skew in degrees [-10..10] */
+  skewDeg: number;
+}
+
+/**
+ * Computes Act 1 White-to-Dark Obsidian Portal Bridge metrics (`clip-path: inset(...)` expansion + counter-scale).
+ */
+export function computePortalBridgeState(
+  progress: number,
+  velocity = 0
+): PortalBridgeMetrics {
+  const p = smoothstep(0, 1, clamp(progress, 0, 1));
+  const inv = 1 - p;
+
+  const insetYPercent = Number((inv * 18).toFixed(2));
+  const insetXPercent = Number((inv * 14).toFixed(2));
+  const borderRadiusPx = Number((inv * 48).toFixed(1));
+  const clipPath = `inset(${insetYPercent}% ${insetXPercent}% ${insetYPercent}% ${insetXPercent}% round ${borderRadiusPx}px)`;
+  const innerScale = Number((1 + inv * 0.22).toFixed(4));
+  const skewDeg = Number(clamp(velocity * -0.18, -10, 10).toFixed(2));
+
+  return {
+    progress: p,
+    insetYPercent,
+    insetXPercent,
+    borderRadiusPx,
+    clipPath,
+    innerScale,
+    skewDeg,
+  };
+}
+
+export interface HorizontalCinemaMetrics {
+  /** Overall track progress [0..1] */
+  progress: number;
+  /** Active 0-based slide index */
+  activeIndex: number;
+  /** Horizontal translation percentage along the track [0..-100*(count-1)/count] */
+  trackXPercent: number;
+  /** Inner media counter-parallax X percentage [-10..10] */
+  imageParallaxXPercent: number;
+  /** Dynamic 3D Y-axis tilt driven by scroll velocity [-8..8] */
+  velocityRotateY: number;
+}
+
+/**
+ * Computes Act 2 GSAP Horizontal Cinema Deck metrics for Featured Projects.
+ */
+export function computeHorizontalCinemaState(
+  progress: number,
+  cardCount: number,
+  velocity = 0
+): HorizontalCinemaMetrics {
+  const safeCount = Math.max(1, cardCount);
+  const p = clamp(progress, 0, 1);
+
+  if (safeCount === 1) {
+    return {
+      progress: p,
+      activeIndex: 0,
+      trackXPercent: 0,
+      imageParallaxXPercent: 0,
+      velocityRotateY: 0,
+    };
+  }
+
+  const maxIndex = safeCount - 1;
+  const activeIndex = Math.min(maxIndex, Math.round(p * maxIndex));
+  const trackXPercent = Number((-p * (maxIndex / safeCount) * 100).toFixed(3));
+  const imageParallaxXPercent = Number(((p - 0.5) * 20).toFixed(2));
+  const velocityRotateY = Number(clamp(velocity * -0.14, -8, 8).toFixed(2));
+
+  return {
+    progress: p,
+    activeIndex,
+    trackXPercent,
+    imageParallaxXPercent,
+    velocityRotateY,
+  };
+}
+
+export interface BlueprintPillarMetrics {
+  /** Local card activation progress [0..1] */
+  activeProgress: number;
+  /** SVG blueprint path normalized draw progress [0..1] */
+  strokeProgress: number;
+  /** 3D Y-axis entrance flip in degrees [16 -> 0] */
+  rotateY: number;
+  /** 3D X-axis entrance tilt in degrees [10 -> 0] */
+  rotateX: number;
+  /** Vertical lift in pixels [36 -> 0] */
+  translateY: number;
+  /** Giant background numeral counter-parallax Y offset in pixels [28 -> -18] */
+  watermarkY: number;
+}
+
+/**
+ * Computes Act 3 Architectural Blueprint SVG line-draw & 3D Pillar metrics for Services (#01-#04).
+ */
+export function computeBlueprintPillarState(
+  sectionProgress: number,
+  cardIndex: number,
+  totalCards: number
+): BlueprintPillarMetrics {
+  const count = Math.max(1, totalCards);
+  const p = clamp(sectionProgress, 0, 1);
+  const staggerStart = (clamp(cardIndex, 0, count - 1) / count) * 0.55;
+  const rawLocal = clamp((p - staggerStart) / 0.42, 0, 1);
+  const activeProgress = easeOutCubic(rawLocal);
+  const inv = 1 - activeProgress;
+
+  return {
+    activeProgress: Number(activeProgress.toFixed(4)),
+    strokeProgress: Number(smoothstep(0.02, 0.92, p).toFixed(4)),
+    rotateY: Number((inv * 16).toFixed(2)),
+    rotateX: Number((inv * 10).toFixed(2)),
+    translateY: Number((inv * 36).toFixed(1)),
+    watermarkY: Number((28 - activeProgress * 46).toFixed(1)),
+  };
+}
+
+export interface CockpitConvergenceMetrics {
+  /** Local convergence progress [0..1] */
+  progress: number;
+  /** Horizontal convergence offset in pixels (left: -52 -> 0, right: +52 -> 0) */
+  translateX: number;
+  /** Vertical offset in pixels [32 -> 0] */
+  translateY: number;
+  /** 3D Y-axis rotation in degrees (left: +10 -> 0, right: -10 -> 0) */
+  rotateY: number;
+  /** Scale factor [0.94 -> 1.0] */
+  scale: number;
+  /** Opacity [0.15 -> 1.0] */
+  opacity: number;
+}
+
+/**
+ * Computes Act 4 3D Cockpit Split-Convergence metrics for the Contact section.
+ */
+export function computeCockpitConvergenceState(
+  sectionProgress: number,
+  side: 'left' | 'right',
+  staggerIndex = 0
+): CockpitConvergenceMetrics {
+  const delay = clamp(staggerIndex * 0.12, 0, 0.45);
+  const raw = clamp((sectionProgress - delay) / (1 - delay), 0, 1);
+  const progress = easeOutCubic(raw);
+  const inv = 1 - progress;
+  const dir = side === 'left' ? -1 : 1;
+
+  return {
+    progress: Number(progress.toFixed(4)),
+    translateX: Number((dir * inv * 52).toFixed(1)),
+    translateY: Number((inv * 32).toFixed(1)),
+    rotateY: Number((-dir * inv * 10).toFixed(2)),
+    scale: Number((0.94 + progress * 0.06).toFixed(4)),
+    opacity: Number(clamp(0.15 + progress * 0.85, 0, 1).toFixed(3)),
+  };
+}
+
