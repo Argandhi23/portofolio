@@ -4,6 +4,7 @@ import { LoginForm } from '@/components/admin/LoginForm';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: 'Login Admin — Argandhi.',
   description: 'Login panel admin Argandhi.',
 };

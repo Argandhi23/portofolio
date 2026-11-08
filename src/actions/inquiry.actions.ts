@@ -1,5 +1,7 @@
 'use server';
 
+import { z } from 'zod';
+
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
@@ -117,6 +119,10 @@ export async function updateInquiryStatus(
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success || !z.enum(['unread', 'read', 'replied']).safeParse(status).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     const { error } = await supabase
       .from('inquiries')
       .update({ status })
@@ -153,6 +159,10 @@ export async function updateInquiryStatus(
 export async function deleteInquiry(id: string): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
+
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
 
     const { error } = await supabase.from('inquiries').delete().eq('id', id);
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { httpUrlSchema, navigationUrlSchema } from './url.schema';
 
 export const settingsSchema = z.object({
   brand_name: z
@@ -20,9 +21,7 @@ export const settingsSchema = z.object({
   hero_description: z
     .string()
     .min(1, 'Deskripsi hero wajib diisi'),
-  hero_image_url: z
-    .string()
-    .url('Format URL gambar hero tidak valid')
+  hero_image_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),
@@ -47,15 +46,11 @@ export const settingsSchema = z.object({
     .string()
     .min(1, 'Nomor WhatsApp wajib diisi')
     .default('6285806912873'),
-  github_url: z
-    .string()
-    .url('Format URL GitHub tidak valid')
+  github_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),
-  cta_url: z
-    .string()
-    .min(1, 'CTA URL wajib diisi')
+  cta_url: navigationUrlSchema
     .default('#contact'),
 });
 

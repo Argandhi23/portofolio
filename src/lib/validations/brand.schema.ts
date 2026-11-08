@@ -1,19 +1,16 @@
 import { z } from 'zod';
+import { httpUrlSchema } from './url.schema';
 
 export const brandSchema = z.object({
   name: z
     .string()
     .min(1, 'Nama brand wajib diisi')
     .max(100, 'Nama brand maksimal 100 karakter'),
-  logo_url: z
-    .string()
-    .url('Format URL logo tidak valid')
+  logo_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),
-  website_url: z
-    .string()
-    .url('Format URL website tidak valid')
+  website_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),

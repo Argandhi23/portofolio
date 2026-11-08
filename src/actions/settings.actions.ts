@@ -29,15 +29,13 @@ export async function updateSettings(
     }
 
     // 1. Fetch current settings to clean up any legacy hero image in storage
-    const { data: existingSettings } = await supabase
+    const { data: existingSettings, error: previousError } = await supabase
       .from('site_settings')
       .select('hero_image_url')
       .eq('id', 1)
       .single();
 
-    if (existingSettings?.hero_image_url) {
-      await deleteMedia(existingSettings.hero_image_url);
-    }
+    if (previousError && previousError.code !== 'PGRST116') return { success: false, message: 'Data lama belum dapat dibaca. Perubahan dibatalkan.' };
 
     // 2. Upsert settings row id = 1 (hero_image_url is always null because Hero uses 3D character)
     const { data, error } = await supabase
@@ -62,6 +60,12 @@ export async function updateSettings(
       };
     }
 
+    let cleanupMessage = '';
+    if (existingSettings?.hero_image_url) {
+      const cleanup = await deleteMedia(existingSettings.hero_image_url);
+      if (!cleanup.success) cleanupMessage = ` Pembersihan media perlu dicoba ulang: ${cleanup.message}`;
+    }
+
     revalidateTag(CACHE_TAG_SETTINGS, { expire: 0 });
     revalidateTag('settings', { expire: 0 });
     revalidatePath('/');
@@ -69,7 +73,8 @@ export async function updateSettings(
 
     return {
       success: true,
-      message: 'Pengaturan situs berhasil diperbarui.',
+      message: 'Pengaturan situs berhasil diperbarui.' + cleanupMessage,
+      warning: cleanupMessage || undefined,
       data,
     };
   } catch (error) {

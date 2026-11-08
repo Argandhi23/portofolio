@@ -59,9 +59,6 @@ function ArchiveBrowserFrame({
           </div>
         ) : (
           <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
           </div>
         )}
 
@@ -208,7 +205,7 @@ export function ProjectsArchiveGrid({ projects }: ProjectsArchiveGridProps) {
 
   const handleListPointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.pointerType === 'touch') return;
+      if (e.pointerType === 'touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       targetPos.current.x = e.clientX + 26;
       targetPos.current.y = e.clientY - 115;
       startFloatingLoop();

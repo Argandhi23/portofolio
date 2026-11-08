@@ -295,6 +295,7 @@ export function PublicNavbar({
             {/* Adaptive Floating Obsidian-Glass Pill Navbar on Scroll (Desktop only) */}
             <div
               aria-hidden={!isScrolled}
+              inert={!isScrolled}
               className={cn(
                 'hidden md:flex fixed top-4 inset-x-0 z-[50] px-4 justify-center pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]',
                 isScrolled
@@ -343,6 +344,7 @@ export function PublicNavbar({
             {/* 3. Fullscreen Mobile Menu Overlay */}
             <div
               aria-hidden={!mobileOpen}
+              inert={!mobileOpen}
               className={cn(
                 'fixed inset-0 z-[55] md:hidden flex flex-col justify-between px-6 pt-28 pb-8 bg-[#000000] text-white transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] min-h-screen min-h-dvh overscroll-contain touch-pan-y',
                 mobileOpen

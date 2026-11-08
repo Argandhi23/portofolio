@@ -103,7 +103,7 @@ export const getServices = unstable_cache(
       .eq('is_active', true)
       .order('display_order', { ascending: true });
 
-    if (error || !data || data.length === 0) {
+    if (error || !data) {
       if (error) {
         console.error('Error fetching services:', error.message);
       }
@@ -131,7 +131,7 @@ export const getBrands = unstable_cache(
       .eq('is_active', true)
       .order('display_order', { ascending: true });
 
-    if (error || !data || data.length === 0) {
+    if (error || !data) {
       if (error) {
         console.error('Error fetching brands:', error.message);
       }

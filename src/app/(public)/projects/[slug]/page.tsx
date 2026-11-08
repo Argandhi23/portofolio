@@ -225,9 +225,6 @@ export default async function ProjectDetailPage({
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
-                        <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
-                        <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
                       </div>
                     )}
 

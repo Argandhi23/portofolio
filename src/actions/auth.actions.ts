@@ -1,5 +1,7 @@
 'use server';
 
+import { z } from 'zod';
+import { requireAdmin } from '@/lib/auth-guard';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -7,7 +9,7 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error';
 import { createClient } from '@/lib/supabase/server';
 import { getAdminEmail, getPublicEnv } from '@/lib/env';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { loginSchema } from '@/lib/validations/auth.schema';
+import { loginSchema, passwordResetSchema } from '@/lib/validations/auth.schema';
 import type { ActionResult } from '@/types/action.types';
 
 async function getClientRateKey(scope: string): Promise<string> {
@@ -118,8 +120,8 @@ export async function loginAdmin(
  */
 export async function logoutAdmin(): Promise<ActionResult> {
   try {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.signOut();
+    const { supabase } = await requireAdmin();
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
 
     if (error) {
       return {
@@ -159,14 +161,15 @@ export async function sendAdminPasswordReset(email: string): Promise<ActionResul
       };
     }
 
-    const normalizedInput = email?.trim().toLowerCase();
-    if (!normalizedInput || !normalizedInput.includes('@')) {
+    const validation = z.string().trim().email().max(160).safeParse(email);
+    if (!validation.success) {
       return {
         success: false,
         message: 'Masukkan alamat email yang valid terlebih dahulu.',
       };
     }
 
+    const normalizedInput = validation.data.toLowerCase();
     const adminEmail = getAdminEmail();
     const neutralSuccessMessage =
       'Jika email terdaftar sebagai administrator, tautan pemulihan kata sandi telah dikirim. Silakan periksa inbox atau folder spam Anda.';
@@ -183,7 +186,7 @@ export async function sendAdminPasswordReset(email: string): Promise<ActionResul
     const { NEXT_PUBLIC_SITE_URL } = getPublicEnv();
 
     const { error } = await supabase.auth.resetPasswordForEmail(normalizedInput, {
-      redirectTo: `${NEXT_PUBLIC_SITE_URL}/login`,
+      redirectTo: `${NEXT_PUBLIC_SITE_URL}/auth/callback`,
     });
 
     if (error) {
@@ -202,5 +205,32 @@ export async function sendAdminPasswordReset(email: string): Promise<ActionResul
       success: false,
       message: 'Terjadi kesalahan sistem saat mengirim pemulihan kata sandi.',
     };
+  }
+}
+
+/** Authenticated recovery users must still match ADMIN_EMAIL before changing a password. */
+export async function resetAdminPassword(
+  _previous: ActionResult,
+  formData: FormData
+): Promise<ActionResult> {
+  try {
+    const { supabase } = await requireAdmin();
+    const validation = passwordResetSchema.safeParse(formData instanceof FormData ? {
+      password: formData.get('password'), confirmPassword: formData.get('confirmPassword'),
+    } : null);
+    if (!validation.success) {
+      return { success: false, message: 'Periksa kata sandi baru Anda.', fieldErrors: validation.error.flatten().fieldErrors };
+    }
+    const { error } = await supabase.auth.updateUser({ password: validation.data.password });
+    if (error) return { success: false, message: 'Kata sandi belum dapat diperbarui. Coba tautan pemulihan baru.' };
+    const { error: signOutError } = await supabase.auth.signOut().catch(() => ({ error: new Error('Sign-out unavailable') }));
+    if (signOutError) {
+      return { success: false, message: 'Kata sandi sudah diperbarui, tetapi sesi belum dapat diakhiri. Buka /admin dan gunakan tombol keluar; jangan ulangi penyimpanan kata sandi.' };
+    }
+    revalidatePath('/', 'layout');
+    redirect('/login');
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    return { success: false, message: 'Sesi pemulihan tidak valid atau telah berakhir.' };
   }
 }

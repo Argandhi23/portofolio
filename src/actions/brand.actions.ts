@@ -1,5 +1,7 @@
 'use server';
 
+import { z } from 'zod';
+
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-guard';
 import { brandSchema, type BrandInput } from '@/lib/validations/brand.schema';
@@ -75,6 +77,10 @@ export async function updateBrand(
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     const validation = brandSchema.safeParse(input);
     if (!validation.success) {
       return {
@@ -85,18 +91,13 @@ export async function updateBrand(
     }
 
     // Anti-orphan check: If logo was changed, remove old logo
-    const { data: existingBrand } = await supabase
+    const { data: existingBrand, error: previousError } = await supabase
       .from('brands')
       .select('logo_url')
       .eq('id', id)
       .single();
 
-    if (
-      existingBrand?.logo_url &&
-      existingBrand.logo_url !== validation.data.logo_url
-    ) {
-      await deleteMedia(existingBrand.logo_url);
-    }
+    if (previousError) return { success: false, message: 'Data lama belum dapat dibaca. Perubahan dibatalkan.' };
 
     const { data, error } = await supabase
       .from('brands')
@@ -116,6 +117,15 @@ export async function updateBrand(
       };
     }
 
+    let cleanupMessage = '';
+    if (
+      existingBrand?.logo_url &&
+      existingBrand.logo_url !== validation.data.logo_url
+    ) {
+      const cleanup = await deleteMedia(existingBrand.logo_url);
+      if (!cleanup.success) cleanupMessage = ` Pembersihan media perlu dicoba ulang: ${cleanup.message}`;
+    }
+
     revalidateTag(CACHE_TAG_BRANDS, { expire: 0 });
     revalidateTag('brands', { expire: 0 });
     revalidatePath('/');
@@ -123,7 +133,8 @@ export async function updateBrand(
 
     return {
       success: true,
-      message: 'Brand berhasil diperbarui.',
+      message: 'Brand berhasil diperbarui.' + cleanupMessage,
+      warning: cleanupMessage || undefined,
       data,
     };
   } catch (error) {
@@ -144,16 +155,18 @@ export async function deleteBrand(id: string): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     // Fetch logo to clean up storage
-    const { data: existingBrand } = await supabase
+    const { data: existingBrand, error: previousError } = await supabase
       .from('brands')
       .select('logo_url')
       .eq('id', id)
       .single();
 
-    if (existingBrand?.logo_url) {
-      await deleteMedia(existingBrand.logo_url);
-    }
+    if (previousError) return { success: false, message: 'Data lama belum dapat dibaca. Penghapusan dibatalkan.' };
 
     const { error } = await supabase.from('brands').delete().eq('id', id);
 
@@ -164,6 +177,8 @@ export async function deleteBrand(id: string): Promise<ActionResult> {
       };
     }
 
+    const cleanup = existingBrand?.logo_url ? await deleteMedia(existingBrand.logo_url) : null;
+
     revalidateTag(CACHE_TAG_BRANDS, { expire: 0 });
     revalidateTag('brands', { expire: 0 });
     revalidatePath('/');
@@ -171,7 +186,8 @@ export async function deleteBrand(id: string): Promise<ActionResult> {
 
     return {
       success: true,
-      message: 'Brand dan logo terkait berhasil dihapus.',
+      warning: cleanup && !cleanup.success ? `Pembersihan media perlu dicoba ulang: ${cleanup.message}` : undefined,
+      message: cleanup && !cleanup.success ? `Brand dihapus; pembersihan media perlu dicoba ulang: ${cleanup.message}` : 'Brand dan logo terkait berhasil dihapus.',
     };
   } catch (error) {
     return {
@@ -193,6 +209,10 @@ export async function toggleBrandActive(
 ): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
+
+    if (!z.uuid().safeParse(id).success || !z.boolean().safeParse(isActive).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
 
     const { error } = await supabase
       .from('brands')

@@ -1,21 +1,7 @@
 import { z } from 'zod';
 import { slugify } from '@/lib/utils';
 
-const mediaUrlOrPathSchema = z
-  .string()
-  .min(1, 'URL gambar wajib diisi')
-  .refine(
-    (val) => {
-      if (val.startsWith('/')) return val.length > 1;
-      try {
-        const parsed = new URL(val);
-        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-      } catch {
-        return false;
-      }
-    },
-    { message: 'Format URL gambar tidak valid (gunakan https://... atau /path/gambar.webp)' }
-  );
+import { httpUrlSchema, mediaUrlSchema } from './url.schema';
 
 export const projectSchema = z.object({
   title: z
@@ -36,24 +22,18 @@ export const projectSchema = z.object({
   client_name: z.string().nullable().optional(),
   summary: z.string().nullable().optional(),
   content: z.string().nullable().optional(),
-  thumbnail_url: mediaUrlOrPathSchema,
-  gallery_urls: z.array(mediaUrlOrPathSchema).default([]),
+  thumbnail_url: mediaUrlSchema,
+  gallery_urls: z.array(mediaUrlSchema).default([]),
   tech_stack: z.array(z.string()).default([]),
-  project_url: z
-    .string()
-    .url('Format URL project tidak valid')
+  project_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),
-  github_url: z
-    .string()
-    .url('Format URL GitHub tidak valid')
+  github_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),
-  apk_url: z
-    .string()
-    .url('Format URL APK tidak valid')
+  apk_url: httpUrlSchema
     .nullable()
     .optional()
     .or(z.literal('')),

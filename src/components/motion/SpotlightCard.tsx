@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface SpotlightCardProps
@@ -34,7 +34,7 @@ export function SpotlightCard({
   const handlePointerEnter = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       onPointerEnter?.(e);
-      if (e.pointerType === 'touch') return;
+      if (e.pointerType === 'touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const el = cardRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
@@ -50,7 +50,7 @@ export function SpotlightCard({
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       onPointerMove?.(e);
-      if (e.pointerType === 'touch') return;
+      if (e.pointerType === 'touch' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const el = cardRef.current;
       const box = cachedBox.current;
       if (!el || !box) return;
@@ -71,6 +71,10 @@ export function SpotlightCard({
     },
     [onPointerMove]
   );
+
+  useEffect(() => () => {
+    if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+  }, []);
 
   return (
     <div

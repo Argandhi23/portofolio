@@ -1,5 +1,7 @@
 'use server';
 
+import { z } from 'zod';
+
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-guard';
 import { serviceSchema, type ServiceInput } from '@/lib/validations/service.schema';
@@ -70,6 +72,10 @@ export async function updateService(
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     const validation = serviceSchema.safeParse(input);
     if (!validation.success) {
       return {
@@ -121,6 +127,10 @@ export async function deleteService(id: string): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     const { error } = await supabase.from('services').delete().eq('id', id);
 
     if (error) {
@@ -159,6 +169,10 @@ export async function toggleServiceActive(
 ): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
+
+    if (!z.uuid().safeParse(id).success || !z.boolean().safeParse(isActive).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
 
     const { error } = await supabase
       .from('services')

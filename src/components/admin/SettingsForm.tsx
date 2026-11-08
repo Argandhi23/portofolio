@@ -128,7 +128,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
           setFieldErrors(res.fieldErrors);
         }
       } else {
-        setSuccessMessage('Pengaturan berhasil disimpan.');
+        setSuccessMessage(res.message);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });

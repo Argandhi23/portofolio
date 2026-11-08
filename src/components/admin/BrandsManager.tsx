@@ -90,6 +90,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
         if (!res.success) {
           setError(res.message);
         } else if (res.data) {
+          if (res.warning) window.alert(res.warning);
           setBrands((prev) =>
             prev.map((b) => (b.id === editingBrand.id ? res.data! : b))
           );
@@ -100,6 +101,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
         if (!res.success) {
           setError(res.message);
         } else if (res.data) {
+          if (res.warning) window.alert(res.warning);
           setBrands((prev) =>
             [...prev, res.data!].sort((a, b) => a.display_order - b.display_order)
           );
@@ -129,6 +131,7 @@ export function BrandsManager({ initialBrands }: BrandsManagerProps) {
     startTransition(async () => {
       const res = await deleteBrand(id);
       if (res.success) {
+        if (res.warning) window.alert(res.warning);
         setBrands((prev) => prev.filter((b) => b.id !== id));
       } else {
         setError(res.message);

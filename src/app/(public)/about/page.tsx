@@ -99,9 +99,6 @@ function EditorialMonographPortrait() {
     <div className="relative rounded-[28px] overflow-hidden border border-white/[0.12] bg-[#121212] shadow-[0_30px_70px_rgba(0,0,0,0.8)] flex flex-col justify-between">
       <div className="h-10 shrink-0 bg-[#171717] border-b border-white/[0.08] px-4 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F56]/85" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#FFBD2E]/85" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#27C93F]/85" />
         </div>
         <span className="text-[11.5px] font-mono text-white/65">
           profile.ts

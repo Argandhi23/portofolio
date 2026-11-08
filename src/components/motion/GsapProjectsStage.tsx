@@ -178,7 +178,7 @@ export function GsapProjectsStage({ items, children }: GsapProjectsStageProps) {
       <div ref={pinSectionRef} className="relative w-full">
         <div
           ref={viewportRef}
-          className="w-full lg:h-[100svh] flex flex-col justify-between py-10 lg:pt-24 lg:pb-12 overflow-hidden"
+          className="w-full lg:h-[100svh] flex flex-col justify-between py-10 lg:pt-24 lg:pb-12 overflow-hidden motion-reduce:lg:h-auto motion-reduce:overflow-visible"
         >
           {/* Minimalist Project Index Bar */}
           {items.length > 0 && (
@@ -223,7 +223,7 @@ export function GsapProjectsStage({ items, children }: GsapProjectsStageProps) {
           <div className="w-full flex-1 flex items-center py-6 lg:py-4 min-h-0">
             <div
               ref={trackRef}
-              className="flex flex-col lg:flex-row lg:flex-nowrap items-start gap-10 lg:gap-10 px-6 sm:px-12 lg:px-[max(3rem,calc((100vw-1140px)/2+3rem))] w-full lg:w-max will-change-transform"
+              className="flex flex-col lg:flex-row lg:flex-nowrap items-start gap-10 lg:gap-10 px-6 sm:px-12 lg:px-[max(3rem,calc((100vw-1140px)/2+3rem))] w-full lg:w-max will-change-transform motion-reduce:lg:flex-col motion-reduce:lg:w-full motion-reduce:transform-none"
             >
               {children}
             </div>

@@ -157,6 +157,7 @@ export function GsapContactCockpit({ children }: GsapContactCockpitProps) {
     return () => {
       magneticWrap.removeEventListener('mousemove', onMouseMove);
       magneticWrap.removeEventListener('mouseleave', onMouseLeave);
+      gsap.killTweensOf(magneticWrap);
       ctx.revert();
     };
   }, []);

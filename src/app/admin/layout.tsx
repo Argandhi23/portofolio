@@ -6,6 +6,7 @@ import { LogoutButton } from '@/components/admin/LogoutButton';
 import { Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
+  robots: { index: false, follow: false },
   title: 'Admin — Argandhi.',
   description: 'Panel admin portofolio Argandhi.',
 };
@@ -63,13 +64,18 @@ export default async function AdminLayout({
               Argandhi. <span className="text-[10px] text-[#9E1B32] uppercase">Admin</span>
             </span>
           </div>
-          <Link
-            href="/"
-            target="_blank"
-            className="rounded-full bg-[#181818] border border-white/[0.08] px-3 py-1 text-[11px] font-medium text-white/75 hover:text-white"
-          >
-            Lihat Web
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              target="_blank"
+              className="rounded-full bg-[#181818] border border-white/[0.08] px-3 py-1 text-[11px] font-medium text-white/75 hover:text-white"
+            >
+              Lihat Web
+            </Link>
+            <div className="w-9 shrink-0 [&_button]:justify-center [&_button]:px-2 [&_button_span]:sr-only">
+              <LogoutButton />
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
           {[

@@ -86,16 +86,15 @@ export function extractStoragePath(
       return null;
     }
 
-    const marker = `/${bucketName}/`;
-    const index = publicUrl.indexOf(marker);
-    if (index === -1) {
-      // If it's already a storage-relative path (e.g. uploads/custom.png)
-      if (!publicUrl.startsWith('http://') && !publicUrl.startsWith('https://')) {
-        return publicUrl;
-      }
-      return null;
+    let path = publicUrl;
+    if (/^https?:\/\//i.test(publicUrl)) {
+      const url = new URL(publicUrl);
+      const prefix = `/storage/v1/object/public/${bucketName}/`;
+      if (!url.pathname.startsWith(prefix)) return null;
+      path = decodeURIComponent(url.pathname.slice(prefix.length));
     }
-    return decodeURIComponent(publicUrl.substring(index + marker.length));
+    if (!path || /[\\?#\u0000-\u001f]/.test(path) || path.split('/').some((part) => !part || part === '.' || part === '..')) return null;
+    return path;
   } catch {
     return null;
   }

@@ -47,9 +47,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLang = useCallback((next: Locale) => {
     setLangState(next);
+    document.documentElement.lang = next;
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
-      document.documentElement.lang = next;
     } catch {
       // Ignore storage quota / privacy mode restrictions
     }

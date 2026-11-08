@@ -59,6 +59,7 @@ export function ProjectTableActions({
       if (!res.success) {
         setError(res.message);
       } else {
+        if (res.warning) window.alert(res.warning);
         setShowDeleteModal(false);
       }
     });
