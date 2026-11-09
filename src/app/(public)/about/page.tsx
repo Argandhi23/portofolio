@@ -14,7 +14,7 @@ import {
   T,
 } from '@/components/public/LanguageProvider';
 import { Reveal } from '@/components/motion/Reveal';
-import { TechLogo } from '@/components/ui/TechLogos';
+import { StackLogo } from '@/components/ui/StackLogo';
 
 export const metadata: Metadata = {
   title: 'About — Argandhi.',
@@ -356,13 +356,13 @@ export default async function AboutPage() {
               key={brand.id}
               variant="fade-up"
               delay={idx * 65}
-              className="border-r border-b border-white/[0.09] px-5 py-5 flex items-center justify-between gap-3 group hover:bg-white/[0.025] transition-colors duration-500"
+                className="border-r border-b border-white/[0.09] px-5 py-5 flex items-center justify-between gap-3 group group/stack hover:bg-white/[0.025] transition-colors duration-500"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <TechLogo
+                <StackLogo
                   name={brand.name}
-                  monochrome
-                  className="h-4 w-4 text-white/80 group-hover:text-[#9E1B32] transition-colors shrink-0"
+                  logoUrl={brand.logo_url}
+                  className="h-4 w-4"
                 />
                 <span className="text-[14px] font-semibold text-white/90 group-hover:text-white truncate">
                   {brand.name}

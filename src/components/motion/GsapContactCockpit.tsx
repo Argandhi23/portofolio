@@ -43,94 +43,40 @@ export function GsapContactCockpit({ children }: GsapContactCockpitProps) {
       '[data-gsap-magnetic-cta]'
     );
 
-    const prefersReduced = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-
-    const ctx = gsap.context(() => {
-      if (prefersReduced) return;
-
-      if (contactGrid) {
-        if (leftWing) {
-          gsap.fromTo(
-            leftWing,
-            { y: 32, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.85,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: contactGrid,
-                start: 'top 86%',
-              },
-            }
-          );
-        }
-
-        if (contactLines.length > 0) {
-          gsap.fromTo(
-            contactLines,
-            { scaleX: 0 },
-            {
-              scaleX: 1,
-              duration: 0.9,
-              stagger: 0.1,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: contactGrid,
-                start: 'top 86%',
-              },
-            }
-          );
-        }
-
-        if (rightRows.length > 0) {
-          gsap.fromTo(
-            rightRows,
-            { y: 24, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.75,
-              stagger: 0.12,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: contactGrid,
-                start: 'top 86%',
-              },
-            }
-          );
-        }
+    const mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      if (contactGrid && leftWing) {
+        gsap.timeline({
+          scrollTrigger: { trigger: contactGrid, start: 'top 94%', end: 'top 48%', scrub: 0.65 },
+        })
+          .fromTo(leftWing, { y: 65, clipPath: 'inset(0% 0% 100% 0%)' }, {
+            y: 0, clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'power2.out',
+          }, 0)
+          .fromTo(contactLines, { scaleX: 0 }, {
+            scaleX: 1, stagger: 0.08, duration: 0.7, ease: 'power2.inOut',
+          }, 0.1)
+          .fromTo(rightRows, { x: 35, autoAlpha: 0 }, {
+            x: 0, autoAlpha: 1, stagger: 0.12, duration: 0.7, ease: 'power3.out',
+          }, 0.15);
       }
-
-      const footerEl = root.querySelector('footer');
-      if (footerEl && footerChars.length > 0) {
-        ScrollTrigger.create({
-          trigger: footerEl,
-          start: 'top 95%',
-          end: 'bottom bottom',
-          scrub: 0.35,
-          onUpdate: (self) => {
-            const p = self.progress;
-            const count = footerChars.length;
-            footerChars.forEach((ch, idx) => {
-              const start = (idx / count) * 0.35;
-              const local = Math.min(1, Math.max(0, (p - start) / 0.55));
-              const eased = 1 - Math.pow(1 - local, 3);
-              const y = (1 - eased) * 28;
-              ch.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
-            });
-          },
+      const footer = root.querySelector('footer');
+      if (footer && footerChars.length) {
+        gsap.fromTo(footerChars, {
+          yPercent: 115, rotation: 8, transformOrigin: '0% 100%',
+        }, {
+          yPercent: 0, rotation: 0, stagger: { each: 0.045, from: 'start' },
+          duration: 1, ease: 'power4.out',
+          scrollTrigger: { trigger: footer, start: 'top 92%', end: 'clamp(top 30%)', scrub: 0.65 },
         });
       }
     }, root);
-
-    if (!magneticWrap || prefersReduced) {
-      return () => ctx.revert();
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!magneticWrap || prefersReduced || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      return () => mm.revert();
     }
 
     const onMouseMove = (e: MouseEvent) => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const rect = magneticWrap.getBoundingClientRect();
       const relX = e.clientX - (rect.left + rect.width / 2);
       const relY = e.clientY - (rect.top + rect.height / 2);
@@ -139,6 +85,7 @@ export function GsapContactCockpit({ children }: GsapContactCockpitProps) {
         y: relY * 0.22,
         duration: 0.35,
         ease: 'power3.out',
+        overwrite: 'auto',
       });
     };
 
@@ -148,6 +95,7 @@ export function GsapContactCockpit({ children }: GsapContactCockpitProps) {
         y: 0,
         duration: 0.5,
         ease: 'power3.out',
+        overwrite: 'auto',
       });
     };
 
@@ -158,7 +106,7 @@ export function GsapContactCockpit({ children }: GsapContactCockpitProps) {
       magneticWrap.removeEventListener('mousemove', onMouseMove);
       magneticWrap.removeEventListener('mouseleave', onMouseLeave);
       gsap.killTweensOf(magneticWrap);
-      ctx.revert();
+      mm.revert();
     };
   }, []);
 
