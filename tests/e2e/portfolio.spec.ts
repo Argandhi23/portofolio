@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test';
 
+// Browser checks must never write visitor analytics to the configured database.
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/track', (route) => route.fulfill({ json: { tracked: false } }));
+});
+
 test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => {
   test('renders landing page sections cleanly with strict security headers and zero console errors', async ({
     page,
@@ -75,8 +80,13 @@ test.describe('Argandhi. Portfolio — Public UX, Motion & Security E2E', () => 
       name: /floating navigation/i,
     });
 
-    // Scroll down 400px
-    await page.evaluate(() => window.scrollTo(0, 400));
+    // Complete the intentional hero portal before testing document scrolling.
+    await expect(page.getByTestId('intro-preloader')).toHaveCount(0, { timeout: 8000 });
+    await expect.poll(async () => {
+      await page.mouse.wheel(0, 600);
+      return page.evaluate(() => document.documentElement.dataset.heroPortal);
+    }, { timeout: 10000 }).toBe('about');
+    await page.mouse.wheel(0, 400);
     await expect(floatingNav).toBeVisible();
   });
 

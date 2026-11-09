@@ -106,7 +106,7 @@ export function VisitorAnalyticsPanel({
     },
     {
       key: 'all',
-      label: 'Semua Waktu',
+      label: 'Sampel Terbaru',
       views: summary.allTime.views,
       unique: summary.allTime.unique,
     },
@@ -165,7 +165,7 @@ export function VisitorAnalyticsPanel({
         </div>
 
         <span className="text-[11px] text-white/45">
-          Klik kartu periode untuk memfilter daftar pengunjung
+          Berdasarkan maksimal 1.000 kunjungan terbaru. Klik periode untuk memfilter.
         </span>
       </div>
 

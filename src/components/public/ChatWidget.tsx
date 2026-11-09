@@ -135,7 +135,9 @@ export function ChatWidget() {
   // Auto-scroll to newest message
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
     }
   }, [messages, isPending, isOpen]);
 

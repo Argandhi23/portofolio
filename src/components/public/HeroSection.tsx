@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import type { SiteSettings, Service, Brand } from '@/types/database.types';
 import { decodeLocalized } from '@/lib/i18n/localized';
 import { PublicNavbar } from '@/components/public/PublicNavbar';
@@ -6,7 +5,7 @@ import { HeroSilhouette } from '@/components/public/HeroSilhouette';
 import { CmsText, T } from '@/components/public/LanguageProvider';
 import { HeroAmbientGlow } from '@/components/motion/HeroAmbientGlow';
 import { Reveal } from '@/components/motion/Reveal';
-import { TechLogo } from '@/components/ui/TechLogos';
+import { StackLogo } from '@/components/ui/StackLogo';
 
 interface HeroSectionProps {
   settings: SiteSettings;
@@ -201,29 +200,9 @@ export function HeroSection({ settings, services, brands }: HeroSectionProps) {
             {displayBrands.map((brand, idx) => (
               <div
                 key={`${brand.id}-${idx}`}
-                className="flex items-center gap-2.5 shrink-0 text-white/90 hover:text-white transition"
+                  className="group/stack flex items-center gap-2.5 shrink-0 text-white/90 hover:text-white transition"
               >
-                {brand.logo_url ? (
-                  <div className="relative w-5 h-5 shrink-0 brightness-0 invert opacity-90">
-                    <Image
-                      src={brand.logo_url}
-                      alt={brand.name}
-                      fill
-                      className="object-contain"
-                      sizes="20px"
-                      unoptimized={
-                        brand.logo_url.startsWith('data:') ||
-                        brand.logo_url.endsWith('.svg')
-                      }
-                    />
-                  </div>
-                ) : (
-                  <TechLogo
-                    name={brand.name}
-                    monochrome
-                    className="w-5 h-5 text-white shrink-0"
-                  />
-                )}
+                  <StackLogo name={brand.name} logoUrl={brand.logo_url} className="w-5 h-5" />
                 <span className="text-white font-bold text-[15px] tracking-[-0.02em] whitespace-nowrap">
                   {brand.name}
                 </span>

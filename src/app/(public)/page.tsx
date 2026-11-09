@@ -21,6 +21,7 @@ import {
 } from '@/components/public/LanguageProvider';
 import { HeroEyePortal } from '@/components/motion/HeroEyePortal';
 import { WhiteToDarkPortalBridge } from '@/components/motion/WhiteToDarkPortalBridge';
+import { AboutEditorialStage } from '@/components/motion/AboutEditorialStage';
 
 export default async function HomePage() {
   const [settings, services, brands, publishedProjects] = await Promise.all([
@@ -86,7 +87,7 @@ export default async function HomePage() {
           />
         }
       >
-        <div className="w-full max-w-[1140px] mx-auto px-6 sm:px-12 pt-24 sm:pt-32 pb-28 sm:pb-36 space-y-14">
+        <AboutEditorialStage>
           <SectionHeader
             eyebrow={
               <CmsText
@@ -129,9 +130,9 @@ export default async function HomePage() {
           </div>
 
           <EditorialIdentityCards />
-        </div>
+        </AboutEditorialStage>
 
-        {/* BABAK 1: CLEAN EDITORIAL CURTAIN TRANSITION (#F5F0EB -> #080808) */}
+        {/* Continuous curved ink wipe (#F5F0EB -> #080808) */}
         <WhiteToDarkPortalBridge />
       </HeroEyePortal>
 
@@ -143,7 +144,7 @@ export default async function HomePage() {
         />
       </section>
 
-      {/* 4. SERVICES (Minimalist Editorial Rows + GSAP SplitText & Hairlines) */}
+      {/* 4. SERVICES (Scroll-linked editorial typesetting) */}
       <section
         id="services"
         className="relative z-40 bg-[#0B0B0B] border-t border-white/[0.08]"

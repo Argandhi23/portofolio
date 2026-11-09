@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { checkRateLimit } from '@/lib/rate-limit';
 import { getPublicEnv } from '@/lib/env';
 import { trackVisitSchema } from '@/lib/validations/visitor.schema';
 import {
@@ -25,6 +26,15 @@ export async function POST(request: NextRequest) {
     const uaInfo = parseUserAgent(userAgent);
     if (uaInfo.isBot) {
       return NextResponse.json({ tracked: false, reason: 'bot' });
+    }
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip') || 'local';
+    const rate = checkRateLimit(`track:${ip}`, 60, 60_000);
+    if (!rate.allowed) {
+      return NextResponse.json({ tracked: false, reason: 'rate_limit' }, {
+        status: 429, headers: { 'Retry-After': String(rate.retryAfterSeconds) },
+      });
     }
 
     // 3. Parse & validate request payload

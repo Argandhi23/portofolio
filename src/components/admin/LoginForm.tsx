@@ -130,10 +130,9 @@ export function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              tabIndex={-1}
               disabled={isPending}
               aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
-              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/40 hover:text-white focus:outline-none"
+              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/40 hover:text-white focus-visible:outline-2 focus-visible:outline-[#E04D70]"
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />

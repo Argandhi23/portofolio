@@ -11,3 +11,10 @@ export const loginSchema = z.object({
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const passwordResetSchema = z.object({
+  password: z.string().min(8, 'Kata sandi minimal 8 karakter').max(128, 'Kata sandi maksimal 128 karakter'),
+  confirmPassword: z.string(),
+}).refine((value) => value.password === value.confirmPassword, {
+  path: ['confirmPassword'], message: 'Konfirmasi kata sandi tidak cocok',
+});

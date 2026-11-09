@@ -1,65 +1,34 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { computeWindowedScrollProgress } from '@/lib/scroll-math';
-import { registerScrollTarget } from '@/components/motion/scroll-coordinator';
+import { useEffect, useRef, type ReactNode } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cn } from '@/lib/utils';
 
-interface FooterCurtainProps {
-  children: React.ReactNode;
-  className?: string;
-}
+gsap.registerPlugin(ScrollTrigger);
 
-/**
- * Pure GPU-composited Curtain Unveil for the Fiery Bookend Footer ("Let's Talk.").
- * Uses translate3d only (no giant container scale re-rasterization) and 0 DOM reads during scroll.
- */
-export function FooterCurtain({ children, className }: FooterCurtainProps) {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const stageRef = useRef<HTMLDivElement | null>(null);
-
+/** The final sheet unfolds into a full-bleed bookend, without a scroll trap. */
+export function FooterCurtain({ children, className }: { children: ReactNode; className?: string }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const wrapper = wrapperRef.current;
+    const root = rootRef.current;
     const stage = stageRef.current;
-    if (!wrapper || !stage) return;
-
-    const prefersReduced = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-    if (prefersReduced) return;
-
-    let lastProgress = -1;
-
-    return registerScrollTarget(
-      wrapper,
-      ({ rectTop, scrollY, viewportHeight, maxScroll }) => {
-        const nearBottom = maxScroll > 0 && scrollY >= maxScroll - 24;
-        const rawProgress = computeWindowedScrollProgress(
-          rectTop,
-          viewportHeight,
-          0.98,
-          0.46
-        );
-        const progress = nearBottom ? 1 : rawProgress;
-
-        if (Math.abs(progress - lastProgress) < 0.002) return;
-        lastProgress = progress;
-
-        const translateY = (1 - progress) * 72;
-        const scale = 0.92 + progress * 0.08;
-        const rotateX = (1 - progress) * 8;
-
-        wrapper.style.setProperty('--footer-progress', progress.toFixed(4));
-        stage.style.transform = `perspective(1200px) translate3d(0, ${translateY.toFixed(
-          1
-        )}px, 0) scale(${scale.toFixed(4)}) rotateX(${rotateX.toFixed(2)}deg)`;
-      }
-    );
+    if (!root || !stage) return;
+    const mm = gsap.matchMedia();
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 768px)' }, (context) => {
+      if (!context.conditions?.motion) return;
+      gsap.fromTo(stage, {
+        y: context.conditions?.desktop ? 100 : 35,
+        clipPath: 'inset(0% 5% 0% 5% round 24px)',
+        '--footer-progress': 0,
+      }, {
+        y: 0, clipPath: 'inset(0% 0% 0% 0% round 0px)', '--footer-progress': 1,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: root, start: 'top 98%', end: 'clamp(top 35%)', scrub: 0.7, invalidateOnRefresh: true },
+      });
+    }, root);
+    return () => mm.revert();
   }, []);
-
-  return (
-    <div ref={wrapperRef} className={cn('overflow-hidden', className)}>
-      <div ref={stageRef}>{children}</div>
-    </div>
-  );
+  return <div ref={rootRef} className={cn('overflow-hidden', className)}><div ref={stageRef}>{children}</div></div>;
 }

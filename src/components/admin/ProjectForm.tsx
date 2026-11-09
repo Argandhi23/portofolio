@@ -183,6 +183,7 @@ export function ProjectForm({ initialData, isEdit = false }: ProjectFormProps) {
           setFieldErrors(res.fieldErrors);
         }
       } else {
+        if (res.warning) window.alert(res.warning);
         router.push('/admin/projects');
       }
     });

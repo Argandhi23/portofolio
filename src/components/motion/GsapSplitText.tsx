@@ -1,6 +1,6 @@
 'use client';
 
-import React, { isValidElement, useEffect, useRef } from 'react';
+import React, { isValidElement, useEffect, useRef, useSyncExternalStore } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from '@/components/public/LanguageProvider';
@@ -25,6 +25,10 @@ interface GsapSplitTextProps {
   /** If true, scrubs word reveal directly with scroll instead of time-based trigger */
   scrub?: boolean;
 }
+
+const subscribeToHydration = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 /**
  * Resolves plain text from string, <T en id />, or <CmsText value fallbackEn fallbackId />
@@ -77,23 +81,26 @@ export function GsapSplitText({
 }: GsapSplitTextProps) {
   const { lang } = useLanguage();
   const containerRef = useRef<HTMLElement | null>(null);
-  const resolvedText = resolveNodeText(children, lang);
+  // RSC children can be opaque during SSR and concrete elements in the browser.
+  // Keep the server and first hydration render identical; enhance only afterward.
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientSnapshot,
+    getServerSnapshot
+  );
+  const resolvedText = hydrated ? resolveNodeText(children, lang) : null;
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
-
-    const prefersReduced = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-    if (prefersReduced) return;
+    if (!el || !hydrated) return;
 
     const words = Array.from(
       el.querySelectorAll<HTMLElement>('[data-gsap-word]')
     );
     const targets = words.length > 0 ? words : [el];
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
       gsap.fromTo(
         targets,
         {
@@ -121,9 +128,9 @@ export function GsapSplitText({
     }, el);
 
     return () => {
-      ctx.revert();
+      mm.revert();
     };
-  }, [lang, resolvedText, stagger, duration, delay, scrub]);
+  }, [hydrated, lang, resolvedText, stagger, duration, delay, scrub]);
 
   if (resolvedText !== null) {
     const words = resolvedText.trim().split(/\s+/).filter(Boolean);

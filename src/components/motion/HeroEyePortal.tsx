@@ -108,6 +108,10 @@ export function HeroEyePortal({
     let contentHeight = 1;
     let lastCover = -1;
     const initialHash = window.location.hash;
+    const findHashTarget = (hash: string): HTMLElement | null => {
+      try { return document.getElementById(decodeURIComponent(hash.slice(1))); }
+      catch { return null; }
+    };
     const hasSectionHash = Boolean(
       initialHash && initialHash !== '#' && initialHash !== '#home'
     );
@@ -347,9 +351,7 @@ export function HeroEyePortal({
         scheduleRemeasure();
 
         if (pendingHashAfterEnter) {
-          const targetEl = document.querySelector<HTMLElement>(
-            pendingHashAfterEnter
-          );
+          const targetEl = findHashTarget(pendingHashAfterEnter);
           pendingHashAfterEnter = null;
           if (targetEl) {
             targetEl.scrollIntoView({ behavior: 'smooth' });
@@ -692,7 +694,7 @@ export function HeroEyePortal({
     layout();
 
     if (hasSectionHash && window.scrollY <= 24) {
-      const hashTarget = document.querySelector<HTMLElement>(initialHash);
+      const hashTarget = findHashTarget(initialHash);
       if (hashTarget) {
         window.requestAnimationFrame(() => {
           hashTarget.scrollIntoView({ behavior: 'smooth' });

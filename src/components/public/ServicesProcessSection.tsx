@@ -6,7 +6,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type { Service } from '@/types/database.types';
 import { pickLocalized } from '@/lib/i18n/localized';
 import { SectionHeader } from '@/components/public/SectionHeader';
-import { GsapSplitText } from '@/components/motion/GsapSplitText';
 import { CmsText, T } from '@/components/public/LanguageProvider';
 
 if (typeof window !== 'undefined') {
@@ -116,8 +115,8 @@ function cleanDigits(label: string): string {
 
 /**
  * Minimalist Editorial Services Index (#services).
- * Full-width typographic rows with GSAP hairline dividers (`scaleX: 0 -> 1`)
- * and masked word-by-word text animations (`GsapSplitText`).
+ * Scroll-linked typesetting: each rule leads a staggered perspective reveal
+ * across the row, followed by a restrained tonal sweep. No extra scroll pin.
  */
 export function ServicesProcessSection({
   services,
@@ -129,51 +128,30 @@ export function ServicesProcessSection({
     const list = listRef.current;
     if (!list || services.length === 0) return;
 
-    const prefersReduced = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches;
-    if (prefersReduced) return;
-
-    const ctx = gsap.context(() => {
-      const lines = list.querySelectorAll<HTMLElement>('[data-service-line]');
-      const rows = list.querySelectorAll<HTMLElement>('[data-service-row]');
-
-      gsap.fromTo(
-        lines,
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: 1,
-          stagger: 0.12,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: list,
-            start: 'top 85%',
-          },
-        }
-      );
-
-      rows.forEach((row) => {
-        gsap.fromTo(
-          row,
-          { y: 24, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: row,
-              start: 'top 90%',
-            },
-          }
-        );
+    const mm = gsap.matchMedia();
+    mm.add({ motion: '(prefers-reduced-motion: no-preference)', desktop: '(min-width: 1024px)' }, (context) => {
+      if (!context.conditions?.motion) return;
+      const desktop = context.conditions?.desktop;
+      const rows = list.querySelectorAll<HTMLElement>('[data-service-entry]');
+      rows.forEach((entry) => {
+        const line = entry.querySelector('[data-service-line]');
+        const cells = entry.querySelectorAll('[data-service-cell]');
+        const wash = entry.querySelector('[data-service-wash]');
+        gsap.timeline({
+          scrollTrigger: { trigger: entry, start: 'top 92%', end: 'top 46%', scrub: 0.55 },
+        })
+          .fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 0.65, ease: 'power2.inOut' }, 0)
+          .fromTo(cells, {
+            yPercent: desktop ? 100 : 40, rotateX: desktop ? -25 : 0,
+            transformPerspective: 900, transformOrigin: '50% 100%', opacity: 0.15,
+          }, { yPercent: 0, rotateX: 0, opacity: 1, stagger: 0.09, duration: 0.75, ease: 'power3.out' }, 0.1);
+        gsap.fromTo(wash, { scaleX: 0 }, {
+          scaleX: 1, ease: 'none',
+          scrollTrigger: { trigger: entry, start: 'top 70%', end: 'bottom 40%', scrub: 0.7 },
+        });
       });
     }, list);
-
-    return () => {
-      ctx.revert();
-    };
+    return () => mm.revert();
   }, [services.length]);
 
   return (
@@ -192,45 +170,38 @@ export function ServicesProcessSection({
       />
 
       <div ref={listRef} className="w-full">
-        <div
-          data-service-line
-          className="h-[1px] w-full bg-white/12 origin-left will-change-transform"
-        />
-
         {services.map((svc, idx) => {
           const digits = cleanDigits(svc.number_label);
           const details = getServiceDetails(svc.title, idx);
 
           return (
-            <div key={svc.id} className="group">
+            <div key={svc.id} data-service-entry className="group relative">
+              <div data-service-line className="h-px w-full bg-white/15 origin-left" />
+              <div data-service-wash aria-hidden="true" className="absolute inset-0 bg-white/[0.025] origin-left pointer-events-none" />
               <div
                 data-service-row
                 className="py-8 sm:py-10 grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-baseline transition-colors"
               >
-                <div className="lg:col-span-1">
-                  <span className="font-mono text-xs sm:text-sm text-[#9E1B32]">
+                <div className="lg:col-span-1 overflow-hidden">
+                  <span data-service-cell className="inline-block font-mono text-xs sm:text-sm text-[#E04D70]">
                     {digits}
                   </span>
                 </div>
 
-                <div className="lg:col-span-4">
-                  <h3 className="text-white font-bold text-[24px] sm:text-[30px] leading-[1.15] tracking-[-0.025em] group-hover:translate-x-2 transition-transform duration-300">
-                    <GsapSplitText stagger={0.035}>
-                      <CmsText value={svc.title} />
-                    </GsapSplitText>
+                <div className="lg:col-span-4 overflow-hidden py-1">
+                  <h3 data-service-cell className="text-white font-bold text-[24px] sm:text-[30px] leading-[1.15] tracking-[-0.025em]">
+                    <CmsText value={svc.title} />
                   </h3>
                 </div>
 
-                <div className="lg:col-span-4">
-                  <p className="text-white/70 text-[15px] leading-[1.6]">
-                    <GsapSplitText stagger={0.02} delay={0.06}>
-                      <T en={details.descEn} id={details.descId} />
-                    </GsapSplitText>
+                <div className="lg:col-span-4 overflow-hidden py-1">
+                  <p data-service-cell className="text-white/70 text-[15px] leading-[1.6]">
+                    <T en={details.descEn} id={details.descId} />
                   </p>
                 </div>
 
-                <div className="lg:col-span-3 lg:text-right pt-1 lg:pt-0">
-                  <p className="font-mono text-[12px] text-white/45">
+                <div className="lg:col-span-3 lg:text-right pt-1 lg:pt-0 overflow-hidden">
+                  <p data-service-cell className="font-mono text-[12px] text-white/45">
                     {details.tagsEn.map((tagEn, tIdx) => (
                       <React.Fragment key={tagEn}>
                         <T en={tagEn} id={details.tagsId[tIdx] || tagEn} />
@@ -240,14 +211,10 @@ export function ServicesProcessSection({
                   </p>
                 </div>
               </div>
-
-              <div
-                data-service-line
-                className="h-[1px] w-full bg-white/12 origin-left will-change-transform"
-              />
             </div>
           );
         })}
+        <div className="h-px w-full bg-white/12" />
       </div>
     </div>
   );

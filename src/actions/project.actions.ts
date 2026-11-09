@@ -1,9 +1,11 @@
 'use server';
 
+import { z } from 'zod';
+
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-guard';
 import { projectSchema, type ProjectInput } from '@/lib/validations/project.schema';
-import { deleteMedia, deleteMultipleMedia } from './storage.actions';
+import { deleteMultipleMedia } from './storage.actions';
 import type { ActionResult } from '@/types/action.types';
 import type { Project } from '@/types/database.types';
 
@@ -88,6 +90,10 @@ export async function updateProject(
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     const validation = projectSchema.safeParse(input);
     if (!validation.success) {
       return {
@@ -98,32 +104,13 @@ export async function updateProject(
     }
 
     // 1. Fetch old project to detect replaced files (Anti-orphan storage management)
-    const { data: existingProject } = await supabase
+    const { data: existingProject, error: previousError } = await supabase
       .from('projects')
-      .select('thumbnail_url, gallery_urls')
+      .select('thumbnail_url, gallery_urls, slug')
       .eq('id', id)
       .single();
 
-    if (existingProject) {
-      // If thumbnail was changed, remove old thumbnail
-      if (
-        existingProject.thumbnail_url &&
-        existingProject.thumbnail_url !== validation.data.thumbnail_url
-      ) {
-        await deleteMedia(existingProject.thumbnail_url);
-      }
-
-      // Check removed gallery items
-      if (Array.isArray(existingProject.gallery_urls)) {
-        const newGallerySet = new Set(validation.data.gallery_urls);
-        const removedGalleryItems = existingProject.gallery_urls.filter(
-          (url) => !newGallerySet.has(url)
-        );
-        if (removedGalleryItems.length > 0) {
-          await deleteMultipleMedia(removedGalleryItems);
-        }
-      }
-    }
+    if (previousError) return { success: false, message: 'Data lama belum dapat dibaca. Perubahan dibatalkan.' };
 
     // 2. Perform database update
     const { data, error } = await supabase
@@ -156,6 +143,14 @@ export async function updateProject(
       };
     }
 
+    // Only remove media after the row has been saved. A URL may move between
+    // thumbnail and gallery, so compare the complete retained set.
+    const retained = new Set([data.thumbnail_url, ...data.gallery_urls]);
+    const removed = existingProject
+      ? [existingProject.thumbnail_url, ...existingProject.gallery_urls].filter((url) => !retained.has(url))
+      : [];
+    const cleanup = await deleteMultipleMedia(removed);
+
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
     revalidatePath('/');
@@ -163,10 +158,12 @@ export async function updateProject(
     revalidatePath('/admin/projects');
     revalidatePath(`/admin/projects/${id}/edit`);
     revalidatePath(`/projects/${data.slug}`);
+    if (existingProject?.slug && existingProject.slug !== data.slug) revalidatePath(`/projects/${existingProject.slug}`);
 
     return {
       success: true,
-      message: 'Project berhasil diperbarui.',
+      warning: cleanup.success ? undefined : `Pembersihan media perlu dicoba ulang: ${cleanup.message}`,
+      message: cleanup.success ? 'Project berhasil diperbarui.' : `Project tersimpan; pembersihan media perlu dicoba ulang: ${cleanup.message}`,
       data,
     };
   } catch (error) {
@@ -187,21 +184,18 @@ export async function deleteProject(id: string): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
 
+    if (!z.uuid().safeParse(id).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
+
     // 1. Fetch project images to clean up storage
-    const { data: project } = await supabase
+    const { data: project, error: previousError } = await supabase
       .from('projects')
       .select('thumbnail_url, gallery_urls, slug')
       .eq('id', id)
       .single();
 
-    if (project) {
-      if (project.thumbnail_url) {
-        await deleteMedia(project.thumbnail_url);
-      }
-      if (Array.isArray(project.gallery_urls) && project.gallery_urls.length > 0) {
-        await deleteMultipleMedia(project.gallery_urls);
-      }
-    }
+    if (previousError) return { success: false, message: 'Data lama belum dapat dibaca. Penghapusan dibatalkan.' };
 
     // 2. Delete database row
     const { error } = await supabase.from('projects').delete().eq('id', id);
@@ -212,6 +206,8 @@ export async function deleteProject(id: string): Promise<ActionResult> {
         message: `Gagal menghapus project: ${error.message}`,
       };
     }
+
+    const cleanup = await deleteMultipleMedia(project ? [project.thumbnail_url, ...project.gallery_urls] : []);
 
     revalidateTag(CACHE_TAG_PROJECTS, { expire: 0 });
     revalidateTag('projects', { expire: 0 });
@@ -224,7 +220,8 @@ export async function deleteProject(id: string): Promise<ActionResult> {
 
     return {
       success: true,
-      message: 'Project dan seluruh berkas media terkait berhasil dihapus.',
+      warning: cleanup.success ? undefined : `Pembersihan media perlu dicoba ulang: ${cleanup.message}`,
+      message: cleanup.success ? 'Project dan media terkait berhasil dihapus.' : `Project dihapus; pembersihan media perlu dicoba ulang: ${cleanup.message}`,
     };
   } catch (error) {
     return {
@@ -246,6 +243,10 @@ export async function toggleProjectStatus(
 ): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
+
+    if (!z.uuid().safeParse(id).success || !z.enum(['draft', 'published']).safeParse(newStatus).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
 
     const { error } = await supabase
       .from('projects')
@@ -289,6 +290,10 @@ export async function toggleProjectFeatured(
 ): Promise<ActionResult> {
   try {
     const { supabase } = await requireAdmin();
+
+    if (!z.uuid().safeParse(id).success || !z.boolean().safeParse(isFeatured).success) {
+      return { success: false, message: 'Input mutasi tidak valid.' };
+    }
 
     const { error } = await supabase
       .from('projects')

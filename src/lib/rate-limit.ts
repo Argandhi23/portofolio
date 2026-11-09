@@ -6,6 +6,7 @@ export interface RateLimitResult {
 
 interface RateLimitBucket {
   timestamps: number[];
+  expiresAt: number;
 }
 
 const buckets = new Map<string, RateLimitBucket>();
@@ -21,15 +22,14 @@ export function checkRateLimit(
   windowMs: number,
   now = Date.now()
 ): RateLimitResult {
-  // Periodic memory hygiene so long-lived server instances stay lean
-  if (buckets.size > MAX_BUCKETS) {
-    for (const [k, b] of buckets.entries()) {
-      const active = b.timestamps.filter((t) => now - t < windowMs);
-      if (active.length === 0) {
-        buckets.delete(k);
-      } else {
-        b.timestamps = active;
-      }
+  // Each bucket keeps its own expiry; a short chat window must not erase a
+  // longer login/reset/inquiry window. Refuse new keys at capacity.
+  if (buckets.size >= MAX_BUCKETS) {
+    for (const [bucketKey, bucket] of buckets) {
+      if (bucket.expiresAt <= now) buckets.delete(bucketKey);
+    }
+    if (!buckets.has(key) && buckets.size >= MAX_BUCKETS) {
+      return { allowed: false, remaining: 0, retryAfterSeconds: Math.max(1, Math.ceil(windowMs / 1000)) };
     }
   }
 
@@ -41,7 +41,7 @@ export function checkRateLimit(
   if (validTimestamps.length >= limit) {
     const oldestInWindow = validTimestamps[0];
     const retryAfterMs = Math.max(1000, windowMs - (now - oldestInWindow));
-    buckets.set(key, { timestamps: validTimestamps });
+    buckets.set(key, { timestamps: validTimestamps, expiresAt: validTimestamps[validTimestamps.length - 1] + windowMs });
     return {
       allowed: false,
       remaining: 0,
@@ -50,7 +50,7 @@ export function checkRateLimit(
   }
 
   validTimestamps.push(now);
-  buckets.set(key, { timestamps: validTimestamps });
+  buckets.set(key, { timestamps: validTimestamps, expiresAt: validTimestamps[validTimestamps.length - 1] + windowMs });
 
   return {
     allowed: true,

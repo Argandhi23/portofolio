@@ -1,6 +1,7 @@
 'use server';
 
 import crypto from 'crypto';
+import { z } from 'zod';
 import { requireAdmin } from '@/lib/auth-guard';
 import { validateImageBuffer } from '@/lib/file-security';
 import { extractStoragePath } from '@/lib/utils';
@@ -36,8 +37,14 @@ export async function uploadMedia(
   try {
     const { supabase } = await requireAdmin();
 
-    const file = formData.get('file') as File | null;
-    const folder = (formData.get('folder') as string) || 'uploads';
+    const payload = z.object({
+      file: z.instanceof(File),
+      folder: z.string().max(80),
+    }).safeParse(formData instanceof FormData ? {
+      file: formData.get('file'), folder: formData.get('folder') ?? 'uploads',
+    } : null);
+    if (!payload.success) return { success: false, message: 'Data unggahan tidak valid.' };
+    const { file, folder } = payload.data;
 
     if (!file || file.size === 0) {
       return {
@@ -123,40 +130,13 @@ export async function uploadMedia(
  */
 export async function deleteMedia(fileUrlOrPath: string): Promise<ActionResult> {
   try {
-    if (!fileUrlOrPath || typeof fileUrlOrPath !== 'string') {
-      return {
-        success: false,
-        message: 'Path file tidak valid.',
-      };
-    }
+    await requireAdmin();
+    const validation = z.string().min(1).max(2048).safeParse(fileUrlOrPath);
+    if (!validation.success) return { success: false, message: 'Path file tidak valid.' };
 
-    const { supabase } = await requireAdmin();
-
-    const filePath =
-      fileUrlOrPath.startsWith('http://') || fileUrlOrPath.startsWith('https://')
-        ? extractStoragePath(fileUrlOrPath, BUCKET_NAME)
-        : fileUrlOrPath;
-
-    if (!filePath) {
-      return {
-        success: false,
-        message: 'Tidak dapat mengekstrak path file dari URL storage.',
-      };
-    }
-
-    const { error } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
-
-    if (error) {
-      return {
-        success: false,
-        message: `Gagal menghapus file dari storage: ${error.message}`,
-      };
-    }
-
-    return {
-      success: true,
-      message: 'File berhasil dihapus dari storage.',
-    };
+    // Delegate to the batch path so reference checks are identical.
+    const result = await deleteMultipleMedia([validation.data]);
+    return { success: result.success, message: result.message };
   } catch (error) {
     return {
       success: false,
@@ -175,23 +155,57 @@ export async function deleteMultipleMedia(
   fileUrlsOrPaths: string[]
 ): Promise<ActionResult<{ deletedCount: number }>> {
   try {
-    if (!Array.isArray(fileUrlsOrPaths) || fileUrlsOrPaths.length === 0) {
-      return {
-        success: true,
-        message: 'Tidak ada file untuk dihapus.',
-        data: { deletedCount: 0 },
-      };
-    }
-
     const { supabase } = await requireAdmin();
+    const validation = z.array(z.string().min(1).max(2048)).max(200).safeParse(fileUrlsOrPaths);
+    if (!validation.success) return { success: false, message: 'Daftar file tidak valid.' };
 
-    const pathsToDelete = fileUrlsOrPaths
-      .map((item) =>
-        item.startsWith('http://') || item.startsWith('https://')
-          ? extractStoragePath(item, BUCKET_NAME)
-          : item
-      )
-      .filter((p): p is string => Boolean(p));
+    const storage = supabase.storage.from(BUCKET_NAME);
+    const bucketOrigin = new URL(storage.getPublicUrl('probe').data.publicUrl).origin;
+    const objectPath = (value: string): string | null => {
+      if (/^https?:/i.test(value) && new URL(value).origin !== bucketOrigin) return null;
+      return extractStoragePath(value, BUCKET_NAME);
+    };
+    const candidates = new Set(validation.data.map(objectPath).filter((path): path is string => !!path));
+    if (candidates.size > 0) {
+      // Read all reference pages, not just the first PostgREST page. Normalize
+      // URLs to object paths so encoded names and query/fragment aliases match.
+      // Admin-only work; never load project content or private visitor data.
+      const readers = [
+        async (offset: number) => {
+          const { data, error } = await supabase.from('projects')
+            .select('thumbnail_url,gallery_urls').order('id').range(offset, offset + 199);
+          return { error: error || (data === null ? new Error('Reference data unavailable') : null), count: data?.length ?? 0, urls: data?.flatMap((row) => [row.thumbnail_url, ...row.gallery_urls]) ?? [] };
+        },
+        async (offset: number) => {
+          const { data, error } = await supabase.from('brands')
+            .select('logo_url').order('id').range(offset, offset + 199);
+          return { error: error || (data === null ? new Error('Reference data unavailable') : null), count: data?.length ?? 0, urls: data?.map((row) => row.logo_url) ?? [] };
+        },
+        async (offset: number) => {
+          const { data, error } = await supabase.from('site_settings')
+            .select('hero_image_url').order('id').range(offset, offset + 199);
+          return { error: error || (data === null ? new Error('Reference data unavailable') : null), count: data?.length ?? 0, urls: data?.map((row) => row.hero_image_url) ?? [] };
+        },
+      ];
+      for (const readPage of readers) {
+        let offset = 0;
+        while (candidates.size > 0) {
+          const page = await readPage(offset);
+          if (page.error) {
+            return { success: false, message: 'Referensi media belum dapat diverifikasi; file dipertahankan.' };
+          }
+          for (const url of page.urls) {
+            if (!url) continue;
+            const path = objectPath(url);
+            if (path) candidates.delete(path);
+          }
+          if (page.count === 0) break;
+          // Advance by the actual count even if the service's page cap is <200.
+          offset += page.count;
+        }
+      }
+    }
+    const pathsToDelete = [...candidates];
 
     if (pathsToDelete.length === 0) {
       return {

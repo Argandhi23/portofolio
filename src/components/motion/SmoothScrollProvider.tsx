@@ -134,26 +134,62 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
     notifyScrollPosition(window.scrollY);
     scheduleRemeasure();
 
-    const rafId = window.requestAnimationFrame(() => {
+    // Next's hash jump can run before ScrollTrigger inserts the gallery pin spacer.
+    // Resolve the destination again AFTER refresh, using the final document geometry.
+    const routeHash = window.location.hash;
+    let interrupted = false;
+    let disposed = false;
+    const cancelAlignment = () => { interrupted = true; };
+    const alignRouteHash = () => {
+      if (disposed || interrupted || !routeHash || routeHash === '#home' || window.location.hash !== routeHash) return;
+      const phase = document.documentElement.dataset.heroPortal;
+      if (phase === 'hero' || phase === 'entering' || phase === 'exiting') return;
+      let target: HTMLElement | null;
+      try {
+        target = document.getElementById(decodeURIComponent(routeHash.slice(1)));
+      } catch {
+        return;
+      }
+      if (!target) return;
+      const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - 24);
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(top, { immediate: true, force: true });
+      } else {
+        window.scrollTo({ top, behavior: 'instant' });
+      }
+      notifyScrollPosition(window.scrollY);
+    };
+    const refreshRouteLayout = () => {
+      if (disposed) return;
+      ScrollTrigger.refresh();
       if (lenisRef.current && !isPortalLocked) {
         lenisRef.current.start();
+        // Lenis must see the new pin spacing before clamping the destination.
         lenisRef.current.resize();
       }
+      alignRouteHash();
       scheduleRemeasure();
-      ScrollTrigger.refresh();
+    };
+    window.addEventListener('wheel', cancelAlignment, { passive: true });
+    window.addEventListener('touchstart', cancelAlignment, { passive: true });
+    window.addEventListener('pointerdown', cancelAlignment, { passive: true });
+    window.addEventListener('keydown', cancelAlignment);
+
+    const rafId = window.requestAnimationFrame(refreshRouteLayout);
+    const settleTimer = window.setTimeout(refreshRouteLayout, 150);
+    // Fonts can change the about section's height after the first layout pass.
+    void document.fonts.ready.then(() => {
+      if (!disposed && !interrupted) refreshRouteLayout();
     });
 
-    const settleTimer = window.setTimeout(() => {
-      if (lenisRef.current && !isPortalLocked) {
-        lenisRef.current.resize();
-      }
-      scheduleRemeasure();
-      ScrollTrigger.refresh();
-    }, 150);
-
     return () => {
+      disposed = true;
       window.cancelAnimationFrame(rafId);
       window.clearTimeout(settleTimer);
+      window.removeEventListener('wheel', cancelAlignment);
+      window.removeEventListener('touchstart', cancelAlignment);
+      window.removeEventListener('pointerdown', cancelAlignment);
+      window.removeEventListener('keydown', cancelAlignment);
     };
   }, [pathname]);
 
