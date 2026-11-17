@@ -21,8 +21,16 @@ import {
 import {
   computeRigPoseMetrics,
   evaluatePath,
+  evaluatePath4,
+  FAR_BROW_PATH,
+  FAR_HUNTER_EYE_PATH,
   FRAGMENT_SHADER_SOURCE,
+  HEAD_CORE_PATH,
   HEAD_RIM_PATH,
+  NEAR_BROW_PATH,
+  NEAR_EYELID_IDLE_PATH,
+  NEAR_HUNTER_EYE_PATH,
+  NOSE_RELIEF_PATH,
   projectWorldPointToCanvasUV,
   RIGHT_EYE_WORLD_AT_FRONT,
   VERTEX_SHADER_SOURCE,
@@ -206,6 +214,38 @@ describe('scroll-math motion engine primitives', () => {
     expect(pathSide).toContain('M 382 162');
     expect(pathMid).toContain('M 392.0 162.0');
     expect(pathFront).toContain('M 400 162');
+
+    // Verify 4-pose Catmull-Rom eye & brow paths never collapse or flip across all 21 turn increments
+    const extractXs = (d: string) => {
+      const nums = (d.match(/-?\d+(?:\.\d+)?/g) ?? []).map(Number);
+      return nums.filter((_, idx) => idx % 2 === 0);
+    };
+    for (let i = 0; i <= 20; i++) {
+      const t = i / 20;
+      const nearEyeXs = extractXs(evaluatePath4(NEAR_HUNTER_EYE_PATH, t));
+      const nearBrowXs = extractXs(evaluatePath4(NEAR_BROW_PATH, t));
+      const nearLidXs = extractXs(evaluatePath4(NEAR_EYELID_IDLE_PATH, t));
+      const farEyeXs = extractXs(evaluatePath4(FAR_HUNTER_EYE_PATH, t));
+      const farBrowXs = extractXs(evaluatePath4(FAR_BROW_PATH, t));
+      const noseXs = extractXs(evaluatePath4(NOSE_RELIEF_PATH, t));
+      const headXs = extractXs(evaluatePath4(HEAD_CORE_PATH, t));
+
+      expect(Math.max(...nearEyeXs) - Math.min(...nearEyeXs)).toBeGreaterThanOrEqual(18);
+      expect(Math.max(...nearBrowXs) - Math.min(...nearBrowXs)).toBeGreaterThanOrEqual(22);
+      expect(Math.max(...nearLidXs) - Math.min(...nearLidXs)).toBeGreaterThanOrEqual(17);
+      expect(Math.max(...farEyeXs) - Math.min(...farEyeXs)).toBeGreaterThanOrEqual(12);
+      expect(Math.max(...farBrowXs) - Math.min(...farBrowXs)).toBeGreaterThanOrEqual(14);
+      expect(headXs.every((n) => Number.isFinite(n))).toBe(true);
+
+      // Once visible past nose bridge (t >= 0.4), far eye stays cleanly left of nose bridge, and near eye right of nose
+      if (t >= 0.4) {
+        const farCenter = (Math.min(...farEyeXs) + Math.max(...farEyeXs)) / 2;
+        const nearCenter = (Math.min(...nearEyeXs) + Math.max(...nearEyeXs)) / 2;
+        const noseBridgeStart = noseXs[0];
+        expect(farCenter).toBeLessThan(noseBridgeStart);
+        expect(noseBridgeStart).toBeLessThan(nearCenter);
+      }
+    }
   });
 
   it('computes Awwwards 4-Act GSAP post-white choreography metrics (Portal Bridge, Cinema Stage, Blueprint Pillars, Cockpit Convergence)', () => {

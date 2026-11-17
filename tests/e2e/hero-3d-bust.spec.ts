@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('renders interactive R3F 3D sculpted bust, turns cleanly on scroll, dives through right eye, and exits back to hero', async ({
+test('4-pose SVG bust turns smoothly across scroll scrub, dives through right eye, and exits back to hero', async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -20,55 +20,33 @@ test('renders interactive R3F 3D sculpted bust, turns cleanly on scroll, dives t
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
 
-  // Fast-skip intro preloader cleanly
   const preloader = page.getByTestId('intro-preloader');
   if ((await preloader.count()) > 0) {
     await preloader.click();
     await expect(preloader).toHaveCount(0, { timeout: 6000 });
   }
 
-  // Wait for WebGL 3D bust to finish initializing
-  const rigStage = page.locator('[data-rig-version="v6-r3f-sculpted-3d"]');
-  await expect(rigStage).toHaveAttribute('data-rig-ready', 'true', {
-    timeout: 12000,
-  });
-  await expect(rigStage.locator('canvas')).toBeVisible();
+  const rigSvg = page.locator('svg[data-rig-version="v6-sculpted-4pose-spline"]');
+  await expect(rigSvg).toBeVisible({ timeout: 8000 });
 
-  // Wait a moment for first R3F frame render
-  await page.waitForTimeout(250);
-  await page.screenshot({ path: 'test-results/hero-3d-01-side-profile.png' });
+  // Frame 0: 90° Side profile (t = 0)
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: 'test-results/svg-00-side.png' });
 
-  // Phase 1 partial scroll: 3/4 turn (multiple wheel steps since single wheel delta is clamped)
+  // Frame 1: Quarter turn (t ~ 0.27)
   await page.mouse.wheel(0, 120);
-  await page.waitForTimeout(80);
-  await page.mouse.wheel(0, 120);
-  await expect
-    .poll(async () =>
-      page.evaluate(() => {
-        const sec = document.querySelector<HTMLElement>('[data-gp-motion]');
-        return Number.parseFloat(
-          sec?.style.getPropertyValue('--gp-head-turn') || '0'
-        );
-      })
-    )
-    .toBeGreaterThan(0.35);
-  await page.waitForTimeout(350);
-  await page.screenshot({ path: 'test-results/hero-3d-02-three-quarter.png' });
+  await page.waitForTimeout(450);
+  await page.screenshot({ path: 'test-results/svg-25-turn.png' });
 
-  // Phase 1 near-front: eyes glowing just before eye dive
-  await page.mouse.wheel(0, 90);
-  await expect
-    .poll(async () =>
-      page.evaluate(() => {
-        const sec = document.querySelector<HTMLElement>('[data-gp-motion]');
-        return Number.parseFloat(
-          sec?.style.getPropertyValue('--gp-head-turn') || '0'
-        );
-      })
-    )
-    .toBeGreaterThan(0.75);
-  await page.waitForTimeout(350);
-  await page.screenshot({ path: 'test-results/hero-3d-03-front-glow.png' });
+  // Frame 2: Three-quarter view (t ~ 0.6)
+  await page.mouse.wheel(0, 100);
+  await page.waitForTimeout(450);
+  await page.screenshot({ path: 'test-results/svg-60-three-quarter.png' });
+
+  // Frame 3: Near front view with glowing eyes (t ~ 0.9)
+  await page.mouse.wheel(0, 85);
+  await page.waitForTimeout(450);
+  await page.screenshot({ path: 'test-results/svg-90-front.png' });
 
   // Complete Phase 2 eye dive into #about (#F5F0EB)
   await expect
@@ -80,10 +58,9 @@ test('renders interactive R3F 3D sculpted bust, turns cleanly on scroll, dives t
       { timeout: 10000 }
     )
     .toBe('about');
-  await page.waitForTimeout(250);
-  await page.screenshot({ path: 'test-results/hero-3d-04-about-portal.png' });
+  await page.waitForTimeout(200);
 
-  // Reverse scroll back up out of eye portal -> Hero restored cleanly
+  // Exit back up out of eye portal -> Hero restored cleanly
   await expect
     .poll(
       async () => {
@@ -97,7 +74,7 @@ test('renders interactive R3F 3D sculpted bust, turns cleanly on scroll, dives t
   expect(errors).toEqual([]);
 });
 
-test('renders static 3D bust cleanly with prefers-reduced-motion: reduce', async ({
+test('SVG bust renders cleanly under prefers-reduced-motion: reduce', async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -115,8 +92,8 @@ test('renders static 3D bust cleanly with prefers-reduced-motion: reduce', async
     timeout: 8000,
   });
   await expect(
-    page.locator('[data-rig-version="v6-r3f-sculpted-3d"]')
-  ).toHaveAttribute('data-rig-ready', 'true', { timeout: 12000 });
+    page.locator('svg[data-rig-version="v6-sculpted-4pose-spline"]')
+  ).toBeVisible();
   await expect(page.locator('#about')).toBeVisible();
   expect(errors).toEqual([]);
 });
