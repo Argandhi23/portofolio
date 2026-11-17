@@ -10,7 +10,7 @@ import {
   COAT_RIGHT_RIM_PATH,
   COAT_SEAM_PATH,
   computeRigPoseMetrics,
-  evaluatePath,
+  evaluatePath4,
   FACE_LEFT_RIM_PATH,
   FACE_RIGHT_RIM_PATH,
   FAR_BROW_PATH,
@@ -19,6 +19,7 @@ import {
   HAIR_CROWN_MASS_PATH,
   HAIR_CROWN_RIM_PATH,
   HAIR_FRINGE_PATH,
+  HAIR_FRINGE_RIM_PATH,
   HEAD_CORE_PATH,
   LAPEL_LEFT_PATH,
   LAPEL_RIGHT_PATH,
@@ -34,38 +35,40 @@ import {
   RIGHT_SIDE_EAR_PATH,
 } from '@/lib/hero-3d-bust';
 
-const INITIAL_HEAD_CORE = evaluatePath(HEAD_CORE_PATH, 0);
-const INITIAL_FACE_LEFT_RIM = evaluatePath(FACE_LEFT_RIM_PATH, 0);
-const INITIAL_FACE_RIGHT_RIM = evaluatePath(FACE_RIGHT_RIM_PATH, 0);
-const INITIAL_NOSE_RELIEF = evaluatePath(NOSE_RELIEF_PATH, 0);
-const INITIAL_MOUTH_RELIEF = evaluatePath(MOUTH_RELIEF_PATH, 0);
-const INITIAL_CHIN_SHADOW = evaluatePath(CHIN_SHADOW_PATH, 0);
-const INITIAL_CHEEK_RIGHT = evaluatePath(CHEEK_RIGHT_RELIEF_PATH, 0);
-const INITIAL_CHEEK_LEFT = evaluatePath(CHEEK_LEFT_RELIEF_PATH, 0);
-const INITIAL_RIGHT_EAR = evaluatePath(RIGHT_SIDE_EAR_PATH, 0);
-const INITIAL_RIGHT_EAR_HELIX = evaluatePath(RIGHT_EAR_HELIX_PATH, 0);
-const INITIAL_LEFT_EAR = evaluatePath(LEFT_SIDE_EAR_PATH, 0);
-const INITIAL_HAIR_BACK = evaluatePath(HAIR_BACK_CURLS_PATH, 0);
-const INITIAL_HAIR_CROWN = evaluatePath(HAIR_CROWN_MASS_PATH, 0);
-const INITIAL_HAIR_CROWN_RIM = evaluatePath(HAIR_CROWN_RIM_PATH, 0);
-const INITIAL_HAIR_FRINGE = evaluatePath(HAIR_FRINGE_PATH, 0);
-const INITIAL_NECK = evaluatePath(NECK_PILLAR_PATH, 0);
-const INITIAL_NECK_RIM = evaluatePath(NECK_LEFT_RIM_PATH, 0);
-const INITIAL_COAT_BODY = evaluatePath(COAT_BODY_PATH, 0);
-const INITIAL_COAT_LEFT_RIM = evaluatePath(COAT_LEFT_RIM_PATH, 0);
-const INITIAL_COAT_RIGHT_RIM = evaluatePath(COAT_RIGHT_RIM_PATH, 0);
-const INITIAL_LAPEL_LEFT = evaluatePath(LAPEL_LEFT_PATH, 0);
-const INITIAL_LAPEL_RIGHT = evaluatePath(LAPEL_RIGHT_PATH, 0);
-const INITIAL_COAT_SEAM = evaluatePath(COAT_SEAM_PATH, 0);
-const INITIAL_NEAR_BROW = evaluatePath(NEAR_BROW_PATH, 0);
-const INITIAL_NEAR_EYELID = evaluatePath(NEAR_EYELID_IDLE_PATH, 0);
-const INITIAL_NEAR_HUNTER = evaluatePath(NEAR_HUNTER_EYE_PATH, 0);
-const INITIAL_FAR_BROW = evaluatePath(FAR_BROW_PATH, 0);
-const INITIAL_FAR_HUNTER = evaluatePath(FAR_HUNTER_EYE_PATH, 0);
+const INITIAL_HEAD_CORE = evaluatePath4(HEAD_CORE_PATH, 0);
+const INITIAL_FACE_LEFT_RIM = evaluatePath4(FACE_LEFT_RIM_PATH, 0);
+const INITIAL_FACE_RIGHT_RIM = evaluatePath4(FACE_RIGHT_RIM_PATH, 0);
+const INITIAL_NOSE_RELIEF = evaluatePath4(NOSE_RELIEF_PATH, 0);
+const INITIAL_MOUTH_RELIEF = evaluatePath4(MOUTH_RELIEF_PATH, 0);
+const INITIAL_CHIN_SHADOW = evaluatePath4(CHIN_SHADOW_PATH, 0);
+const INITIAL_CHEEK_RIGHT = evaluatePath4(CHEEK_RIGHT_RELIEF_PATH, 0);
+const INITIAL_CHEEK_LEFT = evaluatePath4(CHEEK_LEFT_RELIEF_PATH, 0);
+const INITIAL_RIGHT_EAR = evaluatePath4(RIGHT_SIDE_EAR_PATH, 0);
+const INITIAL_RIGHT_EAR_HELIX = evaluatePath4(RIGHT_EAR_HELIX_PATH, 0);
+const INITIAL_LEFT_EAR = evaluatePath4(LEFT_SIDE_EAR_PATH, 0);
+const INITIAL_HAIR_BACK = evaluatePath4(HAIR_BACK_CURLS_PATH, 0);
+const INITIAL_HAIR_CROWN = evaluatePath4(HAIR_CROWN_MASS_PATH, 0);
+const INITIAL_HAIR_CROWN_RIM = evaluatePath4(HAIR_CROWN_RIM_PATH, 0);
+const INITIAL_HAIR_FRINGE = evaluatePath4(HAIR_FRINGE_PATH, 0);
+const INITIAL_HAIR_FRINGE_RIM = evaluatePath4(HAIR_FRINGE_RIM_PATH, 0);
+const INITIAL_NECK = evaluatePath4(NECK_PILLAR_PATH, 0);
+const INITIAL_NECK_RIM = evaluatePath4(NECK_LEFT_RIM_PATH, 0);
+const INITIAL_COAT_BODY = evaluatePath4(COAT_BODY_PATH, 0);
+const INITIAL_COAT_LEFT_RIM = evaluatePath4(COAT_LEFT_RIM_PATH, 0);
+const INITIAL_COAT_RIGHT_RIM = evaluatePath4(COAT_RIGHT_RIM_PATH, 0);
+const INITIAL_LAPEL_LEFT = evaluatePath4(LAPEL_LEFT_PATH, 0);
+const INITIAL_LAPEL_RIGHT = evaluatePath4(LAPEL_RIGHT_PATH, 0);
+const INITIAL_COAT_SEAM = evaluatePath4(COAT_SEAM_PATH, 0);
+const INITIAL_NEAR_BROW = evaluatePath4(NEAR_BROW_PATH, 0);
+const INITIAL_NEAR_EYELID = evaluatePath4(NEAR_EYELID_IDLE_PATH, 0);
+const INITIAL_NEAR_HUNTER = evaluatePath4(NEAR_HUNTER_EYE_PATH, 0);
+const INITIAL_FAR_BROW = evaluatePath4(FAR_BROW_PATH, 0);
+const INITIAL_FAR_HUNTER = evaluatePath4(FAR_HUNTER_EYE_PATH, 0);
 
 export function HeroSilhouette() {
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const rigVersionRef = useRef('v5-sculpted-3pose');
+  const backlightRef = useRef<HTMLDivElement | null>(null);
+  const rigVersionRef = useRef('v6-sculpted-4pose-spline');
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -74,9 +77,6 @@ export function HeroSilhouette() {
     const portalSection = svg.closest<HTMLElement>('[data-gp-motion]');
     if (!portalSection) return;
 
-    const backlight = svg.querySelector<SVGCircleElement>(
-      '[data-rig-backlight]'
-    );
     const bodyGroup = svg.querySelector<SVGGElement>('[data-character-body]');
     const headGroup = svg.querySelector<SVGGElement>('[data-rig-head-group]');
     const headCore = svg.querySelector<SVGPathElement>('[data-rig-head-core]');
@@ -115,6 +115,9 @@ export function HeroSilhouette() {
     );
     const hairFringe = svg.querySelector<SVGPathElement>(
       '[data-rig-hair-fringe]'
+    );
+    const hairFringeRim = svg.querySelector<SVGPathElement>(
+      '[data-rig-hair-fringe-rim]'
     );
     const neckPillar = svg.querySelector<SVGPathElement>('[data-rig-neck]');
     const neckRim = svg.querySelector<SVGPathElement>('[data-rig-neck-rim]');
@@ -155,52 +158,56 @@ export function HeroSilhouette() {
     let lastTurn = -1;
 
     const applyPose = (rawTurn: number) => {
-      if (Math.abs(rawTurn - lastTurn) < 0.0004) return;
+      if (Math.abs(rawTurn - lastTurn) < 0.00025) return;
       lastTurn = rawTurn;
 
       const pose = computeRigPoseMetrics(rawTurn);
 
-      // Native SVG attributes prevent Chromium GPU sub-layer clipping/eviction on zoom
-      backlight?.setAttribute('cx', (368 + pose.turn * 32).toFixed(2));
-      bodyGroup?.setAttribute(
-        'transform',
-        `translate(${((1 - pose.turn) * -18).toFixed(2)} ${((1 - pose.turn) * 6).toFixed(2)})`
-      );
+      if (backlightRef.current) {
+        backlightRef.current.style.transform = `translate3d(${(pose.turn * 20 - 10).toFixed(2)}px, 0, 0)`;
+      }
+
+      const tx = ((1 - pose.turn) * -16).toFixed(2);
+      const ty = ((1 - pose.turn) * 6).toFixed(2);
+      bodyGroup?.setAttribute('transform', `translate(${tx} ${ty})`);
       headGroup?.setAttribute('transform', `translate(0 ${pose.arcNodY})`);
 
-      // 1. Head Core & Directional Studio Rim Contours (No fake cut-out line on back of jaw!)
-      headCore?.setAttribute('d', evaluatePath(HEAD_CORE_PATH, pose.headT));
+      // 1. Head Core & Directional Studio Rim Contours
+      headCore?.setAttribute('d', evaluatePath4(HEAD_CORE_PATH, pose.headT));
       faceLeftRim?.setAttribute(
         'd',
-        evaluatePath(FACE_LEFT_RIM_PATH, pose.headT)
+        evaluatePath4(FACE_LEFT_RIM_PATH, pose.headT)
       );
       faceRightRim?.setAttribute(
         'd',
-        evaluatePath(FACE_RIGHT_RIM_PATH, pose.headT)
+        evaluatePath4(FACE_RIGHT_RIM_PATH, pose.headT)
       );
       if (faceRightRim) {
         faceRightRim.style.opacity = String(pose.rightJawRimOpacity);
       }
 
-      // 2. Sculpted 3D Nose, Mouth, Chin & Cheekbones across all 3 poses
-      noseRelief?.setAttribute('d', evaluatePath(NOSE_RELIEF_PATH, pose.headT));
+      // 2. Sculpted Nose, Mouth, Chin & Cheekbones across all 4 poses
+      noseRelief?.setAttribute('d', evaluatePath4(NOSE_RELIEF_PATH, pose.headT));
       if (noseRelief) {
         noseRelief.style.opacity = String(pose.noseReliefOpacity);
       }
       mouthRelief?.setAttribute(
         'd',
-        evaluatePath(MOUTH_RELIEF_PATH, pose.headT)
+        evaluatePath4(MOUTH_RELIEF_PATH, pose.headT)
       );
       if (mouthRelief) {
         mouthRelief.style.opacity = String(pose.mouthReliefOpacity);
       }
-      chinShadow?.setAttribute('d', evaluatePath(CHIN_SHADOW_PATH, pose.headT));
+      chinShadow?.setAttribute(
+        'd',
+        evaluatePath4(CHIN_SHADOW_PATH, pose.headT)
+      );
       if (chinShadow) {
         chinShadow.style.opacity = String(pose.mouthReliefOpacity);
       }
       cheekRight?.setAttribute(
         'd',
-        evaluatePath(CHEEK_RIGHT_RELIEF_PATH, pose.headT)
+        evaluatePath4(CHEEK_RIGHT_RELIEF_PATH, pose.headT)
       );
       if (cheekRight) {
         cheekRight.style.opacity = String(
@@ -209,7 +216,7 @@ export function HeroSilhouette() {
       }
       cheekLeft?.setAttribute(
         'd',
-        evaluatePath(CHEEK_LEFT_RELIEF_PATH, pose.headT)
+        evaluatePath4(CHEEK_LEFT_RELIEF_PATH, pose.headT)
       );
       if (cheekLeft) {
         cheekLeft.style.opacity = String(
@@ -220,65 +227,75 @@ export function HeroSilhouette() {
       // 3. Anatomical Ears
       rightEar?.setAttribute(
         'd',
-        evaluatePath(RIGHT_SIDE_EAR_PATH, pose.headT)
+        evaluatePath4(RIGHT_SIDE_EAR_PATH, pose.headT)
       );
       rightEarHelix?.setAttribute(
         'd',
-        evaluatePath(RIGHT_EAR_HELIX_PATH, pose.headT)
+        evaluatePath4(RIGHT_EAR_HELIX_PATH, pose.headT)
       );
-      leftEar?.setAttribute('d', evaluatePath(LEFT_SIDE_EAR_PATH, pose.headT));
+      leftEar?.setAttribute('d', evaluatePath4(LEFT_SIDE_EAR_PATH, pose.headT));
       if (leftEar) {
         leftEar.style.opacity = String(pose.leftEarOpacity);
       }
 
-      // 4. Proportional Wavy/Curly Hair Layers & Morphing Crown Rim Highlight
+      // 4. Proportional Wavy/Curly Hair Layers, Crown Rim & Comma Fringe Rim
       hairBack?.setAttribute(
         'd',
-        evaluatePath(HAIR_BACK_CURLS_PATH, pose.hairT)
+        evaluatePath4(HAIR_BACK_CURLS_PATH, pose.hairT)
       );
       hairCrown?.setAttribute(
         'd',
-        evaluatePath(HAIR_CROWN_MASS_PATH, pose.hairT)
+        evaluatePath4(HAIR_CROWN_MASS_PATH, pose.hairT)
       );
       hairCrownRim?.setAttribute(
         'd',
-        evaluatePath(HAIR_CROWN_RIM_PATH, pose.hairT)
+        evaluatePath4(HAIR_CROWN_RIM_PATH, pose.hairT)
       );
-      hairFringe?.setAttribute('d', evaluatePath(HAIR_FRINGE_PATH, pose.hairT));
+      hairFringe?.setAttribute(
+        'd',
+        evaluatePath4(HAIR_FRINGE_PATH, pose.hairT)
+      );
+      hairFringeRim?.setAttribute(
+        'd',
+        evaluatePath4(HAIR_FRINGE_RIM_PATH, pose.hairT)
+      );
+      if (hairFringeRim) {
+        hairFringeRim.style.opacity = String(pose.fringeRimOpacity);
+      }
 
       // 5. Cylindrical Neck, Collar & Tailored Coat
       neckPillar?.setAttribute(
         'd',
-        evaluatePath(NECK_PILLAR_PATH, pose.torsoT)
+        evaluatePath4(NECK_PILLAR_PATH, pose.torsoT)
       );
-      neckRim?.setAttribute('d', evaluatePath(NECK_LEFT_RIM_PATH, pose.torsoT));
-      coatBody?.setAttribute('d', evaluatePath(COAT_BODY_PATH, pose.torsoT));
+      neckRim?.setAttribute('d', evaluatePath4(NECK_LEFT_RIM_PATH, pose.torsoT));
+      coatBody?.setAttribute('d', evaluatePath4(COAT_BODY_PATH, pose.torsoT));
       coatLeftRim?.setAttribute(
         'd',
-        evaluatePath(COAT_LEFT_RIM_PATH, pose.torsoT)
+        evaluatePath4(COAT_LEFT_RIM_PATH, pose.torsoT)
       );
       coatRightRim?.setAttribute(
         'd',
-        evaluatePath(COAT_RIGHT_RIM_PATH, pose.torsoT)
+        evaluatePath4(COAT_RIGHT_RIM_PATH, pose.torsoT)
       );
-      lapelLeft?.setAttribute('d', evaluatePath(LAPEL_LEFT_PATH, pose.torsoT));
+      lapelLeft?.setAttribute('d', evaluatePath4(LAPEL_LEFT_PATH, pose.torsoT));
       lapelRight?.setAttribute(
         'd',
-        evaluatePath(LAPEL_RIGHT_PATH, pose.torsoT)
+        evaluatePath4(LAPEL_RIGHT_PATH, pose.torsoT)
       );
-      coatSeam?.setAttribute('d', evaluatePath(COAT_SEAM_PATH, pose.torsoT));
+      coatSeam?.setAttribute('d', evaluatePath4(COAT_SEAM_PATH, pose.torsoT));
 
       // 6. Near Eye (Anatomical Left Eye at Front x=426)
       nearAura?.setAttribute('cx', String(pose.nearEyeCx));
       nearCatch?.setAttribute('cx', String(pose.nearEyeCx));
-      nearBrow?.setAttribute('d', evaluatePath(NEAR_BROW_PATH, pose.headT));
+      nearBrow?.setAttribute('d', evaluatePath4(NEAR_BROW_PATH, pose.headT));
       nearEyelid?.setAttribute(
         'd',
-        evaluatePath(NEAR_EYELID_IDLE_PATH, pose.headT)
+        evaluatePath4(NEAR_EYELID_IDLE_PATH, pose.headT)
       );
       nearHunter?.setAttribute(
         'd',
-        evaluatePath(NEAR_HUNTER_EYE_PATH, pose.headT)
+        evaluatePath4(NEAR_HUNTER_EYE_PATH, pose.headT)
       );
 
       // 7. Far Eye (Anatomical Right Eye -> Target of Eye Dive at x=374, y=215.5)
@@ -286,10 +303,10 @@ export function HeroSilhouette() {
         farEyeGroup.style.opacity = String(pose.farEyeVisibility);
       }
       farAura?.setAttribute('cx', String(pose.farEyeCx));
-      farBrow?.setAttribute('d', evaluatePath(FAR_BROW_PATH, pose.headT));
+      farBrow?.setAttribute('d', evaluatePath4(FAR_BROW_PATH, pose.headT));
       farHunter?.setAttribute(
         'd',
-        evaluatePath(FAR_HUNTER_EYE_PATH, pose.headT)
+        evaluatePath4(FAR_HUNTER_EYE_PATH, pose.headT)
       );
     };
 
@@ -321,21 +338,24 @@ export function HeroSilhouette() {
       aria-hidden="true"
     >
       <div className="relative w-full max-w-[540px] sm:max-w-[680px] lg:max-w-[800px] h-[80%] sm:h-[86%] lg:h-[90%] flex items-end justify-center">
+        {/* Soft Studio Backlight Aura (Zero visible outer circle ring) */}
+        <div
+          ref={backlightRef}
+          className="pointer-events-none absolute -inset-x-[18%] -top-[6%] bottom-[8%] will-change-transform"
+          style={{
+            background:
+              'radial-gradient(circle at 48% 43%, rgba(214, 51, 92, 0.58) 0%, rgba(158, 27, 50, 0.25) 30%, rgba(74, 9, 22, 0.06) 52%, rgba(31, 4, 9, 0) 68%)',
+          }}
+        />
+
         <svg
-          key="hero-silhouette-v5"
+          key="hero-silhouette-v6"
           ref={svgRef}
           viewBox="0 -60 800 740"
-          className="w-full h-full select-none"
+          className="relative w-full h-full select-none"
           preserveAspectRatio="xMidYMax meet"
         >
           <defs>
-            <radialGradient id="headBacklight" cx="48%" cy="42%" r="50%">
-              <stop offset="0%" stopColor="#D6335C" stopOpacity="0.88" />
-              <stop offset="38%" stopColor="#9E1B32" stopOpacity="0.5" />
-              <stop offset="72%" stopColor="#4A0916" stopOpacity="0.16" />
-              <stop offset="100%" stopColor="#1F0409" stopOpacity="0" />
-            </radialGradient>
-
             <linearGradient id="faceRimLight" x1="0%" y1="0%" x2="85%" y2="100%">
               <stop offset="0%" stopColor="#E85A7C" />
               <stop offset="45%" stopColor="#C42448" />
@@ -363,26 +383,15 @@ export function HeroSilhouette() {
             </radialGradient>
           </defs>
 
-          {/* Studio Backlight Aura */}
-          <circle
-            data-rig-backlight
-            cx="368"
-            cy="275"
-            r="295"
-            fill="url(#headBacklight)"
-          />
-
           {/* ============================================================================
-              MASTER CHARACTER BODY SHIFT (Steps +18px rightward & rises -6px into center frame)
+              MASTER CHARACTER BODY SHIFT (Steps +16px rightward & rises -6px into center frame)
           ============================================================================= */}
-          <g data-character-body transform="translate(-18 6)">
+          <g data-character-body transform="translate(-16 6)">
             {/* ==============================================================
                 1. 3D MORPHING TORSO, CYLINDRICAL NECK & TAILORED COAT LAPELS
             =============================================================== */}
             <g>
-              {/* Sculpted Cylindrical Neck Pillar */}
               <path data-rig-neck d={INITIAL_NECK} fill="#110205" />
-              {/* Warm Rim Highlight on Left Neck Sternocleidomastoid Edge */}
               <path
                 data-rig-neck-rim
                 d={INITIAL_NECK_RIM}
@@ -393,14 +402,12 @@ export function HeroSilhouette() {
                 opacity="0.72"
               />
 
-              {/* Broad Masculine Coat Body */}
               <path
                 data-rig-coat-body
                 d={INITIAL_COAT_BODY}
                 fill="url(#coatGrad)"
               />
 
-              {/* Left & Right Outer Shoulder Rim Highlights */}
               <path
                 data-rig-coat-left-rim
                 d={INITIAL_COAT_LEFT_RIM}
@@ -418,7 +425,6 @@ export function HeroSilhouette() {
                 opacity="0.68"
               />
 
-              {/* Tailored Left & Right Collar Lapels & Coat Center Seam */}
               <path
                 data-rig-lapel-left
                 d={INITIAL_LAPEL_LEFT}
@@ -492,7 +498,7 @@ export function HeroSilhouette() {
                 fill="#110205"
               />
 
-              {/* E. Directional Studio Rim Contours (Left/Front Key Rim + Right Gonial Jaw Rim) */}
+              {/* E. Directional Studio Rim Contours */}
               <path
                 data-rig-face-left-rim
                 d={INITIAL_FACE_LEFT_RIM}
@@ -512,7 +518,7 @@ export function HeroSilhouette() {
                 style={{ opacity: 0.12 }}
               />
 
-              {/* F. Right Ear (Subtle Obsidian Fill + Outer Helix Rim so it blends naturally into the head) */}
+              {/* F. Right Ear */}
               <path
                 data-rig-right-ear
                 d={INITIAL_RIGHT_EAR}
@@ -527,7 +533,7 @@ export function HeroSilhouette() {
                 strokeLinecap="round"
               />
 
-              {/* G. 3-Pose Morphing Cheekbones, Mouth & Chin Relief (Active in Side, 3/4, and Front!) */}
+              {/* G. 4-Pose Morphing Cheekbones, Mouth & Chin Relief */}
               <path
                 data-rig-cheek-right
                 d={INITIAL_CHEEK_RIGHT}
@@ -650,11 +656,21 @@ export function HeroSilhouette() {
                 />
               </g>
 
-              {/* K. Signature Forehead Comma / Curtain Fringe */}
+              {/* K. Signature Forehead Comma / Curtain Fringe + Subtle Crimson Edge Definition */}
               <path
                 data-rig-hair-fringe
                 d={INITIAL_HAIR_FRINGE}
                 fill="#120206"
+              />
+              <path
+                data-rig-hair-fringe-rim
+                d={INITIAL_HAIR_FRINGE_RIM}
+                fill="none"
+                stroke="#6E0F23"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ opacity: 0.4 }}
               />
             </g>
           </g>
