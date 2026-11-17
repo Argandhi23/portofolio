@@ -30,6 +30,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
+    agentUpgrade: 'security',
     // Workaround observed on Windows / Node 22.20: loader child processes
     // exited before connecting. Keep other platforms on Next's default.
     // Next may fall back on affected Node versions; never force worker threads.
