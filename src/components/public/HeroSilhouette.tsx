@@ -1,6 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import dynamic from 'next/dynamic';
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
+import type { HeroBustRigRefState } from '@/components/public/HeroBustCanvas';
 import {
   CHEEK_LEFT_RELIEF_PATH,
   CHEEK_RIGHT_RELIEF_PATH,
@@ -33,6 +43,18 @@ import {
   RIGHT_EAR_HELIX_PATH,
   RIGHT_SIDE_EAR_PATH,
 } from '@/lib/hero-3d-bust';
+import { computeRightEyeAnchorUV } from '@/lib/hero-3d-geometry';
+import { clamp } from '@/lib/scroll-math';
+
+const HeroBustCanvas = dynamic(
+  () =>
+    import('@/components/public/HeroBustCanvas').then(
+      (mod) => mod.HeroBustCanvas
+    ),
+  { ssr: false }
+);
+
+const INITIAL_ANCHOR_UV = computeRightEyeAnchorUV(800 / 740, 1);
 
 const INITIAL_HEAD_CORE = evaluatePath(HEAD_CORE_PATH, 0);
 const INITIAL_FACE_LEFT_RIM = evaluatePath(FACE_LEFT_RIM_PATH, 0);
@@ -63,112 +85,213 @@ const INITIAL_NEAR_HUNTER = evaluatePath(NEAR_HUNTER_EYE_PATH, 0);
 const INITIAL_FAR_BROW = evaluatePath(FAR_BROW_PATH, 0);
 const INITIAL_FAR_HUNTER = evaluatePath(FAR_HUNTER_EYE_PATH, 0);
 
+interface WebGLErrorBoundaryProps {
+  onError: () => void;
+  children: ReactNode;
+}
+
+class WebGLErrorBoundary extends Component<
+  WebGLErrorBoundaryProps,
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch() {
+    this.props.onError();
+  }
+
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
+
+const emptySubscribe = () => () => {};
+let cachedWebGLSupport: boolean | null = null;
+
+function getWebGLSupportSnapshot(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (cachedWebGLSupport !== null) return cachedWebGLSupport;
+  try {
+    const canvas = document.createElement('canvas');
+    cachedWebGLSupport = Boolean(
+      window.WebGLRenderingContext &&
+        (canvas.getContext('webgl2') || canvas.getContext('webgl'))
+    );
+  } catch {
+    cachedWebGLSupport = false;
+  }
+  return cachedWebGLSupport;
+}
+
+function getServerFalseSnapshot(): boolean {
+  return false;
+}
+
+function subscribeReducedMotion(onStoreChange: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  media.addEventListener('change', onStoreChange);
+  return () => media.removeEventListener('change', onStoreChange);
+}
+
+function getReducedMotionSnapshot(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 export function HeroSilhouette() {
+  const stageRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const rigVersionRef = useRef('v5-sculpted-3pose');
+  const backlightRef = useRef<HTMLDivElement | null>(null);
+  const anchorRef = useRef<HTMLDivElement | null>(null);
+
+  const rigRef = useRef<HeroBustRigRefState>({
+    turn: 0,
+    eyesGlow: 0,
+    pointerX: 0,
+    pointerY: 0,
+  });
+
+  const webglSupported = useSyncExternalStore(
+    emptySubscribe,
+    getWebGLSupportSnapshot,
+    getServerFalseSnapshot
+  );
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    getServerFalseSnapshot
+  );
+  const [webglDisabled, setWebglDisabled] = useState(false);
+  const [webglReady, setWebglReady] = useState(false);
+
+  const canRenderWebGL = webglSupported && !webglDisabled;
+
+  const updateAnchorPosition = useCallback((u: number, v: number) => {
+    const anchor = anchorRef.current;
+    if (!anchor) return;
+    anchor.style.left = `${(u * 100).toFixed(3)}%`;
+    anchor.style.top = `${(v * 100).toFixed(3)}%`;
+  }, []);
 
   useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+    const rig = rigRef.current;
+    rig.setAnchorUV = updateAnchorPosition;
+    return () => {
+      if (rig.setAnchorUV === updateAnchorPosition) {
+        rig.setAnchorUV = undefined;
+      }
+    };
+  }, [updateAnchorPosition]);
 
-    const portalSection = svg.closest<HTMLElement>('[data-gp-motion]');
+  useEffect(() => {
+    rigRef.current.invalidate?.();
+  }, [reducedMotion]);
+
+  // Fallback SVG morph synchronization (active prior to WebGL ready or on no-WebGL devices)
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const portalSection = stage.closest<HTMLElement>('[data-gp-motion]');
     if (!portalSection) return;
 
-    const backlight = svg.querySelector<SVGCircleElement>(
-      '[data-rig-backlight]'
-    );
-    const bodyGroup = svg.querySelector<SVGGElement>('[data-character-body]');
-    const headGroup = svg.querySelector<SVGGElement>('[data-rig-head-group]');
-    const headCore = svg.querySelector<SVGPathElement>('[data-rig-head-core]');
-    const faceLeftRim = svg.querySelector<SVGPathElement>(
+    const svg = svgRef.current;
+    const bodyGroup = svg?.querySelector<SVGGElement>('[data-character-body]');
+    const headGroup = svg?.querySelector<SVGGElement>('[data-rig-head-group]');
+    const headCore = svg?.querySelector<SVGPathElement>('[data-rig-head-core]');
+    const faceLeftRim = svg?.querySelector<SVGPathElement>(
       '[data-rig-face-left-rim]'
     );
-    const faceRightRim = svg.querySelector<SVGPathElement>(
+    const faceRightRim = svg?.querySelector<SVGPathElement>(
       '[data-rig-face-right-rim]'
     );
-    const noseRelief = svg.querySelector<SVGPathElement>(
+    const noseRelief = svg?.querySelector<SVGPathElement>(
       '[data-rig-nose-relief]'
     );
-    const mouthRelief = svg.querySelector<SVGPathElement>(
+    const mouthRelief = svg?.querySelector<SVGPathElement>(
       '[data-rig-mouth-relief]'
     );
-    const chinShadow = svg.querySelector<SVGPathElement>(
+    const chinShadow = svg?.querySelector<SVGPathElement>(
       '[data-rig-chin-shadow]'
     );
-    const cheekRight = svg.querySelector<SVGPathElement>(
+    const cheekRight = svg?.querySelector<SVGPathElement>(
       '[data-rig-cheek-right]'
     );
-    const cheekLeft = svg.querySelector<SVGPathElement>(
+    const cheekLeft = svg?.querySelector<SVGPathElement>(
       '[data-rig-cheek-left]'
     );
-    const rightEar = svg.querySelector<SVGPathElement>('[data-rig-right-ear]');
-    const rightEarHelix = svg.querySelector<SVGPathElement>(
+    const rightEar = svg?.querySelector<SVGPathElement>('[data-rig-right-ear]');
+    const rightEarHelix = svg?.querySelector<SVGPathElement>(
       '[data-rig-right-ear-helix]'
     );
-    const leftEar = svg.querySelector<SVGPathElement>('[data-rig-left-ear]');
-    const hairBack = svg.querySelector<SVGPathElement>('[data-rig-hair-back]');
-    const hairCrown = svg.querySelector<SVGPathElement>(
+    const leftEar = svg?.querySelector<SVGPathElement>('[data-rig-left-ear]');
+    const hairBack = svg?.querySelector<SVGPathElement>('[data-rig-hair-back]');
+    const hairCrown = svg?.querySelector<SVGPathElement>(
       '[data-rig-hair-crown]'
     );
-    const hairCrownRim = svg.querySelector<SVGPathElement>(
+    const hairCrownRim = svg?.querySelector<SVGPathElement>(
       '[data-rig-hair-crown-rim]'
     );
-    const hairFringe = svg.querySelector<SVGPathElement>(
+    const hairFringe = svg?.querySelector<SVGPathElement>(
       '[data-rig-hair-fringe]'
     );
-    const neckPillar = svg.querySelector<SVGPathElement>('[data-rig-neck]');
-    const neckRim = svg.querySelector<SVGPathElement>('[data-rig-neck-rim]');
-    const coatBody = svg.querySelector<SVGPathElement>('[data-rig-coat-body]');
-    const coatLeftRim = svg.querySelector<SVGPathElement>(
+    const neckPillar = svg?.querySelector<SVGPathElement>('[data-rig-neck]');
+    const neckRim = svg?.querySelector<SVGPathElement>('[data-rig-neck-rim]');
+    const coatBody = svg?.querySelector<SVGPathElement>('[data-rig-coat-body]');
+    const coatLeftRim = svg?.querySelector<SVGPathElement>(
       '[data-rig-coat-left-rim]'
     );
-    const coatRightRim = svg.querySelector<SVGPathElement>(
+    const coatRightRim = svg?.querySelector<SVGPathElement>(
       '[data-rig-coat-right-rim]'
     );
-    const lapelLeft = svg.querySelector<SVGPathElement>(
+    const lapelLeft = svg?.querySelector<SVGPathElement>(
       '[data-rig-lapel-left]'
     );
-    const lapelRight = svg.querySelector<SVGPathElement>(
+    const lapelRight = svg?.querySelector<SVGPathElement>(
       '[data-rig-lapel-right]'
     );
-    const coatSeam = svg.querySelector<SVGPathElement>('[data-rig-coat-seam]');
-    const nearAura = svg.querySelector<SVGCircleElement>(
+    const coatSeam = svg?.querySelector<SVGPathElement>('[data-rig-coat-seam]');
+    const nearAura = svg?.querySelector<SVGCircleElement>(
       '[data-rig-near-aura]'
     );
-    const nearCatch = svg.querySelector<SVGCircleElement>(
+    const nearCatch = svg?.querySelector<SVGCircleElement>(
       '[data-rig-near-catch]'
     );
-    const nearBrow = svg.querySelector<SVGPathElement>('[data-rig-near-brow]');
-    const nearEyelid = svg.querySelector<SVGPathElement>(
+    const nearBrow = svg?.querySelector<SVGPathElement>('[data-rig-near-brow]');
+    const nearEyelid = svg?.querySelector<SVGPathElement>(
       '[data-rig-near-eyelid]'
     );
-    const nearHunter = svg.querySelector<SVGPathElement>(
+    const nearHunter = svg?.querySelector<SVGPathElement>(
       '[data-rig-near-hunter]'
     );
-    const farEyeGroup = svg.querySelector<SVGGElement>('[data-rig-far-group]');
-    const farAura = svg.querySelector<SVGCircleElement>('[data-rig-far-aura]');
-    const farBrow = svg.querySelector<SVGPathElement>('[data-rig-far-brow]');
-    const farHunter = svg.querySelector<SVGPathElement>(
+    const farEyeGroup = svg?.querySelector<SVGGElement>('[data-rig-far-group]');
+    const farAura = svg?.querySelector<SVGCircleElement>('[data-rig-far-aura]');
+    const farBrow = svg?.querySelector<SVGPathElement>('[data-rig-far-brow]');
+    const farHunter = svg?.querySelector<SVGPathElement>(
       '[data-rig-far-hunter]'
     );
 
     let lastTurn = -1;
 
-    const applyPose = (rawTurn: number) => {
+    const applySvgFallbackPose = (rawTurn: number) => {
+      if (webglReady || !svg) return;
       if (Math.abs(rawTurn - lastTurn) < 0.0004) return;
       lastTurn = rawTurn;
 
       const pose = computeRigPoseMetrics(rawTurn);
 
-      // Native SVG attributes prevent Chromium GPU sub-layer clipping/eviction on zoom
-      backlight?.setAttribute('cx', (368 + pose.turn * 32).toFixed(2));
       bodyGroup?.setAttribute(
         'transform',
         `translate(${((1 - pose.turn) * -18).toFixed(2)} ${((1 - pose.turn) * 6).toFixed(2)})`
       );
       headGroup?.setAttribute('transform', `translate(0 ${pose.arcNodY})`);
 
-      // 1. Head Core & Directional Studio Rim Contours (No fake cut-out line on back of jaw!)
       headCore?.setAttribute('d', evaluatePath(HEAD_CORE_PATH, pose.headT));
       faceLeftRim?.setAttribute(
         'd',
@@ -182,7 +305,6 @@ export function HeroSilhouette() {
         faceRightRim.style.opacity = String(pose.rightJawRimOpacity);
       }
 
-      // 2. Sculpted 3D Nose, Mouth, Chin & Cheekbones across all 3 poses
       noseRelief?.setAttribute('d', evaluatePath(NOSE_RELIEF_PATH, pose.headT));
       if (noseRelief) {
         noseRelief.style.opacity = String(pose.noseReliefOpacity);
@@ -217,7 +339,6 @@ export function HeroSilhouette() {
         );
       }
 
-      // 3. Anatomical Ears
       rightEar?.setAttribute(
         'd',
         evaluatePath(RIGHT_SIDE_EAR_PATH, pose.headT)
@@ -231,7 +352,6 @@ export function HeroSilhouette() {
         leftEar.style.opacity = String(pose.leftEarOpacity);
       }
 
-      // 4. Proportional Wavy/Curly Hair Layers & Morphing Crown Rim Highlight
       hairBack?.setAttribute(
         'd',
         evaluatePath(HAIR_BACK_CURLS_PATH, pose.hairT)
@@ -246,7 +366,6 @@ export function HeroSilhouette() {
       );
       hairFringe?.setAttribute('d', evaluatePath(HAIR_FRINGE_PATH, pose.hairT));
 
-      // 5. Cylindrical Neck, Collar & Tailored Coat
       neckPillar?.setAttribute(
         'd',
         evaluatePath(NECK_PILLAR_PATH, pose.torsoT)
@@ -268,7 +387,6 @@ export function HeroSilhouette() {
       );
       coatSeam?.setAttribute('d', evaluatePath(COAT_SEAM_PATH, pose.torsoT));
 
-      // 6. Near Eye (Anatomical Left Eye at Front x=426)
       nearAura?.setAttribute('cx', String(pose.nearEyeCx));
       nearCatch?.setAttribute('cx', String(pose.nearEyeCx));
       nearBrow?.setAttribute('d', evaluatePath(NEAR_BROW_PATH, pose.headT));
@@ -281,7 +399,6 @@ export function HeroSilhouette() {
         evaluatePath(NEAR_HUNTER_EYE_PATH, pose.headT)
       );
 
-      // 7. Far Eye (Anatomical Right Eye -> Target of Eye Dive at x=374, y=215.5)
       if (farEyeGroup) {
         farEyeGroup.style.opacity = String(pose.farEyeVisibility);
       }
@@ -294,12 +411,22 @@ export function HeroSilhouette() {
     };
 
     const syncFromSection = () => {
-      const raw = portalSection.style.getPropertyValue('--gp-head-turn');
-      const val = raw ? Number.parseFloat(raw) || 0 : 0;
-      applyPose(val);
+      const rawTurn = portalSection.style.getPropertyValue('--gp-head-turn');
+      const rawGlow = portalSection.style.getPropertyValue('--gp-eyes-glow');
+      const turnVal = clamp(rawTurn ? Number.parseFloat(rawTurn) || 0 : 0, 0, 1);
+      const glowVal = clamp(rawGlow ? Number.parseFloat(rawGlow) || 0 : 0, 0, 1);
+
+      rigRef.current.turn = turnVal;
+      rigRef.current.eyesGlow = glowVal;
+      rigRef.current.invalidate?.();
+
+      if (backlightRef.current) {
+        backlightRef.current.style.transform = `translate3d(${(turnVal * 18 - 9).toFixed(1)}px, 0, 0)`;
+      }
+
+      applySvgFallbackPose(turnVal);
     };
 
-    svg.dataset.rigVersion = rigVersionRef.current;
     syncFromSection();
 
     portalSection.addEventListener('hero-head-turn', syncFromSection);
@@ -309,10 +436,60 @@ export function HeroSilhouette() {
       attributeFilter: ['style', 'data-gp-progress'],
     });
 
+    // Interactive desktop studio rim-light tracking (sleeps when settled)
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const onPointerMove = (e: PointerEvent) => {
+      if (reducedMotion || isCoarsePointer) return;
+      const rect = portalSection.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const nx = clamp(((e.clientX - rect.left) / rect.width - 0.5) * 2, -1, 1);
+      const ny = clamp(((e.clientY - rect.top) / rect.height - 0.5) * -2, -1, 1);
+      rigRef.current.pointerX = nx;
+      rigRef.current.pointerY = ny;
+      rigRef.current.invalidate?.();
+    };
+    const onPointerLeave = () => {
+      rigRef.current.pointerX = 0;
+      rigRef.current.pointerY = 0;
+      rigRef.current.invalidate?.();
+    };
+
+    if (!isCoarsePointer && !reducedMotion) {
+      portalSection.addEventListener('pointermove', onPointerMove, {
+        passive: true,
+      });
+      portalSection.addEventListener('pointerleave', onPointerLeave, {
+        passive: true,
+      });
+    }
+
+    const syncFallbackAnchor = () => {
+      if (webglReady) return;
+      const rect = stage.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        const uv = computeRightEyeAnchorUV(rect.width / rect.height, 1);
+        updateAnchorPosition(uv.u, uv.v);
+      }
+    };
+    syncFallbackAnchor();
+    window.addEventListener('resize', syncFallbackAnchor);
+
     return () => {
       portalSection.removeEventListener('hero-head-turn', syncFromSection);
+      portalSection.removeEventListener('pointermove', onPointerMove);
+      portalSection.removeEventListener('pointerleave', onPointerLeave);
+      window.removeEventListener('resize', syncFallbackAnchor);
       observer.disconnect();
     };
+  }, [reducedMotion, updateAnchorPosition, webglReady]);
+
+  const handleCanvasReady = useCallback(() => {
+    setWebglReady(true);
+  }, []);
+
+  const handleWebGLFallback = useCallback(() => {
+    setWebglReady(false);
+    setWebglDisabled(true);
   }, []);
 
   return (
@@ -320,355 +497,355 @@ export function HeroSilhouette() {
       className="absolute inset-0 flex justify-center items-end pointer-events-none z-[2] overflow-hidden"
       aria-hidden="true"
     >
-      <div className="relative w-full max-w-[540px] sm:max-w-[680px] lg:max-w-[800px] h-[80%] sm:h-[86%] lg:h-[90%] flex items-end justify-center">
-        <svg
-          key="hero-silhouette-v5"
-          ref={svgRef}
-          viewBox="0 -60 800 740"
-          className="w-full h-full select-none"
-          preserveAspectRatio="xMidYMax meet"
-        >
-          <defs>
-            <radialGradient id="headBacklight" cx="48%" cy="42%" r="50%">
-              <stop offset="0%" stopColor="#D6335C" stopOpacity="0.88" />
-              <stop offset="38%" stopColor="#9E1B32" stopOpacity="0.5" />
-              <stop offset="72%" stopColor="#4A0916" stopOpacity="0.16" />
-              <stop offset="100%" stopColor="#1F0409" stopOpacity="0" />
-            </radialGradient>
+      <div
+        ref={stageRef}
+        data-rig-version={
+          webglReady ? 'v6-r3f-sculpted-3d' : 'v5-sculpted-3pose'
+        }
+        data-rig-ready={webglReady ? 'true' : 'false'}
+        className="relative w-full max-w-[540px] sm:max-w-[680px] lg:max-w-[800px] h-[80%] sm:h-[86%] lg:h-[90%] flex items-end justify-center"
+      >
+        {/* Studio Backlight Aura (Soft fade to 0% well inside container so no edge ring ever shows) */}
+        <div
+          ref={backlightRef}
+          className="pointer-events-none absolute -inset-x-[15%] top-[0%] bottom-[6%] transition-transform duration-150 will-change-transform"
+          style={{
+            background:
+              'radial-gradient(circle at 48% 44%, rgba(214, 51, 92, 0.65) 0%, rgba(158, 27, 50, 0.30) 30%, rgba(74, 9, 22, 0.10) 52%, rgba(31, 4, 9, 0) 68%)',
+          }}
+        />
 
-            <linearGradient id="faceRimLight" x1="0%" y1="0%" x2="85%" y2="100%">
-              <stop offset="0%" stopColor="#E85A7C" />
-              <stop offset="45%" stopColor="#C42448" />
-              <stop offset="85%" stopColor="#6E0F23" />
-              <stop offset="100%" stopColor="#26040B" />
-            </linearGradient>
-
-            <linearGradient id="rightJawGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#88132A" />
-              <stop offset="55%" stopColor="#C42448" />
-              <stop offset="100%" stopColor="#6E0F23" />
-            </linearGradient>
-
-            <linearGradient id="coatGrad" x1="20%" y1="0%" x2="80%" y2="100%">
-              <stop offset="0%" stopColor="#24040B" />
-              <stop offset="40%" stopColor="#120206" />
-              <stop offset="100%" stopColor="#070103" />
-            </linearGradient>
-
-            <radialGradient id="eyeWhiteAura" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-              <stop offset="36%" stopColor="#F5F0EB" stopOpacity="0.52" />
-              <stop offset="70%" stopColor="#E04D70" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#9E1B32" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          {/* Studio Backlight Aura */}
-          <circle
-            data-rig-backlight
-            cx="368"
-            cy="275"
-            r="295"
-            fill="url(#headBacklight)"
-          />
-
-          {/* ============================================================================
-              MASTER CHARACTER BODY SHIFT (Steps +18px rightward & rises -6px into center frame)
-          ============================================================================= */}
-          <g data-character-body transform="translate(-18 6)">
-            {/* ==============================================================
-                1. 3D MORPHING TORSO, CYLINDRICAL NECK & TAILORED COAT LAPELS
-            =============================================================== */}
-            <g>
-              {/* Sculpted Cylindrical Neck Pillar */}
-              <path data-rig-neck d={INITIAL_NECK} fill="#110205" />
-              {/* Warm Rim Highlight on Left Neck Sternocleidomastoid Edge */}
-              <path
-                data-rig-neck-rim
-                d={INITIAL_NECK_RIM}
-                fill="none"
-                stroke="#88132A"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                opacity="0.72"
+        {/* Real 3D WebGL Bust Engine (React Three Fiber) */}
+        {canRenderWebGL && (
+          <div
+            className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+            style={{ opacity: webglReady ? 1 : 0 }}
+          >
+            <WebGLErrorBoundary onError={handleWebGLFallback}>
+              <HeroBustCanvas
+                rigRef={rigRef}
+                reducedMotion={reducedMotion}
+                onReady={handleCanvasReady}
+                onContextLost={handleWebGLFallback}
               />
+            </WebGLErrorBoundary>
+          </div>
+        )}
 
-              {/* Broad Masculine Coat Body */}
-              <path
-                data-rig-coat-body
-                d={INITIAL_COAT_BODY}
-                fill="url(#coatGrad)"
-              />
+        {/* Lightweight SSR / No-WebGL SVG Fallback */}
+        {!webglReady && (
+          <svg
+            key="hero-silhouette-fallback"
+            ref={svgRef}
+            viewBox="0 -60 800 740"
+            className="relative w-full h-full select-none"
+            preserveAspectRatio="xMidYMax meet"
+          >
+            <defs>
+              <linearGradient
+                id="faceRimLight"
+                x1="0%"
+                y1="0%"
+                x2="85%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="#E85A7C" />
+                <stop offset="45%" stopColor="#C42448" />
+                <stop offset="85%" stopColor="#6E0F23" />
+                <stop offset="100%" stopColor="#26040B" />
+              </linearGradient>
 
-              {/* Left & Right Outer Shoulder Rim Highlights */}
-              <path
-                data-rig-coat-left-rim
-                d={INITIAL_COAT_LEFT_RIM}
-                fill="none"
-                stroke="#B81D3D"
-                strokeWidth="2.5"
-                opacity="0.82"
-              />
-              <path
-                data-rig-coat-right-rim
-                d={INITIAL_COAT_RIGHT_RIM}
-                fill="none"
-                stroke="#9E1B32"
-                strokeWidth="2.4"
-                opacity="0.68"
-              />
+              <linearGradient
+                id="rightJawGrad"
+                x1="0%"
+                y1="100%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#88132A" />
+                <stop offset="55%" stopColor="#C42448" />
+                <stop offset="100%" stopColor="#6E0F23" />
+              </linearGradient>
 
-              {/* Tailored Left & Right Collar Lapels & Coat Center Seam */}
-              <path
-                data-rig-lapel-left
-                d={INITIAL_LAPEL_LEFT}
-                fill="#1D0309"
-                stroke="#6E0F23"
-                strokeWidth="1.4"
-              />
-              <path
-                data-rig-lapel-right
-                d={INITIAL_LAPEL_RIGHT}
-                fill="#190308"
-                stroke="#520A18"
-                strokeWidth="1.4"
-              />
-              <path
-                data-rig-coat-seam
-                d={INITIAL_COAT_SEAM}
-                fill="none"
-                stroke="#4A0916"
-                strokeWidth="2"
-                opacity="0.75"
-              />
-            </g>
+              <linearGradient id="coatGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+                <stop offset="0%" stopColor="#24040B" />
+                <stop offset="40%" stopColor="#120206" />
+                <stop offset="100%" stopColor="#070103" />
+              </linearGradient>
 
-            {/* ==============================================================
-                2. 3D ROTATING HEAD, HAIR CURLS, FACE & HUNTER EYES
-            =============================================================== */}
-            <g data-rig-head-group>
-              {/* A. Back-of-Skull Volumetric Hair Curls */}
-              <path
-                data-rig-hair-back
-                d={INITIAL_HAIR_BACK}
-                fill="#130206"
-                stroke="#6E0F23"
-                strokeWidth="1.4"
-                strokeLinejoin="round"
-              />
+              <radialGradient id="eyeWhiteAura" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+                <stop offset="36%" stopColor="#F5F0EB" stopOpacity="0.52" />
+                <stop offset="70%" stopColor="#E04D70" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#9E1B32" stopOpacity="0" />
+              </radialGradient>
+            </defs>
 
-              {/* B. Crown Curly Hair Volume & Natural Morphing Crown Rim */}
+            <g data-character-body transform="translate(-18 6)">
               <g>
+                <path data-rig-neck d={INITIAL_NECK} fill="#110205" />
                 <path
-                  data-rig-hair-crown
-                  d={INITIAL_HAIR_CROWN}
-                  fill="#120206"
+                  data-rig-neck-rim
+                  d={INITIAL_NECK_RIM}
+                  fill="none"
+                  stroke="#88132A"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  opacity="0.72"
                 />
                 <path
-                  data-rig-hair-crown-rim
-                  d={INITIAL_HAIR_CROWN_RIM}
+                  data-rig-coat-body
+                  d={INITIAL_COAT_BODY}
+                  fill="url(#coatGrad)"
+                />
+                <path
+                  data-rig-coat-left-rim
+                  d={INITIAL_COAT_LEFT_RIM}
                   fill="none"
-                  stroke="#9E1B32"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
+                  stroke="#B81D3D"
+                  strokeWidth="2.5"
                   opacity="0.82"
                 />
-              </g>
-
-              {/* C. Left Ear (Emerges as head turns toward front) */}
-              <path
-                data-rig-left-ear
-                d={INITIAL_LEFT_EAR}
-                fill="#1D0309"
-                stroke="#7D1128"
-                strokeWidth="1.3"
-                style={{ opacity: 0 }}
-              />
-
-              {/* D. Solid Obsidian Head & Face Core */}
-              <path
-                data-rig-head-core
-                d={INITIAL_HEAD_CORE}
-                fill="#110205"
-              />
-
-              {/* E. Directional Studio Rim Contours (Left/Front Key Rim + Right Gonial Jaw Rim) */}
-              <path
-                data-rig-face-left-rim
-                d={INITIAL_FACE_LEFT_RIM}
-                fill="none"
-                stroke="url(#faceRimLight)"
-                strokeWidth="2.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                data-rig-face-right-rim
-                d={INITIAL_FACE_RIGHT_RIM}
-                fill="none"
-                stroke="url(#rightJawGrad)"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                style={{ opacity: 0.12 }}
-              />
-
-              {/* F. Right Ear (Subtle Obsidian Fill + Outer Helix Rim so it blends naturally into the head) */}
-              <path
-                data-rig-right-ear
-                d={INITIAL_RIGHT_EAR}
-                fill="#160207"
-              />
-              <path
-                data-rig-right-ear-helix
-                d={INITIAL_RIGHT_EAR_HELIX}
-                fill="none"
-                stroke="#7D1128"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-
-              {/* G. 3-Pose Morphing Cheekbones, Mouth & Chin Relief (Active in Side, 3/4, and Front!) */}
-              <path
-                data-rig-cheek-right
-                d={INITIAL_CHEEK_RIGHT}
-                fill="#520A18"
-                style={{ opacity: 0.25 }}
-              />
-              <path
-                data-rig-cheek-left
-                d={INITIAL_CHEEK_LEFT}
-                fill="#520A18"
-                style={{ opacity: 0 }}
-              />
-              <path
-                data-rig-mouth-relief
-                d={INITIAL_MOUTH_RELIEF}
-                fill="none"
-                stroke="#6E0F23"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                style={{ opacity: 0.35 }}
-              />
-              <path
-                data-rig-chin-shadow
-                d={INITIAL_CHIN_SHADOW}
-                fill="none"
-                stroke="#4A0916"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                style={{ opacity: 0.35 }}
-              />
-
-              {/* H. Far-Side Eye (Anatomical Right Eye / Viewer's Left -> Target of Eye Dive at 374, 215.5) */}
-              <g data-rig-far-group style={{ opacity: 0 }}>
-                <circle
-                  data-rig-far-aura
-                  cx="374"
-                  cy="215.5"
-                  r="24"
-                  fill="url(#eyeWhiteAura)"
-                  style={{ opacity: 'var(--gp-eyes-glow, 0)' }}
-                />
                 <path
-                  data-rig-far-brow
-                  d={INITIAL_FAR_BROW}
+                  data-rig-coat-right-rim
+                  d={INITIAL_COAT_RIGHT_RIM}
                   fill="none"
-                  stroke="#E04D70"
-                  strokeWidth="2.1"
-                  strokeLinecap="round"
-                  opacity="0.9"
+                  stroke="#9E1B32"
+                  strokeWidth="2.4"
+                  opacity="0.68"
                 />
                 <path
-                  data-rig-far-hunter
-                  d={INITIAL_FAR_HUNTER}
-                  fill="#FFFFFF"
-                  stroke="#F5F0EB"
-                  strokeWidth="0.8"
-                  style={{
-                    opacity: 'calc(0.28 + var(--gp-eyes-glow, 0) * 0.72)',
-                  }}
+                  data-rig-lapel-left
+                  d={INITIAL_LAPEL_LEFT}
+                  fill="#1D0309"
+                  stroke="#6E0F23"
+                  strokeWidth="1.4"
+                />
+                <path
+                  data-rig-lapel-right
+                  d={INITIAL_LAPEL_RIGHT}
+                  fill="#190308"
+                  stroke="#520A18"
+                  strokeWidth="1.4"
+                />
+                <path
+                  data-rig-coat-seam
+                  d={INITIAL_COAT_SEAM}
+                  fill="none"
+                  stroke="#4A0916"
+                  strokeWidth="2"
+                  opacity="0.75"
                 />
               </g>
 
-              {/* I. Internal 3D Nose Bridge & Tip Contour */}
-              <path
-                data-rig-nose-relief
-                d={INITIAL_NOSE_RELIEF}
-                fill="none"
-                stroke="url(#faceRimLight)"
-                strokeWidth="2.1"
-                strokeLinecap="round"
-                style={{ opacity: 0 }}
-              />
-
-              {/* J. Near-Side Eye (Anatomical Left Eye / Viewer's Right at 426, 215.5) */}
-              <g>
-                <circle
-                  data-rig-near-aura
-                  cx="344"
-                  cy="215.5"
-                  r="24"
-                  fill="url(#eyeWhiteAura)"
-                  style={{ opacity: 'var(--gp-eyes-glow, 0)' }}
-                />
+              <g data-rig-head-group>
                 <path
-                  data-rig-near-brow
-                  d={INITIAL_NEAR_BROW}
-                  fill="none"
-                  stroke="#E04D70"
-                  strokeWidth="2.1"
-                  strokeLinecap="round"
-                  opacity="0.92"
+                  data-rig-hair-back
+                  d={INITIAL_HAIR_BACK}
+                  fill="#130206"
+                  stroke="#6E0F23"
+                  strokeWidth="1.4"
+                  strokeLinejoin="round"
                 />
-                <g style={{ opacity: 'calc(1 - var(--gp-eyes-glow, 0))' }}>
+                <g>
                   <path
-                    data-rig-near-eyelid
-                    d={INITIAL_NEAR_EYELID}
-                    fill="none"
-                    stroke="#D6335C"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
+                    data-rig-hair-crown
+                    d={INITIAL_HAIR_CROWN}
+                    fill="#120206"
                   />
-                  <circle
-                    data-rig-near-catch
-                    cx="344"
-                    cy="215.5"
-                    r="1.7"
-                    fill="#F5F0EB"
-                    opacity="0.78"
+                  <path
+                    data-rig-hair-crown-rim
+                    d={INITIAL_HAIR_CROWN_RIM}
+                    fill="none"
+                    stroke="#9E1B32"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    opacity="0.82"
                   />
                 </g>
                 <path
-                  data-rig-near-hunter
-                  d={INITIAL_NEAR_HUNTER}
-                  fill="#FFFFFF"
-                  stroke="#F5F0EB"
-                  strokeWidth="0.8"
-                  style={{
-                    opacity: 'calc(0.22 + var(--gp-eyes-glow, 0) * 0.78)',
-                  }}
+                  data-rig-left-ear
+                  d={INITIAL_LEFT_EAR}
+                  fill="#1D0309"
+                  stroke="#7D1128"
+                  strokeWidth="1.3"
+                  style={{ opacity: 0 }}
+                />
+                <path
+                  data-rig-head-core
+                  d={INITIAL_HEAD_CORE}
+                  fill="#110205"
+                />
+                <path
+                  data-rig-face-left-rim
+                  d={INITIAL_FACE_LEFT_RIM}
+                  fill="none"
+                  stroke="url(#faceRimLight)"
+                  strokeWidth="2.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  data-rig-face-right-rim
+                  d={INITIAL_FACE_RIGHT_RIM}
+                  fill="none"
+                  stroke="url(#rightJawGrad)"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  style={{ opacity: 0.12 }}
+                />
+                <path
+                  data-rig-right-ear
+                  d={INITIAL_RIGHT_EAR}
+                  fill="#160207"
+                />
+                <path
+                  data-rig-right-ear-helix
+                  d={INITIAL_RIGHT_EAR_HELIX}
+                  fill="none"
+                  stroke="#7D1128"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  data-rig-cheek-right
+                  d={INITIAL_CHEEK_RIGHT}
+                  fill="#520A18"
+                  style={{ opacity: 0.25 }}
+                />
+                <path
+                  data-rig-cheek-left
+                  d={INITIAL_CHEEK_LEFT}
+                  fill="#520A18"
+                  style={{ opacity: 0 }}
+                />
+                <path
+                  data-rig-mouth-relief
+                  d={INITIAL_MOUTH_RELIEF}
+                  fill="none"
+                  stroke="#6E0F23"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  style={{ opacity: 0.35 }}
+                />
+                <path
+                  data-rig-chin-shadow
+                  d={INITIAL_CHIN_SHADOW}
+                  fill="none"
+                  stroke="#4A0916"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  style={{ opacity: 0.35 }}
+                />
+
+                <g data-rig-far-group style={{ opacity: 0 }}>
+                  <circle
+                    data-rig-far-aura
+                    cx="374"
+                    cy="215.5"
+                    r="24"
+                    fill="url(#eyeWhiteAura)"
+                    style={{ opacity: 'var(--gp-eyes-glow, 0)' }}
+                  />
+                  <path
+                    data-rig-far-brow
+                    d={INITIAL_FAR_BROW}
+                    fill="none"
+                    stroke="#E04D70"
+                    strokeWidth="2.1"
+                    strokeLinecap="round"
+                    opacity="0.9"
+                  />
+                  <path
+                    data-rig-far-hunter
+                    d={INITIAL_FAR_HUNTER}
+                    fill="#FFFFFF"
+                    stroke="#F5F0EB"
+                    strokeWidth="0.8"
+                    style={{
+                      opacity: 'calc(0.28 + var(--gp-eyes-glow, 0) * 0.72)',
+                    }}
+                  />
+                </g>
+
+                <path
+                  data-rig-nose-relief
+                  d={INITIAL_NOSE_RELIEF}
+                  fill="none"
+                  stroke="url(#faceRimLight)"
+                  strokeWidth="2.1"
+                  strokeLinecap="round"
+                  style={{ opacity: 0 }}
+                />
+
+                <g>
+                  <circle
+                    data-rig-near-aura
+                    cx="344"
+                    cy="215.5"
+                    r="24"
+                    fill="url(#eyeWhiteAura)"
+                    style={{ opacity: 'var(--gp-eyes-glow, 0)' }}
+                  />
+                  <path
+                    data-rig-near-brow
+                    d={INITIAL_NEAR_BROW}
+                    fill="none"
+                    stroke="#E04D70"
+                    strokeWidth="2.1"
+                    strokeLinecap="round"
+                    opacity="0.92"
+                  />
+                  <g style={{ opacity: 'calc(1 - var(--gp-eyes-glow, 0))' }}>
+                    <path
+                      data-rig-near-eyelid
+                      d={INITIAL_NEAR_EYELID}
+                      fill="none"
+                      stroke="#D6335C"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                    <circle
+                      data-rig-near-catch
+                      cx="344"
+                      cy="215.5"
+                      r="1.7"
+                      fill="#F5F0EB"
+                      opacity="0.78"
+                    />
+                  </g>
+                  <path
+                    data-rig-near-hunter
+                    d={INITIAL_NEAR_HUNTER}
+                    fill="#FFFFFF"
+                    stroke="#F5F0EB"
+                    strokeWidth="0.8"
+                    style={{
+                      opacity: 'calc(0.22 + var(--gp-eyes-glow, 0) * 0.78)',
+                    }}
+                  />
+                </g>
+
+                <path
+                  data-rig-hair-fringe
+                  d={INITIAL_HAIR_FRINGE}
+                  fill="#120206"
                 />
               </g>
-
-              {/* K. Signature Forehead Comma / Curtain Fringe */}
-              <path
-                data-rig-hair-fringe
-                d={INITIAL_HAIR_FRINGE}
-                fill="#120206"
-              />
             </g>
-          </g>
+          </svg>
+        )}
 
-          {/* Static Measured Target Anchor at Final Front-Facing Anatomical Right Eye (cx=374, cy=215.5) */}
-          <circle
-            data-eye-portal-anchor
-            cx="374"
-            cy="215.5"
-            r="2.4"
-            fill="#F5F0EB"
-            opacity="0"
-          />
-        </svg>
+        {/* Measured Eye Portal Dive Target (Synced to exact projected 3D Right Eye at front pose) */}
+        <div
+          ref={anchorRef}
+          data-eye-portal-anchor
+          className="pointer-events-none absolute w-[5px] h-[5px] -translate-x-1/2 -translate-y-1/2 opacity-0"
+          style={{
+            left: `${(INITIAL_ANCHOR_UV.u * 100).toFixed(3)}%`,
+            top: `${(INITIAL_ANCHOR_UV.v * 100).toFixed(3)}%`,
+          }}
+        />
       </div>
     </div>
   );
